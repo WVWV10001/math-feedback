@@ -1,0 +1,2177 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<title>数学教学反馈工具</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="教学反馈">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Ccircle cx='90' cy='105' r='55' fill='%23fbe89a'/%3E%3Ccircle cx='90' cy='60' r='48' fill='%23fbe89a'/%3E%3Cellipse cx='60' cy='32' rx='14' ry='24' fill='%23fbe89a'/%3E%3Cellipse cx='120' cy='32' rx='14' ry='24' fill='%23fbe89a'/%3E%3Cellipse cx='60' cy='28' rx='9' ry='16' fill='%23fef6d5'/%3E%3Cellipse cx='120' cy='28' rx='9' ry='16' fill='%23fef6d5'/%3E%3Ccircle cx='70' cy='55' r='4' fill='%233d342f'/%3E%3Ccircle cx='110' cy='55' r='4' fill='%233d342f'/%3E%3Ccircle cx='72' cy='53' r='1.5' fill='%23fff'/%3E%3Ccircle cx='112' cy='53' r='1.5' fill='%23fff'/%3E%3Cellipse cx='90' cy='66' rx='5' ry='3' fill='%23f0a09b'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#a89b8c">
+<meta name="theme-color" media="(prefers-color-scheme:dark)" content="#3d3530">
+<link rel="manifest" href="/manifest.json">
+<style>
+/* ═══════════ DESIGN TOKENS ═══════════ */
+:root{
+  --radius-sm:10px;--radius:14px;--radius-lg:20px;--radius-xl:24px;
+  --font-caption:11px;--font-xs:12px;--font-sm:13px;--font-md:14px;--font-lg:16px;--font-xl:18px;--font-display:48px;
+  --transition-fast:0.12s ease;--transition:0.2s ease;--transition-slow:0.35s ease;
+  --spring:0.4s cubic-bezier(0.34,1.56,0.64,1);
+  --swipe:0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+
+  /* Light theme — Morandi warm */
+  --bg:#f5f1ed;--bg2:#ede6df;
+  --surface:#ffffff;--card-bg:rgba(255,255,255,0.92);
+  --text:#3d3530;--text-secondary:#9b8e84;--text-muted:#b0a599;
+  --accent:#a89b8c;--accent-soft:#c9bdb0;--accent-light:rgba(168,155,140,0.12);
+  --border:#e0d8cf;--border-light:#ebe5dd;
+  --shadow-sm:0 2px 12px rgba(148,130,115,0.05);--shadow:0 4px 20px rgba(148,130,115,0.07);--shadow-lg:0 8px 36px rgba(148,130,115,0.10);
+  --success:#8faa93;--warn:#e67e22;--danger:#c0392b;
+  --doubao:#4a6cf7;--doubao-light:#edf0ff;--ds:#43b57a;--ds-light:#ecf8f2;
+  --bunny-body:#fbe89a;--bunny-ear:#fef6d5;--bunny-nose:#f0a09b;--bunny-outline:#8f7a6f;
+  --glass-bg:rgba(255,255,255,0.88);--glass-blur:blur(14px);
+  --overlay:rgba(0,0,0,0.18);
+}
+
+/* Dark theme */
+html[data-theme="dark"]{
+  --bg:#2c2825;--bg2:#1f1c1a;
+  --surface:#3d3530;--card-bg:rgba(55,48,42,0.92);
+  --text:#e8e0d8;--text-secondary:#b0a599;--text-muted:#8f8075;
+  --accent:#c9bdb0;--accent-soft:#8f8075;--accent-light:rgba(201,189,176,0.10);
+  --border:#5a4f45;--border-light:#48403a;
+  --shadow-sm:0 2px 12px rgba(0,0,0,0.12);--shadow:0 4px 20px rgba(0,0,0,0.16);--shadow-lg:0 8px 36px rgba(0,0,0,0.22);
+  --success:#7fa884;--warn:#d9822f;--danger:#d35b4e;
+  --doubao:#6b8af7;--doubao-light:rgba(74,108,247,0.15);--ds:#5dc48a;--ds-light:rgba(67,181,122,0.15);
+  --bunny-body:#e8d48a;--bunny-ear:#efe0ba;--bunny-outline:#6b5f55;
+  --glass-bg:rgba(50,44,40,0.88);--glass-blur:blur(14px);
+  --overlay:rgba(0,0,0,0.35);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+  background:linear-gradient(175deg,var(--bg) 0%,var(--bg2) 100%);
+  color:var(--text);min-height:100vh;font-size:var(--font-md);
+  -webkit-tap-highlight-color:transparent;transition:background .4s,color .4s;
+}
+#app-classic,#app-workspace{
+  max-width:1440px;margin:0 auto;padding:14px 16px;position:relative;z-index:1;
+  transition:opacity .3s ease;
+}
+#app-workspace{display:none}
+
+/* ── Header ── */
+.header{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  gap:8px;margin-bottom:12px;padding:10px 18px;
+  background:var(--glass-bg);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+}
+.header-title{display:flex;align-items:center;gap:10px}
+.header-title h1{font-size:19px;font-weight:700;white-space:nowrap}
+.header-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+
+/* ── Buttons ── */
+.btn{
+  border:none;border-radius:var(--radius);padding:7px 13px;font-size:var(--font-sm);
+  cursor:pointer;white-space:nowrap;font-family:inherit;display:inline-flex;align-items:center;gap:5px;line-height:1.3;
+  transition:transform var(--spring),box-shadow var(--transition),background var(--transition-fast);
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.btn:active{transform:scale(0.94);transition:transform 0.08s ease}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-db{background:var(--doubao);color:#fff}
+.btn-ds{background:var(--ds);color:#fff}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:var(--font-xs)}
+.btn-xs{padding:3px 8px;font-size:11px;border-radius:10px}
+.btn-icon{
+  width:28px;height:28px;border-radius:50%;border:1px solid var(--border);
+  background:var(--surface);cursor:pointer;display:inline-flex;align-items:center;
+  justify-content:center;transition:all var(--transition-fast);font-size:14px;padding:0;
+}
+.btn-icon:hover{background:var(--card-bg);border-color:var(--accent)}
+
+/* ── Layout ── */
+.layout{display:grid;grid-template-columns:275px 1fr;gap:12px;align-items:start}
+
+/* ── Sidebar ── */
+.sidebar{
+  background:var(--glass-bg);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:12px;box-shadow:var(--shadow);
+  max-height:calc(100vh - 95px);overflow-y:auto;position:sticky;top:14px;
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+}
+.sidebar-title{font-size:var(--font-lg);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.group-block{margin-bottom:8px}
+.group-header{
+  display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:var(--radius);
+  cursor:pointer;font-weight:700;font-size:var(--font-sm);user-select:none;
+  transition:background var(--transition-fast);position:relative;
+}
+.group-header:hover{background:var(--accent-light)}
+.group-header .label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.group-header .count{font-size:11px;color:var(--text-secondary);flex-shrink:0}
+.group-header .add-btn{
+  display:none;width:22px;height:22px;border-radius:50%;border:1.5px dashed var(--accent);
+  background:transparent;color:var(--accent);font-size:15px;cursor:pointer;
+  align-items:center;justify-content:center;transition:all var(--transition-fast);
+  flex-shrink:0;line-height:1;padding:0;
+}
+.group-header:hover .add-btn,.add-btn.always{display:inline-flex}
+.group-header .add-btn:hover{background:var(--accent-light);border-style:solid}
+
+.subgroup-block{margin-left:14px;margin-bottom:4px}
+.subgroup-header{
+  display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:var(--radius);
+  cursor:pointer;font-size:var(--font-sm);font-weight:600;user-select:none;
+  transition:background var(--transition-fast);
+}
+.subgroup-header:hover{background:var(--accent-light)}
+.subgroup-header .type-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1.5px solid rgba(0,0,0,.12)}
+.type-dot.class,.type-dot.vip{background:var(--accent-soft)}
+.subgroup-header .label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  background:transparent;border:none;font-size:var(--font-sm);font-weight:600;color:var(--text);font-family:inherit}
+.subgroup-header .count{font-size:10px;color:var(--text-secondary);flex-shrink:0}
+.subgroup-header .add-btn{
+  display:none;width:20px;height:20px;border-radius:50%;border:1.5px dashed var(--accent);
+  background:transparent;color:var(--accent);font-size:13px;cursor:pointer;
+  align-items:center;justify-content:center;transition:all var(--transition-fast);
+  flex-shrink:0;line-height:1;padding:0;
+}
+.subgroup-header:hover .add-btn,.add-btn.always{display:inline-flex}
+.subgroup-header .add-btn:hover{background:var(--accent-light);border-style:solid}
+
+.student-item{
+  display:flex;align-items:center;gap:6px;margin-left:26px;padding:6px 10px;
+  border-radius:var(--radius);cursor:pointer;font-size:var(--font-sm);
+  transition:all var(--transition-fast);user-select:none;touch-action:manipulation
+}
+.student-item:hover{background:var(--accent-light)}
+.student-item.active{background:var(--accent-light);font-weight:600}
+.student-item .idx{font-size:10px;color:var(--text-secondary);width:18px;text-align:center;flex-shrink:0}
+.student-item .stu-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.student-item .stu-meta{font-size:10px;color:var(--text-secondary);flex-shrink:0;white-space:nowrap}
+.student-item .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-left:4px;background:#d0c8bf;opacity:.7}
+.student-item .dot.done{background:#7da887;opacity:1;box-shadow:0 0 4px rgba(125,168,135,.4)}
+.student-item .dot.skipped,.student-item .dot.uneval{background:var(--accent-soft);opacity:.55;border:1.5px dashed var(--accent-soft)}
+
+/* ── Cards ── */
+.main-panel{display:flex;flex-direction:column;gap:10px}
+.card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);
+  transition:transform .25s ease,box-shadow .25s ease;
+  transform:translateZ(0) rotateX(1deg);
+}
+.card:hover{transform:translateY(-2px) translateZ(0);box-shadow:var(--shadow-lg)}
+.card.slide-in{animation:cardIn .35s ease}
+@keyframes cardIn{from{opacity:.5;transform:translateY(12px) translateZ(0)}to{opacity:1;transform:translateY(0) translateZ(0)}}
+.card-title{
+  font-weight:700;margin-bottom:8px;font-size:var(--font-md);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;
+}
+.card-title .title-left{display:flex;align-items:center;gap:6px}
+.card-title .title-right{display:flex;align-items:center;gap:6px}
+.section-num{
+  display:inline-flex;width:20px;height:20px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:11px;align-items:center;
+  justify-content:center;flex-shrink:0;font-weight:600;
+}
+
+/* ── Forms ── */
+.form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.form-group{display:flex;flex-direction:column;gap:3px;flex:1;min-width:90px}
+.form-group label{font-size:var(--font-xs);color:var(--text-secondary)}
+input,select,textarea{
+  width:100%;border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--surface);padding:9px 11px;font-size:var(--font-md);
+  color:var(--text);font-family:inherit;transition:border-color var(--transition-fast);
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+textarea{resize:vertical;min-height:60px}
+select{
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%238f7a6f' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;
+}
+
+/* ── Tags ── */
+.tag-grid{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.tag{
+  display:flex;align-items:center;gap:4px;padding:6px 11px;border-radius:20px;
+  background:var(--border-light);font-size:var(--font-sm);cursor:pointer;
+  transition:all var(--transition-fast);user-select:none;white-space:nowrap;
+  border:1.5px solid transparent;
+}
+.tag:hover{background:var(--accent-light)}
+.tag.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tag input{display:none}
+.tag-num{font-size:10px;opacity:.6;margin-right:2px}
+.custom-inline{display:flex;gap:6px;align-items:center;margin-top:6px}
+.custom-inline input{flex:1;padding:6px 10px;font-size:var(--font-sm)}
+.fu-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:6px}
+
+/* ── Preview ── */
+.preview-box{
+  width:100%;min-height:170px;background:var(--bg);border-radius:var(--radius);
+  border:1px solid var(--border);padding:14px;white-space:pre-wrap;
+  line-height:1.9;font-size:var(--font-md);font-family:inherit;
+  color:var(--text);outline:none;resize:vertical;
+}
+.preview-box:empty::before{content:'点击「生成」创建反馈…';color:var(--text-muted)}
+
+/* ── History ── */
+.history-list{display:flex;flex-direction:column;gap:7px;max-height:280px;overflow-y:auto}
+.history-item{
+  background:var(--bg);border-radius:var(--radius);padding:10px 14px;
+  border:1px solid var(--border);position:relative;font-size:var(--font-sm);
+}
+.history-item time{display:block;margin-bottom:5px;color:var(--text-secondary);font-size:var(--font-xs)}
+.history-item .htext{white-space:pre-wrap;line-height:1.7;padding-right:24px}
+.history-item .del{
+  position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;
+  border:none;background:transparent;color:var(--text-secondary);cursor:pointer;
+  font-size:16px;line-height:1;opacity:0;transition:opacity var(--transition-fast);
+  display:flex;align-items:center;justify-content:center;
+}
+.history-item:hover .del,.history-item .del.always{opacity:1}
+.history-item .del:hover{color:var(--danger);background:rgba(192,57,43,.08)}
+
+.status-msg{font-size:var(--font-sm);min-height:20px;line-height:20px}
+.status-msg.ok{color:var(--success)}
+
+/* ── Dropdown ── */
+.dropdown{position:relative;display:inline-block}
+.dropdown-menu{
+  position:absolute;bottom:100%;left:0;z-index:100;min-width:155px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow-lg);padding:5px;display:none;margin-bottom:6px;
+}
+.dropdown-menu.show{display:block}
+.dropdown-menu button{
+  display:block;width:100%;text-align:left;padding:9px 13px;border:none;
+  background:transparent;border-radius:10px;cursor:pointer;font-size:var(--font-sm);
+  font-family:inherit;transition:background var(--transition-fast);color:var(--text);
+}
+.dropdown-menu button:hover{background:var(--accent-light)}
+.dropdown-menu .sep{height:1px;background:var(--border);margin:4px 8px}
+
+/* ── Modal (frosted glass) ── */
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;background:var(--overlay);
+  z-index:200;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.modal{
+  background:var(--glass-bg);border-radius:var(--radius-xl);padding:22px 24px;
+  max-width:440px;width:92%;max-height:82vh;overflow-y:auto;
+  box-shadow:var(--shadow-lg);border:1px solid var(--border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.modal h3{font-size:var(--font-lg);margin-bottom:10px}
+.modal .btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.modal select,.modal input{width:100%;margin-bottom:8px}
+
+/* ── Toast ── */
+.toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:300;pointer-events:none}
+.toast{
+  background:var(--glass-bg);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:10px 20px;font-size:var(--font-sm);color:var(--text);
+  box-shadow:var(--shadow-lg);animation:toastIn .35s ease,toastOut .35s ease 1.8s forwards;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-16px)}}
+
+/* ── Clean: no decorative bunnies or paper texture per 二.1 ── */
+
+/* ── Progress ── */
+.progress-wrap{flex:1;min-width:120px;display:flex;align-items:center;gap:8px}
+.progress-bar{flex:1;height:8px;background:var(--accent-light);border-radius:4px;overflow:hidden;position:relative}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-soft),var(--success),var(--accent-soft));background-size:200% 100%;border-radius:4px;transition:width .5s ease;animation:fluidFlow 3s linear infinite}
+@keyframes fluidFlow{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.progress-text{font-size:var(--font-xs);color:var(--text-secondary);white-space:nowrap}
+
+/* ── Workflow ── */
+.workflow-bar{
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+  padding:10px 14px;background:rgba(143,170,147,0.12);
+  border:1px solid rgba(143,170,147,0.2);border-radius:var(--radius);
+  margin-bottom:10px;
+}
+.workflow-bar .step{font-size:var(--font-xs);color:var(--text-secondary)}
+
+/* ── Sent badge ── */
+.sent-badge{
+  display:inline-flex;align-items:center;gap:4px;font-size:11px;
+  color:var(--success);padding:3px 8px;border-radius:10px;
+  background:rgba(143,170,147,0.15);cursor:pointer;transition:all var(--transition-fast);
+}
+.sent-badge:hover{background:rgba(143,170,147,0.25)}
+.sent-badge.unsent{color:var(--warn);background:rgba(230,126,34,0.12)}
+.sent-badge.unsent:hover{background:rgba(230,126,34,0.2)}
+
+/* ── Theme toggle ── */
+.theme-btn{
+  width:30px;height:30px;border-radius:50%;border:1px solid var(--border);
+  background:var(--surface);cursor:pointer;display:inline-flex;align-items:center;
+  justify-content:center;transition:all var(--transition-fast);font-size:15px;padding:0;
+}
+.theme-btn:hover{background:var(--card-bg);border-color:var(--accent)}
+
+/* ═══════════ WORKSPACE MODE ═══════════ */
+.ws-header{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:10px 18px;margin-bottom:16px;
+  background:var(--glass-bg);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+}
+.ws-header-left{display:flex;align-items:center;gap:10px}
+.ws-header-right{display:flex;align-items:center;gap:8px}
+.ws-progress{font-size:var(--font-sm);color:var(--text-secondary)}
+.ws-progress strong{color:var(--accent);font-size:var(--font-lg)}
+
+.ws-main{
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  padding:10px 0;min-height:70vh;justify-content:center;
+}
+.ws-card{
+  background:var(--card-bg);border:none;
+  border-radius:0;padding:20px 24px;width:100%;max-width:100%;
+  min-height:calc(100vh - 120px);box-shadow:none;position:relative;
+  transition:transform var(--swipe),opacity var(--swipe);
+  transform:translateX(0);will-change:transform;touch-action:pan-y;
+  overflow-y:auto;
+}
+.ws-card.swiping{transition:none}
+.ws-card.swipe-left{transform:translateX(-120%);opacity:0}
+.ws-card.swipe-right{transform:translateX(120%);opacity:0}
+.ws-card.swipe-up{transform:translateY(-120%);opacity:0}
+.ws-card.slide-in-left{animation:wsSlideInLeft .35s ease}
+.ws-card.slide-in-right{animation:wsSlideInRight .35s ease}
+@keyframes wsSlideInLeft{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes wsSlideInRight{from{transform:translateX(-120%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+.ws-student-name{font-size:var(--font-md);font-weight:700;text-align:left;margin-bottom:2px;color:var(--text)}
+.ws-student-tier{font-size:var(--font-xs);color:var(--text-secondary);margin-bottom:6px}
+.ws-student-meta{display:none}
+
+.ws-section{margin-bottom:14px}
+.ws-section-title{
+  font-size:var(--font-sm);font-weight:700;color:var(--text-secondary);
+  display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;
+  padding:8px 0;border-bottom:1px solid var(--border-light);
+}
+.ws-section-title::after{content:'▾';font-size:10px;transition:transform var(--transition-fast)}
+.ws-section-title.collapsed::after{transform:rotate(-90deg)}
+.ws-section-body{transition:max-height var(--transition-slow),opacity var(--transition-slow);overflow:hidden}
+.ws-section-body.collapsed{max-height:0!important;opacity:0}
+
+.ws-save-btn{
+  width:min(92vw,500px);padding:14px;border:none;border-radius:var(--radius-lg);
+  background:var(--accent);color:#fff;font-size:var(--font-lg);font-weight:700;
+  cursor:pointer;font-family:inherit;transition:transform var(--spring),box-shadow var(--transition);
+  box-shadow:var(--shadow);
+}
+.ws-save-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.ws-save-btn:active{transform:scale(0.95);transition:transform 0.08s ease}
+
+.ws-complete{text-align:center;padding:30px}
+.ws-complete h2{font-size:28px;margin-bottom:10px}
+.ws-complete p{color:var(--text-secondary);margin-bottom:20px}
+
+/* ── Swipe dots ── */
+/* ── Workspace selection screens ── */
+.ws-select-list{padding:20px;width:100%;max-width:500px;margin:0 auto}
+.ws-select-list h3{font-size:var(--font-lg);margin-bottom:14px;text-align:center}
+.ws-select-item{
+  display:block;width:100%;padding:14px 18px;margin-bottom:8px;
+  background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-lg);
+  font-size:var(--font-md);color:var(--text);cursor:pointer;text-align:left;
+  font-family:inherit;transition:all var(--transition-fast);
+}
+.ws-select-item:hover{background:var(--accent-light);border-color:var(--accent)}
+.ws-select-item .sub{font-size:var(--font-xs);color:var(--text-secondary)}
+.ws-menu{display:flex;flex-direction:column;align-items:center;padding:30px 20px;width:100%;max-width:400px;margin:0 auto}
+.ws-menu h3{font-size:var(--font-xl);text-align:center}
+.ws-menu-btn{
+  width:100%;padding:20px;margin-bottom:12px;border:2px solid var(--border);
+  border-radius:var(--radius-xl);background:var(--card-bg);font-size:var(--font-lg);
+  font-weight:700;color:var(--text);cursor:pointer;font-family:inherit;
+  transition:all var(--spring);text-align:center;
+}
+.ws-menu-btn:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
+.ws-menu-btn:active{transform:scale(0.96)}
+.ws-lesson-editor{padding:20px;width:100%;max-width:600px;margin:0 auto;display:flex;flex-direction:column}
+.ws-lesson-editor h3{font-size:var(--font-lg);text-align:center}
+.ws-lesson-editor textarea{width:100%;min-height:200px;border:1px solid var(--border);border-radius:var(--radius-lg);
+  background:var(--surface);padding:14px;font-size:var(--font-md);color:var(--text);font-family:inherit;resize:vertical}
+
+.ws-swipe-dots{display:flex;gap:8px;justify-content:center;padding:12px 0}
+.ws-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all var(--transition)}
+.ws-dot.active{background:var(--accent);transform:scale(1.3)}
+
+/* ── Hero entry animation ── */
+.ws-hero-text{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(1.5);
+  font-size:48px;font-weight:700;color:var(--accent);z-index:100;pointer-events:none;
+  opacity:0;transition:none;white-space:nowrap;
+}
+.ws-hero-text.animate{animation:heroEntry 1.2s cubic-bezier(0.25,0.46,0.45,0.94) forwards}
+@keyframes heroEntry{
+  0%{transform:translate(-50%,-50%) scale(1.5);opacity:0}
+  25%{transform:translate(-50%,-50%) scale(1);opacity:1}
+  75%{transform:translate(-50%,-50%) scale(1);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(1);opacity:0}
+}
+/* ── Card Stack Accordion ── */
+.ws-stack-container{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:10px;padding:10px;align-content:start;
+  position:relative;width:100%;transition:all var(--transition-slow);
+}
+.ws-stack-card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:16px 18px;
+  box-shadow:var(--shadow);position:relative;
+  transition:transform var(--spring),opacity var(--spring);cursor:pointer;
+}
+/* Stacked mode override (pinch-to-stack) */
+.ws-stack-container.stacked{display:block;position:relative;min-height:calc(100vh - 180px)}
+.ws-stack-container.stacked .ws-stack-card{
+  position:absolute;top:0;left:0;right:0;min-height:calc(100vh - 180px);
+}
+.ws-stack-container.stacked .ws-stack-card:nth-child(1){z-index:20;opacity:1;transform:scale(1)}
+.ws-stack-container.stacked .ws-stack-card:nth-child(2){z-index:19;opacity:0.92;transform:scale(0.97) translateY(8px)}
+.ws-stack-container.stacked .ws-stack-card:nth-child(3){z-index:18;opacity:0.84;transform:scale(0.94) translateY(14px)}
+.ws-stack-container.stacked .ws-stack-card:nth-child(4){z-index:17;opacity:0.74;transform:scale(0.91) translateY(18px)}
+.ws-stack-container.stacked .ws-stack-card:nth-child(n+5){z-index:10;opacity:0.4;transform:scale(0.85) translateY(22px);pointer-events:none}
+/* One-on-one: single card centered */
+.ws-stack-container.single{display:flex;justify-content:center;align-items:flex-start}
+.ws-stack-container.single .ws-stack-card{max-width:500px;width:100%}
+/* Extracted card */
+.ws-stack-card.extracted{z-index:100!important;transform:scale(1.08)!important;box-shadow:var(--shadow-lg)!important;border-color:var(--accent)!important}
+.ws-stack-card.dragging{z-index:200!important;opacity:0.95!important;transition:none!important;box-shadow:0 16px 48px rgba(0,0,0,0.18)!important;pointer-events:none}
+
+/* ── Line icons on cards ── */
+.ws-card-icons{position:absolute;top:10px;right:12px;display:flex;gap:10px;z-index:5}
+.ws-card-icon{
+  width:22px;height:22px;cursor:pointer;opacity:0.45;transition:opacity var(--transition-fast);
+  background:none;border:none;padding:0;display:flex;align-items:center;justify-content:center;
+}
+.ws-card-icon:hover{opacity:1}
+.ws-card-icon svg{stroke:var(--text-secondary);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ws-ai-btn{width:28px!important;height:28px!important;border-radius:50%!important;background:var(--doubao-light)!important}
+.ws-sync-btn{width:28px!important;height:28px!important;border-radius:50%!important;background:var(--accent-light)!important}
+/* Auto-expand preview text */
+.ws-preview-text{font-size:var(--font-xs);color:var(--text-secondary);margin-top:6px;line-height:1.6;border:1px solid var(--border-light);border-radius:8px;padding:8px;background:var(--bg);min-height:40px;word-break:break-word}
+
+/* Bunny hero and bunny-ear removed per 二.1 */
+
+/* ── Responsive ── */
+@media(max-width:880px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;max-height:35vh;order:-1;top:0;margin-bottom:10px}
+  .main-panel{order:1}
+  .header h1{font-size:17px}
+  .ws-student-name{font-size:24px}
+}
+/* iPad portrait specific */
+@media only screen and (min-width:768px) and (max-width:1024px) and (orientation:portrait){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;max-height:40vh;order:-1;top:0;display:block!important}
+  .main-panel{order:1}
+}
+@media(hover:none){
+  .add-btn{display:inline-flex!important}
+  .btn{padding:9px 15px}
+  .tag{padding:7px 12px}
+  .group-header .add-btn,.subgroup-header .add-btn{display:inline-flex!important}
+  .history-item .del{opacity:1}
+}
+[data-tip]{position:relative}
+[data-tip]:hover::after{
+  content:attr(data-tip);position:absolute;bottom:115%;left:50%;
+  transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;
+  padding:5px 9px;border-radius:7px;font-size:11px;white-space:nowrap;
+  pointer-events:none;z-index:50;
+}
+
+/* ── Button ripple ── */
+.btn{position:relative;overflow:hidden}
+.btn::after{
+  content:'';position:absolute;top:50%;left:50%;width:0;height:0;
+  border-radius:50%;background:rgba(255,255,255,.3);transform:translate(-50%,-50%);
+  transition:width .6s,height .6s,opacity .6s;
+}
+.btn:active::after{width:300px;height:300px;opacity:0}
+
+/* ── Input breathing glow ── */
+input:focus,select:focus,textarea:focus{
+  animation:breathe 2s ease-in-out infinite;
+  box-shadow:0 0 0 2px var(--accent-soft);
+}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 2px var(--accent-soft)}50%{box-shadow:0 0 0 5px var(--accent-soft),0 0 12px var(--accent-light)}}
+
+/* ── Bunny ears animation ── */
+.bunny-ear{transition:transform var(--spring);transform-origin:center bottom}
+.bunny-ear.ears-up{transform:rotate(0deg)!important}
+.bunny-ear-inner{transition:transform var(--spring);transform-origin:center bottom}
+
+/* ── Loading spinner ── */
+.ws-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Scroll damping ── */
+.sidebar,.ws-stack-card,.history-list,.ws-lesson-editor{
+  scroll-behavior:smooth;
+}
+
+/* ── Tag editor ── */
+.ws-tag-editor{padding:20px;text-align:center;width:100%}
+.ws-edit-hero{font-size:48px;font-weight:700;color:var(--accent);padding:40px 0;opacity:0;transform:scale(1.3);transition:all .25s ease}
+.ws-edit-hero.show{opacity:1;transform:scale(1)}
+.ws-bubble-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:20px;max-width:700px;margin:0 auto}
+.ws-bubble{
+  padding:10px 18px;border-radius:24px;background:var(--border-light);font-size:var(--font-sm);
+  cursor:pointer;transition:all .2s ease;user-select:none;opacity:0;transform:scale(0);
+  animation:bubbleOut .2s ease forwards;border:2px solid transparent;
+}
+.ws-bubble.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ws-bubble:nth-child(1){animation-delay:0s}.ws-bubble:nth-child(2){animation-delay:.03s}
+.ws-bubble:nth-child(3){animation-delay:.06s}.ws-bubble:nth-child(4){animation-delay:.09s}
+.ws-bubble:nth-child(5){animation-delay:.12s}.ws-bubble:nth-child(6){animation-delay:.15s}
+.ws-bubble:nth-child(7){animation-delay:.18s}.ws-bubble:nth-child(8){animation-delay:.21s}
+.ws-edit-actions{padding:10px}
+@keyframes bubbleOut{0%{opacity:0;transform:scale(0)}100%{opacity:1;transform:scale(1)}}
+
+/* ── Floating "本" button ── */
+.ws-fab{
+  position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:20px;font-weight:700;border:none;
+  cursor:pointer;z-index:100;box-shadow:var(--shadow-lg);
+  transition:transform var(--spring),box-shadow var(--transition);
+  display:flex;align-items:center;justify-content:center;font-family:inherit;
+}
+.ws-fab:hover{transform:scale(1.08);box-shadow:0 8px 30px rgba(0,0,0,.18)}
+.ws-fab:active{transform:scale(0.92)}
+</style>
+</head>
+<body>
+
+<!-- Decorative elements removed per 二.1: no flowers/Morandi decorations -->
+
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- Floating "本" button for local generate -->
+<button class="ws-fab" id="wsFab" onclick="wsFabGenerate()" title="本地生成" style="display:none">本</button>
+
+<!-- ═══════════ CLASSIC MODE ═══════════ -->
+<div id="app-classic">
+  <div class="header">
+    <div class="header-title">
+      <svg width="26" height="26" viewBox="0 0 40 40"><circle cx="20" cy="22" r="16" fill="var(--bunny-body)"/><circle cx="20" cy="12" r="13" fill="var(--bunny-body)"/><ellipse cx="12" cy="8" rx="8" ry="11" fill="var(--bunny-body)"/><ellipse cx="28" cy="8" rx="8" ry="11" fill="var(--bunny-body)"/><circle cx="14" cy="12" r="2" fill="var(--text)"/><circle cx="26" cy="12" r="2" fill="var(--text)"/><ellipse cx="20" cy="16" rx="3" ry="2" fill="var(--bunny-nose)"/></svg>
+      <h1>数学教学反馈工具</h1>
+    </div>
+    <div class="header-actions">
+      <span class="progress-wrap"><span class="progress-text" id="progressLabel">0/29</span><span class="progress-bar"><span class="progress-fill" id="progressFill" style="width:0%"></span></span></span>
+      <button class="theme-btn" onclick="toggleTheme()" title="切换主题" id="themeBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" style="vertical-align:-1px"><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <button class="btn btn-ghost btn-sm" onclick="enterWorkspace()" id="btnWsEnter" title="切换工作模式">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M8 3H3v5"/><path d="M3 3l6 6"/><path d="M16 21h5v-5"/><path d="M21 21l-6-6"/></svg> 沉浸工作</button>
+      <button class="btn btn-ghost btn-sm" onclick="showCleanupModal()" title="清理旧记录"><svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="5,7 2,0 9,6" fill="none" stroke="currentColor" stroke-width="1.2"/><polygon points="19,7 22,0 15,6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/></svg> 清理</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearWeek()">一键清空本周</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportData()">导出</button>
+      <button class="btn btn-ghost btn-sm" onclick="importData()">导入</button>
+    </div>
+  </div>
+
+  <div class="workflow-bar" id="workflowBar">
+    <button class="btn btn-primary btn-sm" onclick="startWorkflow()">快速过学生</button>
+    <button class="btn btn-ghost btn-sm" onclick="nextWorkflowStudent()" id="btnNext" style="display:none">跳下一个</button>
+    <span class="step" id="workflowStep">共 29 名学生，点击开始逐个生成反馈</span>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-title"><svg width="16" height="16" viewBox="0 0 24 24"><ellipse cx="12" cy="14" rx="7" ry="7" fill="#c9b896"/><ellipse cx="7" cy="6" rx="2.5" ry="6" fill="#c9b896"/><ellipse cx="17" cy="6" rx="2.5" ry="6" fill="#c9b896"/><ellipse cx="7" cy="4" rx="1.8" ry="4" fill="#fef9f0"/><ellipse cx="17" cy="4" rx="1.8" ry="4" fill="#fef9f0"/><circle cx="9.5" cy="12" r="1.2" fill="#4a3f3a"/><circle cx="14.5" cy="12" r="1.2" fill="#4a3f3a"/></svg> 学生名录</div>
+      <div id="sidebarContent"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addGroup()" style="margin-top:8px;width:100%">+ 添加学段</button>
+    </div>
+
+    <div class="main-panel" id="mainPanel">
+      <!-- 1. Student Info -->
+      <div class="card" id="card-student">
+        <div class="card-title">
+          <span class="title-left"><span class="section-num">1</span> 学生信息</span>
+          <span class="title-right">
+            <button class="btn btn-ghost btn-sm" onclick="syncTier()">同档同步</button>
+            <button class="btn btn-ghost btn-sm" onclick="syncClass()">全班同步</button>
+          </span>
+        </div>
+        <div id="studentForm"></div>
+        <div id="studentEmpty" style="color:var(--text-secondary);text-align:center;padding:30px"><svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="#e8c97a"/><polygon points="11,7 9,10 12,12 15,10" fill="#f0a060"/><circle cx="9" cy="12" r="1.2" fill="#4a3f3a"/><circle cx="15" cy="12" r="1.2" fill="#4a3f3a"/></svg> 选择左侧学生开始编辑</div>
+      </div>
+      <!-- 2. Lesson -->
+      <div class="card"><div class="card-title"><span class="title-left"><span class="section-num">2</span> 本周授课内容（班级共享）</span><span class="title-right"><button class="btn btn-db btn-sm" onclick="polishDoubao('lesson')">豆包</button></span></div><textarea id="lessonContent" rows="3" placeholder="输入本周授课内容…&#10;切换学生不清空，全班共享" oninput="onLessonChange()"></textarea></div>
+      <!-- 3. State -->
+      <div class="card"><div class="card-title"><span class="title-left"><span class="section-num">3</span> 课堂表现</span><button class="btn btn-ghost btn-xs" onclick="refreshOptions('state')">更新选项</button></div><div class="tag-grid" id="checkState"></div><div class="custom-inline"><input type="text" id="customState" placeholder="+ 自定义补充课堂表现" oninput="onCustomCheckChange('state')"></div></div>
+      <!-- 4. Strengths -->
+      <div class="card"><div class="card-title"><span class="title-left"><span class="section-num">4</span> 表现优点</span><button class="btn btn-ghost btn-xs" onclick="refreshOptions('strengths')">更新选项</button></div><div class="tag-grid" id="checkStrengths"></div><div class="custom-inline"><input type="text" id="customStrengths" placeholder="+ 自定义补充优点" oninput="onCustomCheckChange('strengths')"></div></div>
+      <!-- 5. Improvements -->
+      <div class="card"><div class="card-title"><span class="title-left"><span class="section-num">5</span> 需要注意/改进的地方</span><button class="btn btn-ghost btn-xs" onclick="refreshOptions('improvements')">更新选项</button></div><div class="tag-grid" id="checkImprovements"></div><div class="custom-inline"><input type="text" id="customImprovements" placeholder="+ 自定义补充改进建议" oninput="onCustomCheckChange('improvements')"></div></div>
+      <!-- 6. Follow-up -->
+      <div class="card"><div class="card-title"><span class="title-left"><span class="section-num">6</span> 后续学习安排（可多选）</span></div><div class="fu-grid" id="followUpTags"></div><div class="custom-inline"><input type="text" id="customFollowUp" placeholder="自定义补充（将自动融入反馈）" oninput="onFollowUpCustom()"></div></div>
+      <!-- 7. Preview -->
+      <div class="card"><div class="card-title"><span class="title-left"><span class="section-num">7</span> 反馈预览（三部分）</span><span class="title-right"><div class="dropdown"><button class="btn btn-primary btn-sm" id="genBtn" onclick="toggleGenMenu()">生成▾</button><div class="dropdown-menu" id="genMenu"><button onclick="localGenerate()">本地生成初稿</button><div class="sep"></div><button onclick="genDoubao()">豆包 AI 润色</button></div></div><button class="btn btn-ghost btn-sm" onclick="saveFeedback()">保存</button><!-- 保存并下一个已移除，改用滑动手势切换 --><button class="btn btn-ghost btn-sm" onclick="copyFeedback()">一键复制</button><span id="sentToggle" class="sent-badge unsent" onclick="toggleSent()" style="cursor:pointer">未发送</span></span></div><div id="previewBox" class="preview-box" contenteditable="true"></div><div id="previewStatus" class="status-msg"></div></div>
+      <!-- 8. History -->
+      <div class="card"><div class="card-title"><span class="title-left"><span class="section-num">8</span> 历史反馈记录</span><button class="btn btn-ghost btn-xs" onclick="showHistoryManager(S.curSid)">查看全部</button></div><div class="history-list" id="historyList"><div style="color:var(--text-secondary);text-align:center;padding:14px">暂无记录</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ WORKSPACE MODE ═══════════ -->
+<div id="app-workspace">
+  <div class="ws-header">
+    <div class="ws-header-left">
+      <span class="ws-progress" id="wsProgress">准备开始评价</span>
+    </div>
+    <div class="ws-header-right">
+      <button class="btn btn-ghost btn-xs" onclick="showClearOptionsModal()" title="清空">清空</button>
+      <button class="btn btn-primary btn-xs" onclick="wsSaveAllHistory()" title="一键保存全部到历史记录" style="margin-left:4px">一键存档</button>
+      <span class="ws-progress" id="wsTally" style="font-size:var(--font-sm);color:var(--text-secondary)"></span>
+    </div>
+  </div>
+  <div class="ws-main" id="wsMain">
+    <div style="text-align:center;color:var(--text-secondary);padding:40px" id="wsEmpty">
+      <p style="font-size:var(--font-lg);margin-bottom:8px">请先在经典模式中选择一个班级</p>
+      <p style="font-size:var(--font-sm)">点击左侧学生列表中的班级，然后进入沉浸模式</p>
+    </div>
+    <div class="ws-select-list" id="wsGradeSelect" style="display:none"></div>
+    <div class="ws-select-list" id="wsClassSelect" style="display:none">
+      <div id="wsClassList"></div>
+    </div>
+    <div class="ws-menu" id="wsMainMenu" style="display:none">
+      <h3 id="wsMenuTitle" style="margin-bottom:20px"></h3>
+      <button class="ws-menu-btn" onclick="wsShowLessonEdit()">本周授课内容</button>
+      <button class="ws-menu-btn" onclick="wsStartEval()">学生评价</button>
+    </div>
+    <div class="ws-lesson-editor" id="wsLessonEdit" style="display:none">
+      <h3 id="wsLessonEditTitle" style="margin-bottom:12px"></h3>
+      <textarea id="wsLessonTextarea" rows="6" placeholder="输入本周授课内容…"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-db btn-sm" onclick="wsPolishLesson()">豆包润色</button>
+        <button class="btn btn-primary btn-sm" onclick="wsSaveLesson()">保存本周班级授课内容</button>
+      </div>
+    </div>
+    <div class="ws-stack-container" id="wsStack" style="display:none"></div>
+      <div class="ws-swipe-dots" id="wsSwipeDots" style="display:none">
+        <span class="ws-dot active"></span><span class="ws-dot"></span><span class="ws-dot"></span>
+      </div>
+    <div class="ws-tag-editor" id="wsTagEditor" style="display:none">
+      <div class="ws-edit-hero" id="wsEditHero"></div>
+      <div class="ws-bubble-grid" id="wsBubbleGrid"></div>
+      <div class="ws-edit-actions" id="wsEditActions" style="display:none">
+        <button class="btn btn-ghost btn-xs" onclick="wsRefreshEditTags()">刷新未选</button>
+      </div>
+    </div>
+    <div class="ws-complete" id="wsComplete" style="display:none">
+      <h2>全班评价完成</h2>
+      <p id="wsCompleteMsg"></p>
+      <p style="font-size:var(--font-xs);color:var(--text-muted)">右滑返回年级选择</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalBg" style="display:none" onclick="closeModal()">
+  <div class="modal" id="modalBox" onclick="event.stopPropagation()"></div>
+</div>
+
+<script>
+// ======================== CONSTANTS ========================
+const SK='mathFeedbackTool-v3';
+
+const isIPad=/iPad|Macintosh/.test(navigator.userAgent)&&'ontouchend'in document;
+const isTouch='ontouchstart'in window||navigator.maxTouchPoints>0;
+
+// Tag pools
+const poolState=[
+  '上课专注，听讲认真','主动举手回答问题','课堂参与度较高','能跟上教学节奏',
+  '愿意上台板演','对新题型有兴趣','课堂互动时表现积极','对难题有钻研精神',
+  '课堂笔记工整有条理','遇到不懂主动提问','反应快理解能力强','认真完成课堂练习',
+  '学习中善于总结方法','乐于帮助同学讲解','有独到的解题思路','对新知识接受较快',
+  '上课状态整体良好','保持稳定的学习状态','逻辑思维表现不错','思路清晰表达流畅',
+  '审题较为仔细','计算准确率较高','几何想象力不错','解题步骤完整规范',
+  '学习态度端正','能独立完成思考题','课堂互动表现活跃','对解题有自己见解'
+];
+const poolStrengths=[
+  '理解能力强一点就通','解题步骤规范思路清晰','善于总结同类题型解法',
+  '笔记整理条理分明','课堂提问积极有思考','空间想象力好几何题有优势',
+  '计算细心准确率高','能高效完成课堂任务','课堂练习完成质量高',
+  '对数学有浓厚兴趣','举一反三能力强','能清晰表达解题过程',
+  '阅读题目仔细审题认真','敢于挑战难题不畏惧','书写工整规范',
+  '逻辑推理能力突出','课堂反应敏捷','知识迁移运用灵活',
+  '良好自我检查纠错能力','善于与老师沟通交流','善于发现题目关键信息',
+  '自信心较强不怕犯错','课堂乐于分享想法','基础扎实知识框架清晰'
+];
+const poolImprovements=[
+  '遇难题有时会退缩需多鼓励','计算速度可以再提升','偶尔忽略题目关键条件',
+  '解题步骤有时不够完整','可多注意书写规范','审题时可以更仔细',
+  '综合题型训练可以加强','可以适当增加针对性练习','有时惯性思维解题',
+  '部分概念理解还可更深入','单位换算时需要更仔细','应用题分析可以更有条理',
+  '可以更注重检查验算','知识点串联可以更主动','笔记细节可再完善一些',
+  '有时急于求成需要更多耐心','一题多解意识可以加强','对自己要求可以再高一点',
+  '需加强基础计算熟练度','可多尝试不同的解题方法','时间分配上可以更合理',
+  '复杂问题拆解能力有提升空间','可规范使用数学语言','个别知识点灵活运用可加强'
+];
+const fuOpts=[
+  {v:'review',t:'复盘讲义错题',d:'建议孩子重点复习本周讲义中的错题，查漏补缺'},
+  {v:'practice',t:'针对性加练+批改',d:'布置少量针对性练习题巩固本周所学，完成后发我批改'},
+  {v:'homework',t:'布置课后作业',d:'已布置本周课后作业，请孩子完成后拍照发我'},
+  {v:'interact',t:'课堂互动加强',d:'后续课堂我会多提问关注，强化专注度和表达能力'},
+  {v:'custom',t:'自定义安排',d:''}
+];
+const litPool=[
+  '学如逆水行舟，每一步踏实都是向前。','功夫不负有心人，持续的专注会带来扎实的进步。',
+  '书山有路勤为径，每次思考都在为理解搭桥。','不积跬步无以至千里，扎实来自每节课的认真。',
+  '成长如竹，默默扎根然后稳稳拔节。','清晰思路来自每一次用心的练习。',
+  '水滴石穿非一日之功，好习惯在每节课里慢慢养成。','学数学如登山，一步一步风景自会展开。',
+  '真正的理解是把基本功千锤百炼后的内化。','每次审题都是在培养细致的品质。',
+  '踏实走过每段路程，自然收获一路风景。','认真是一种习惯，它会在关键时刻发光。',
+  '求知路上，耐心是最好的伙伴。','思维的种子在静默中生根发芽。',
+  '稳扎稳打方能行稳致远。','点滴积累终将汇成江河。',
+  '态度决定高度，细节决定成败。','用心之处自有回响。',
+  '每一个认真的瞬间都在为未来铺路。','静水流深，扎实的脚步最有力。',
+  '聪明在于勤奋，天才在于积累。','好习惯是最好的老师。',
+  '慢慢来比较快，稳当里见真章。','学习的路上没有白走的路。',
+  '一步一个脚印，踏实本身就是一种能力。','每一次专注都在为理解加深印记。',
+  '学问是经验的积累，才能是刻苦的忍耐。','坚持不懈的努力不会被辜负。',
+  '认真对待每一处细节，结果自然不会差。','真正的进步往往在无声中发生。',
+  '勤学如春起之苗，不见其增日有所长。','善思者智，善问者明。',
+  '用心走过的每一步，未来都会记得。','持续的投入是解开难题的唯一钥匙。',
+  '在数学里找到节奏，在思考里收获成长。','好的习惯是无声的竞争力。',
+  '每次认真审题，都是在与知识深度对话。','踏实是一种品质，更是一种力量。'
+];
+const tierBonus={
+  '优秀档':{phrase:'当前阶段学习状态较好，细节把控稳定，逻辑呈现自然流畅。',tone:'继续保持扎实的学习状态，稳中求进。'},
+  '中等档':{phrase:'整体学习节奏稳中有进，仍有提升空间，接下来继续保持。',tone:'保持当前势头，稳步提升即可看到明显进步。'},
+  '进步档':{phrase:'本周表现显示出潜力和努力，后续重点在专注度和习题巩固上。',tone:'每一点进步都值得肯定，继续踏实用心会越来越好。'}
+};
+const tierTags={
+  '优秀档':['稳定性强','细节把控到位','思维流畅度高','解题思路严谨','逻辑表达清晰'],
+  '中等档':['稳中有进','仍有提升空间','节奏保持良好','波动在正常范围','可塑性较强'],
+  '进步档':['潜力正在释放','逐步适应课堂节奏','需要持续的专注练习','每一次努力都看得见','正在朝着好的方向前进']
+};
+const greetPool=[
+  (n,l)=>`${n}${l}您好，下面是${n}本周的课堂反馈：`,
+  (n,l)=>`${n}${l}好，跟您同步一下${n}本周的学习情况：`,
+  (n,l)=>`${n}${l}您好，这是${n}本周的课堂反馈：`,
+  (n,l)=>`${n}${l}您好，向您反馈${n}本周课堂学习情况：`
+];
+const connectors=['同时','此外','并且','再者','另外','与此同时','加之','另外值得一提的是'];
+const praiseWords={认真:'踏实',不错:'良好',细心:'沉稳',优秀:'出色',积极:'主动',努力:'用功',聪明:'敏锐',很好:'相当不错'};
+
+// ======================== STATE ========================
+let S;
+function initState(){
+  return{
+    theme:'light',
+    groups:[
+      {id:'g1',label:'小学段'},{id:'g2',label:'初一学段'},
+      {id:'g3',label:'初二学段'},{id:'g4',label:'初三学段'}
+    ],
+    subGroups:[
+      {id:'sg1',groupId:'g1',label:'三年级一对一',type:'一对一'},
+      {id:'sg2',groupId:'g1',label:'四年级一对一',type:'一对一'},
+      {id:'sg3',groupId:'g1',label:'六年级班课',type:'班课'},
+      {id:'sg4',groupId:'g2',label:'初一一对一',type:'一对一'},
+      {id:'sg5',groupId:'g3',label:'初二下班课',type:'班课'}
+    ],
+    students:[
+      {id:'s1',sgId:'sg1',name:'梓翔',gender:'男',parent:'妈妈',grade:'三',sem:'下',tier:'优秀档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s2',sgId:'sg2',name:'嘉蔚',gender:'女',parent:'家长',grade:'四',sem:'下',tier:'进步档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s3',sgId:'sg3',name:'明玕',gender:'男',parent:'妈妈',grade:'六',sem:'下',tier:'优秀档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s4',sgId:'sg3',name:'恩慧',gender:'女',parent:'妈妈',grade:'六',sem:'下',tier:'优秀档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s5',sgId:'sg3',name:'芷晴',gender:'女',parent:'妈妈',grade:'六',sem:'下',tier:'优秀档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s6',sgId:'sg3',name:'晓程',gender:'女',parent:'妈妈',grade:'六',sem:'下',tier:'优秀档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s7',sgId:'sg3',name:'晞楠',gender:'男',parent:'家长',grade:'六',sem:'下',tier:'中等档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s8',sgId:'sg3',name:'翔睿',gender:'男',parent:'妈妈',grade:'六',sem:'下',tier:'中等档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s9',sgId:'sg3',name:'滟灵',gender:'女',parent:'家长',grade:'六',sem:'下',tier:'中等档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s10',sgId:'sg3',name:'梓豪',gender:'男',parent:'妈妈',grade:'六',sem:'下',tier:'进步档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s11',sgId:'sg3',name:'瑾瑜',gender:'女',parent:'妈妈',grade:'六',sem:'下',tier:'进步档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s12',sgId:'sg3',name:'皓轩',gender:'男',parent:'家长',grade:'六',sem:'下',tier:'进步档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s13',sgId:'sg4',name:'芷晴',gender:'女',parent:'家长',grade:'七',sem:'下',tier:'进步档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s14',sgId:'sg5',name:'小滢',gender:'女',parent:'妈妈',grade:'八',sem:'下',tier:'优秀档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s15',sgId:'sg5',name:'依果',gender:'女',parent:'妈妈',grade:'八',sem:'下',tier:'优秀档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s16',sgId:'sg5',name:'圣锐',gender:'男',parent:'妈妈',grade:'八',sem:'下',tier:'优秀档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s17',sgId:'sg5',name:'家妮',gender:'女',parent:'爸爸',grade:'八',sem:'下',tier:'优秀档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s18',sgId:'sg5',name:'明轩',gender:'男',parent:'爸爸',grade:'八',sem:'下',tier:'优秀档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s19',sgId:'sg5',name:'锦瑶',gender:'男',parent:'爸爸',grade:'八',sem:'下',tier:'优秀档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s20',sgId:'sg5',name:'子桥',gender:'男',parent:'妈妈',grade:'八',sem:'下',tier:'中等档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s21',sgId:'sg5',name:'淳博',gender:'男',parent:'爸爸',grade:'八',sem:'下',tier:'中等档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s22',sgId:'sg5',name:'名轩',gender:'男',parent:'妈妈',grade:'八',sem:'下',tier:'中等档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s23',sgId:'sg5',name:'浩宇',gender:'男',parent:'妈妈',grade:'八',sem:'下',tier:'中等档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s24',sgId:'sg5',name:'蕙雯',gender:'女',parent:'妈妈',grade:'八',sem:'下',tier:'进步档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s25',sgId:'sg5',name:'学瑾',gender:'男',parent:'妈妈',grade:'八',sem:'下',tier:'进步档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s26',sgId:'sg5',name:'缤缤',gender:'男',parent:'妈妈',grade:'八',sem:'下',tier:'进步档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false},
+      {id:'s27',sgId:'sg5',name:'圳浩',gender:'男',parent:'妈妈',grade:'八',sem:'下',tier:'进步档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false}
+    ],
+    lessonContents:{},
+    tierPresets:{}, // per-class: {sgId:{tier:{...}}}
+    curSid:null,curSgId:null,clsRot:{},reviewQ:[],useCounts:{state:0,strengths:0,improvements:0},
+    sentThisWeek:{},workflowIdx:0,
+    customBgUrl:null,cleanedAt:null,workspaceSgId:null,workspaceIdx:0,consecutiveEvalCount:0
+  };
+}
+
+// Per-class tier presets helper (migrated from global to per-sgId)
+function _defTP(){return {优秀档:_defTPE(),中等档:_defTPE(),进步档:_defTPE()}}
+function _defTPE(){return {state:[],strengths:[],improvements:[],customState:'',customStrengths:'',customImprovements:'',followUp:[],customFollowUp:''}}
+function tp(sgId,tier){if(!S.tierPresets[sgId])S.tierPresets[sgId]=_defTP();if(!S.tierPresets[sgId][tier])S.tierPresets[sgId][tier]=_defTPE();return S.tierPresets[sgId][tier]}
+
+function load(){
+  ['mathFeedbackTool-v1','mathFeedbackTool-v2','ds_api_key_v1','ds_api_key'].forEach(k=>localStorage.removeItem(k));
+  const r=localStorage.getItem(SK);if(!r)return initState();
+  try{
+    const d=JSON.parse(r);const base=initState();
+    if(d.students&&base.students){
+      const savedMap=new Map(d.students.map(s=>[s.id,s]));
+      base.students=base.students.map(bs=>{
+        const sv=savedMap.get(bs.id);
+        if(sv)return{...bs,hist:sv.hist||[],mem:sv.mem||bs.mem,sent:sv.sent,wsEvaluated:sv.wsEvaluated||false,_preview:sv._preview||'',_wsPreview:sv._wsPreview||'',_wsEdited:sv._wsEdited||false};
+        return bs;
+      });
+    }
+    // Merge saved overrides with base defaults for new fields
+    const merged={...base};
+    if(d.theme)merged.theme=d.theme;
+    if(d.customBgUrl)merged.customBgUrl=d.customBgUrl;
+    if(d.cleanedAt)merged.cleanedAt=d.cleanedAt;
+    if(d.workspaceSgId)merged.workspaceSgId=d.workspaceSgId;
+    if(d.workspaceIdx!=null)merged.workspaceIdx=d.workspaceIdx;
+    if(d.consecutiveEvalCount)merged.consecutiveEvalCount=d.consecutiveEvalCount;
+    merged.curSid=d.curSid||base.curSid;
+    merged.curSgId=d.curSgId||base.curSgId;
+    merged.sentThisWeek=d.sentThisWeek||{};
+    merged.lessonContents=d.lessonContents||{};
+    merged.tierPresets=d.tierPresets||base.tierPresets||{};
+    // Migrate old global tierPresets to per-class format
+    if(merged.tierPresets['优秀档']&&merged.tierPresets['优秀档'].state){
+      const old=merged.tierPresets;merged.tierPresets={};
+      d.students.forEach(s=>{if(s.sgId&&!merged.tierPresets[s.sgId])merged.tierPresets[s.sgId]=JSON.parse(JSON.stringify(old))});
+    }
+    merged.clsRot=d.clsRot||{};
+    merged.reviewQ=d.reviewQ||[];
+    merged.useCounts=d.useCounts||{state:0,strengths:0,improvements:0};
+    merged.workflowIdx=d.workflowIdx||0;
+    return merged;
+  }catch(e){localStorage.removeItem(SK);return initState();}
+}
+function save(){const compact=JSON.parse(JSON.stringify(S));localStorage.setItem(SK,JSON.stringify(compact));scheduleSave()}
+let st;function scheduleSave(){clearTimeout(st);st=setTimeout(()=>{const c=JSON.parse(JSON.stringify(S));localStorage.setItem(SK,JSON.stringify(c))},100)}
+addEventListener('beforeunload',()=>{const c=JSON.parse(JSON.stringify(S));localStorage.setItem(SK,JSON.stringify(c))});
+S=load();
+
+// Apply saved theme
+if(S.theme==='dark')document.documentElement.setAttribute('data-theme','dark');
+else document.documentElement.setAttribute('data-theme','light');
+
+// ======================== HELPERS ========================
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function stu(id){return S.students.find(s=>s.id===id)}
+function sg(id){return S.subGroups.find(x=>x.id===id)}
+function gp(id){return S.groups.find(g=>g.id===id)}
+function stusBySg(sgId){return S.students.filter(s=>s.sgId===sgId)}
+function sgsByGp(gId){return S.subGroups.filter(x=>x.groupId===gId)}
+function sgOfStu(sid){const s=stu(sid);return s?sg(s.sgId):null}
+function gpOfStu(sid){const x=sgOfStu(sid);return x?gp(x.groupId):null}
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
+function pick(a,n){return shuffle(a).slice(0,n)}
+function prn(s){return s.gender==='女'?'她':'他'}
+function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function rotCls(sgId,key,max){
+  if(!S.clsRot[sgId])S.clsRot[sgId]={};
+  if(S.clsRot[sgId][key]==null)S.clsRot[sgId][key]=0;
+  const v=S.clsRot[sgId][key];S.clsRot[sgId][key]=(v+1)%max;return v;
+}
+function conn(sgId){return connectors[rotCls(sgId,'conn',connectors.length)]}
+function varyPraise(word){
+  for(const[k,v]of Object.entries(praiseWords))word=word.replace(new RegExp(k,'g'),()=>Math.random()<.5?v:k);
+  return word;
+}
+function gradeOptions(){
+  const grades=['二','三','四','五','六','七','八'];
+  let opts='';
+  grades.forEach(g=>{opts+=`<option value="${g}上">${g}年级上</option><option value="${g}下">${g}年级下</option>`});
+  return opts;
+}
+
+// ======================== THEME ========================
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  S.theme=next;save();
+}
+
+// ======================== TOAST ========================
+function showToast(msg,icon){
+  const c=document.getElementById('toastContainer');
+  const el=document.createElement('div');el.className='toast';
+  el.innerHTML=(icon||'')+' '+msg;
+  c.appendChild(el);
+  setTimeout(()=>{if(el.parentNode)el.parentNode.removeChild(el)},2500);
+}
+
+// ======================== RENDER ========================
+function renderAll(){renderSidebar();renderStudentPanel()}
+
+function renderSidebar(){
+  const el=document.getElementById('sidebarContent');let h='';
+  S.groups.forEach(g=>{
+    const sgs=sgsByGp(g.id);
+    h+=`<div class="group-block"><div class="group-header" oncontextmenu="ctxMenu(event,'group','${g.id}')"
+      ${isTouch?'ontouchstart="touchCtx(event,\'group\',\''+g.id+'\')"':''}>
+      <span class="label">${esc(g.label)}</span><span class="count">${sgs.length}</span>
+      <button class="add-btn${isIPad?' always':''}" onclick="event.stopPropagation();showAddSG('${g.id}')" title="添加">+</button>
+    </div>`;
+    sgs.forEach(x=>{
+      const stus=stusBySg(x.id);
+      h+=`<div class="subgroup-block"><div class="subgroup-header" oncontextmenu="ctxMenu(event,'subgroup','${x.id}')"
+        ${isTouch?'ontouchstart="touchCtx(event,\'subgroup\',\''+x.id+'\')"':''}>
+        <span class="type-dot${x.type==='一对一'?' vip':' class'}" title="${esc(x.type)}"></span>
+        <span class="label">${esc(x.label)}</span><span class="count">${stus.length}人</span>
+        <button class="add-btn${isIPad?' always':''}" onclick="event.stopPropagation();addStudent('${x.id}')" title="添加学生">+</button>
+        <button class="btn btn-ghost btn-xs" style="margin-left:4px;padding:2px 5px" onclick="event.stopPropagation();enterWorkspace('${x.id}')" title="进入沉浸模式"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M3 5V3h2M11 3h2v2M3 11v2h2M13 11v2h-2"/></svg></button>
+      </div>`;
+      stus.forEach((s,i)=>{
+        const active=s.id===S.curSid?' active':'';
+        const nm=s.name||'未命名';
+        h+=`<div class="student-item${active}" data-sid="${s.id}" onclick="selectStudent('${s.id}')"
+          oncontextmenu="ctxMenu(event,'student','${s.id}')"
+          ${isTouch?'ontouchstart="touchCtx(event,\'student\',\''+s.id+'\')"':''}>
+          <span class="idx">${i+1}</span><span class="stu-name">${esc(nm)}</span>
+          <span class="stu-meta">${esc(s.grade)}年${esc(s.sem)} · ${esc(s.tier)}</span>
+          <span class="dot${S.sentThisWeek[s.id]?' done':''}${s.wsSkipped?' skipped':''}${s.wsBrowsed&&!s.wsEvaluated&&!s.wsSkipped?' uneval':''}" title="${S.sentThisWeek[s.id]?'已保存':s.wsSkipped?'已跳过':s.wsBrowsed&&!s.wsEvaluated?'已浏览未评价':'未完成'}"></span>
+        </div>`;
+      });
+      h+=`</div>`;
+    });
+    h+=`</div>`;
+  });
+  el.innerHTML=h||'<div style="color:var(--text-secondary);text-align:center;padding:20px">点击下方按钮添加学段</div>';
+}
+
+function renderStudentPanel(){
+  const s=stu(S.curSid);
+  if(!s){
+    document.getElementById('studentEmpty').style.display='block';
+    document.getElementById('studentForm').innerHTML='';
+    ['checkState','checkStrengths','checkImprovements'].forEach(id=>document.getElementById(id).innerHTML='');
+    document.getElementById('followUpTags').innerHTML='';
+    document.getElementById('lessonContent').value='';
+    document.getElementById('previewBox').textContent='';
+    document.getElementById('historyList').innerHTML='<div style="color:var(--text-secondary);text-align:center;padding:14px">暂无记录</div>';
+    return;
+  }
+  document.getElementById('studentEmpty').style.display='none';
+  const prev=window._prevStu;const preview=document.getElementById('previewBox');
+  // Save previous student's preview before switching
+  if(prev&&prev.id!==s.id&&preview.textContent.trim()){
+    const ps=stu(prev.id);if(ps){ps._preview=preview.textContent;save()}
+  }
+  // Load current student's saved preview, or leave blank for fresh generate
+  preview.textContent=s._preview||'';
+  window._prevStu={id:s.id,name:s.name,parent:s.parent,gender:s.gender};
+  const x=sgOfStu(s.id);const g=gpOfStu(s.id);
+  const form=document.getElementById('studentForm');
+  const parOpts=['爸爸','妈妈','家长'];
+  const curGv=s.grade+s.sem;
+  form.innerHTML=`
+    <div class="form-row">
+      <div class="form-group"><label>姓名</label><input value="${esc(s.name)}" onchange="updStu('name',this.value)" placeholder="学生姓名"></div>
+      <div class="form-group"><label>性别</label><select onchange="updStu('gender',this.value)"><option value="男"${s.gender==='男'?' selected':''}>男</option><option value="女"${s.gender==='女'?' selected':''}>女</option></select></div>
+      <div class="form-group"><label>家长称呼</label><select onchange="updStu('parent',this.value)">${parOpts.map(p=>`<option value="${p}"${s.parent===p?' selected':''}>${p}</option>`).join('')}</select></div>
+    </div>
+    <div class="form-row" style="margin-top:6px">
+      <div class="form-group"><label>年级学期</label><select onchange="updStuGradeSem(this.value)">${gradeOptions().replace(`value="${curGv}"`,'value="'+curGv+'" selected')}</select></div>
+      <div class="form-group"><label>档位</label><select onchange="updStu('tier',this.value)">${['优秀档','中等档','进步档'].map(t=>`<option value="${t}"${s.tier===t?' selected':''}>${t}</option>`).join('')}</select></div>
+    </div>
+    <div style="margin-top:5px;font-size:var(--font-xs);color:var(--text-secondary)">
+      ${s.grade?esc(s.grade)+'年级'+esc(s.sem)+' · '+esc(x?x.type:''):''}
+    </div>`;
+  const ps=tp(s.sgId,s.tier)||{state:[],strengths:[],improvements:[],customStrengths:'',customImprovements:'',followUp:[],customFollowUp:''};
+  const mem=s.mem||{state:[],strengths:[],improvements:[]};
+  const stSel=[...new Set([...(ps.state||[]),...(mem.state||[])])];
+  const strSel=[...new Set([...(ps.strengths||[]),...(mem.strengths||[])])];
+  const impSel=[...new Set([...(ps.improvements||[]),...(mem.improvements||[])])];
+  renderTags('checkState',stSel,'state');
+  renderTags('checkStrengths',strSel,'strengths');
+  renderTags('checkImprovements',impSel,'improvements');
+  document.getElementById('customState').value=ps.customState||'';
+  document.getElementById('customStrengths').value=ps.customStrengths||'';
+  document.getElementById('customImprovements').value=ps.customImprovements||'';
+  renderFuTags(ps.followUp||[]);
+  document.getElementById('customFollowUp').value=ps.customFollowUp||'';
+  document.getElementById('lessonContent').value=S.lessonContents[s.sgId]||'';
+  renderHistory();
+  updateSentBadge();updateWorkflowLabel();
+}
+
+function renderTags(elId,selected,cat){
+  const el=document.getElementById(elId);
+  const pool=cat==='state'?poolState:(cat==='strengths'?poolStrengths:poolImprovements);
+  let shown=[...new Set([...selected,...pick(pool,Math.max(0,8-selected.length))])];
+  el.innerHTML=shown.map((t,i)=>{
+    const on=selected.includes(t);
+    return `<label class="tag${on?' on':''}"><input type="checkbox" ${on?'checked':''} onchange="toggleTag('${cat}','${esc(t.replace(/'/g,"\\'"))}',this.checked)"><span class="tag-num">${i+1}</span>${esc(t)}</label>`;
+  }).join('');
+}
+
+function renderFuTags(selected){
+  const el=document.getElementById('followUpTags');
+  el.innerHTML=fuOpts.map(o=>{
+    const on=selected.includes(o.v);
+    return `<label class="tag${on?' on':''}"><input type="checkbox" ${on?'checked':''} onchange="toggleFu('${o.v}',this.checked)">${esc(o.t)}</label>`;
+  }).join('');
+}
+
+function renderHistory(){
+  const el=document.getElementById('historyList');const s=stu(S.curSid);
+  if(!s||!s.hist||!s.hist.length){el.innerHTML='<div style="color:var(--text-secondary);text-align:center;padding:14px">暂无记录</div>';return;}
+  const recent=s.hist.slice(0,3);
+  el.innerHTML=recent.map((r,i)=>`
+    <div class="history-item"><time>${esc(r.date)}</time><div class="htext" contenteditable="true" onblur="editHist(${i},this.textContent)">${esc(r.content)}</div>
+    <button class="del copy-btn" onclick="event.stopPropagation();copyHist(${i})" title="复制">⎘</button>
+    <button class="del${isTouch?' always':''}" onclick="delHist(${i})">×</button></div>
+  `).join('');
+}
+
+// ======================== CLASSIC ACTIONS ========================
+function selectStudent(sid){
+  S.curSid=sid;const s=stu(sid);if(s)S.curSgId=s.sgId;
+  document.querySelectorAll('.student-item').forEach(el=>el.classList.remove('active'));
+  const target=document.querySelector(`.student-item[data-sid="${sid}"]`);
+  if(target)target.classList.add('active');
+  renderStudentPanel();save();checkReview();
+}
+
+function updStu(field,value){const s=stu(S.curSid);if(!s)return;s[field]=value;if(field==='tier')renderStudentPanel();save();renderSidebar();}
+function updStuGradeSem(val){const s=stu(S.curSid);if(!s)return;s.grade=val.charAt(0);s.sem=val.charAt(1);save();renderStudentPanel();renderSidebar();}
+
+function toggleTag(cat,label,checked){
+  const s=stu(S.curSid);if(!s)return;const ps=tp(s.sgId,s.tier)||{state:[],strengths:[],improvements:[]};const arr=ps[cat]||[];
+  if(checked&&!arr.includes(label))arr.push(label);else if(!checked){const i=arr.indexOf(label);if(i>=0)arr.splice(i,1)}
+  ps[cat]=arr;if(!s.mem)s.mem={state:[],strengths:[],improvements:[],count:0};
+  if(checked&&!s.mem[cat].includes(label))s.mem[cat].push(label);
+  else if(!checked){const i=s.mem[cat].indexOf(label);if(i>=0)s.mem[cat].splice(i,1)}
+  save();renderTags('check'+cat[0].toUpperCase()+cat.slice(1),getCategoryTags(cat),cat);
+}
+function getCategoryTags(cat){const s=stu(S.curSid);if(!s)return[];const ps=tp(s.sgId,s.tier)||{};return ps[cat]||[];}
+function toggleFu(val,checked){
+  const s=stu(S.curSid);if(!s)return;const ps=tp(s.sgId,s.tier);if(!ps)return;if(!ps.followUp)ps.followUp=[];
+  if(checked&&!ps.followUp.includes(val))ps.followUp.push(val);else if(!checked)ps.followUp=ps.followUp.filter(v=>v!==val);
+  save();renderFuTags(ps.followUp);
+}
+function onLessonChange(){if(!S.curSgId)return;S.lessonContents[S.curSgId]=document.getElementById('lessonContent').value;save();}
+function onCustomCheckChange(cat){
+  const s=stu(S.curSid);if(!s)return;const ps=tp(s.sgId,s.tier);if(!ps)return;
+  const cap=cat==='strengths'?'Strengths':cat==='improvements'?'Improvements':'State';
+  const elId='custom'+cap;
+  const el=document.getElementById(elId);if(!el)return;
+  ps['custom'+cap]=el.value;save();
+}
+function onFollowUpCustom(){const s=stu(S.curSid);if(!s)return;const ps=tp(s.sgId,s.tier);if(!ps)return;ps.customFollowUp=document.getElementById('customFollowUp').value;save();}
+
+function refreshOptions(cat){
+  S.useCounts[cat]=(S.useCounts[cat]||0)+1;const s=stu(S.curSid);const ps=s?tp(s.sgId,s.tier):null;const cur=ps?ps[cat]||[]:[];
+  const pool=cat==='state'?poolState:(cat==='strengths'?poolStrengths:poolImprovements);const fresh=pick(pool,9);
+  const mem=(s&&s.mem)?s.mem[cat]||[]:[];const merged=[...new Set([...cur,...mem,...fresh])];
+  renderTags('check'+cat[0].toUpperCase()+cat.slice(1),merged,cat);
+  if(S.useCounts[cat]>=5){S.useCounts[cat]=0;showToast('选项已轮换多轮，建议手动补充自定义标签')}
+  save();
+}
+
+function syncTier(){
+  const s=stu(S.curSid);if(!s)return;const ps=tp(s.sgId,s.tier);if(!ps)return;const stus=stusBySg(s.sgId);let c=0;
+  const srcPreview=s._preview||document.getElementById('previewBox').textContent.trim();
+  stus.forEach(o=>{if(o.id===s.id||o.tier!==s.tier)return;Object.assign(tp(o.sgId,o.tier),JSON.parse(JSON.stringify(ps)));
+    // Sync preview text with name/gender/parent substitution
+    if(srcPreview){let t=srcPreview;if(s.name)t=t.replaceAll(s.name,o.name||'孩子');if(s.parent&&o.parent&&s.parent!==o.parent){t=t.replaceAll(s.parent+'您好',o.parent+'您好').replaceAll(s.parent+'好',o.parent+'好')}if(s.gender==='男'&&o.gender==='女')t=t.replaceAll('他','她');if(s.gender==='女'&&o.gender==='男')t=t.replaceAll('她','他');o._preview=t;}
+    c++});
+  save();showToast(`已同步 ${c} 名同班同档学生 · 含标签和反馈预览`);
+}
+function syncClass(){if(!S.curSgId)return;S.lessonContents[S.curSgId]=document.getElementById('lessonContent').value;save();showToast('全班授课内容已同步');}
+
+function clearWeek(){
+  if(!confirm('确定清空本周数据？（学生档案和历史记录保留）'))return;
+  S.lessonContents={};S.tierPresets={};
+  S.useCounts={state:0,strengths:0,improvements:0};S.reviewQ=[];S.clsRot={};S.sentThisWeek={};S.workflowIdx=0;
+  S.students.forEach(s=>{s._preview='';s._wsPreview='';s._wsEdited=false});
+  document.getElementById('lessonContent').value='';document.getElementById('previewBox').textContent='';
+  document.getElementById('previewStatus').textContent='';
+  ['checkState','checkStrengths','checkImprovements'].forEach(id=>document.getElementById(id).innerHTML='');
+  document.getElementById('followUpTags').innerHTML='';document.getElementById('customFollowUp').value='';
+  document.getElementById('customState').value='';document.getElementById('customStrengths').value='';document.getElementById('customImprovements').value='';
+  save();renderAll();updateProgress();updateWorkflowLabel();
+}
+
+// ======================== FEEDBACK GENERATION ========================
+function buildFeedback(){
+  const s=stu(S.curSid);if(!s||!S.curSid)return'请先在左侧选择一个学生';
+  const studentName=s.name&&s.name.trim()?s.name.trim():'孩子';const x=sgOfStu(s.id);const is1v1=x&&x.type==='一对一';
+  const lesson=S.lessonContents[s.sgId]||'（本周继续围绕阶段重点内容展开）';const ps=tp(s.sgId,s.tier)||{};
+  const b={state:ps.state||[],strengths:ps.strengths||[],improvements:ps.improvements||[]};
+  const cst=ps.customState||'';const cs=ps.customStrengths||'';const ci=ps.customImprovements||'';
+  if(cst)b.state=[...b.state,cst];
+  if(cs)b.strengths=[...b.strengths,cs];if(ci)b.improvements=[...b.improvements,ci];
+  const fu=ps.followUp||[];const cfu=ps.customFollowUp||'';const pr=prn(s);const pl=s.parent||'家长';const sgId=s.sgId;
+  const gi=rotCls(sgId,'greet',greetPool.length);const greet=greetPool[gi](studentName,pl);
+  const p2=genPart2(s,x,b,is1v1,pr,sgId);const p3=genPart3(s,x,b,fu,cfu,is1v1,pr,sgId);
+  return greet+'\n\n一、本周学习内容：\n'+lesson+'\n\n二、课堂表现：\n'+p2+'\n\n三、后续学习安排：\n'+p3;
+}
+function genPart2(s,x,b,is1v1,pr,sgId){
+  let parts=[];if(b.state.length)parts.push(...b.state);if(b.strengths.length)parts.push(...b.strengths);
+  if(!parts.length)parts.push(`${prn(s)}本周课堂状态平稳，保持了良好的常规表现`);
+  const sp=shuffle(parts);const tb=tierBonus[s.tier]||tierBonus['中等档'];let text='';
+  if(sp.length<=3)text=sp.map(x=>varyPraise(x)).join('，')+'。';
+  else text=sp.slice(0,3).map(x=>varyPraise(x)).join('，')+'。'+conn(sgId)+'，'+sp.slice(3,6).map(x=>varyPraise(x)).join('，')+'。';
+  const tt=tierTags[s.tier]||tierTags['中等档'];text+=' '+tb.phrase;if(tt.length)text+=' '+pick(tt,1)[0]+'。';
+  const li=rotCls(sgId,'lit',litPool.length);text+=' '+litPool[li];
+  text=text.replace(/我/g,pr).replace(/孩子/g,s.name||'孩子');if(is1v1)text=text.replace(/同学们/g,'大家');
+  return text;
+}
+function genPart3(s,x,b,fu,cfu,is1v1,pr,sgId){
+  let parts=[];fu.forEach(f=>{const o=fuOpts.find(oo=>oo.v===f);if(o&&o.d)parts.push(o.d)});
+  if(fu.includes('custom')&&cfu)parts.push(`具体建议：${cfu}`);
+  if(b.improvements.length){const imp=b.improvements.slice(0,3);parts.push(`针对需要加强的方面（${imp.join('、')}），建议${prn(s)}在课后有针对性地回顾讲义中的相关题目，巩固薄弱环节。`);}
+  if(!parts.length)parts.push('建议孩子抽出时间回顾本周讲过的讲义错题，保持稳定的复习节奏。');
+  const tb=tierBonus[s.tier]||tierBonus['中等档'];const text=parts.join(' ')+' '+tb.tone;
+  const final=is1v1?text.replace(/同学们/g,'大家'):text;return final;
+}
+function localGenerate(){
+  const text=buildFeedback();if(!text||text.startsWith('请')){showToast('请先选择学生');return;}
+  document.getElementById('previewBox').textContent=text;
+  document.getElementById('previewStatus').innerHTML='<span class="ok">本地初稿生成完成 — 可编辑后保存，或跳转 AI 润色</span>';
+  wsShowHeroText('反馈总览');
+  closeGenMenu();
+}
+function genDoubao(){
+  const text=buildFeedback();if(!text||text.startsWith('请')){showToast('请先选择学生');return;}
+  const s=stu(S.curSid);const x=sgOfStu(s.id);const prompt=buildAIPrompt(text,s,x);copyToClip(prompt);closeGenMenu();
+  try{location.href='doubao://'}catch(e){}
+}
+function buildAIPrompt(base,s,x){
+  const is1v1=x&&x.type==='一对一';const parts=base.split(/\n(?=二、课堂表现：)/);
+  const lockedPart1=parts[0]||'';const parts23=parts.length>1?parts.slice(1).join('\n'):'\n二、课堂表现：\n\n三、后续学习安排：';
+  const tierGuide=s.tier==='优秀档'
+    ?'该生属于优秀档：学习主动、吸收快、细心、思维好、亮点多、缺点极少。评价应饱满正向，突出优势和亮点。'
+    :s.tier==='中等档'
+    ?'该生属于中等档：态度端正、状态平稳、基础稳定、优缺点均衡。评价应客观中肯，小问题少量提及，整体积极。'
+    :'该生属于进步档：请优先肯定学习态度、课堂纪律、配合度及点滴小进步；不堆砌缺点、不通篇否定；温和点出专注力、基础、细心度方面的问题；以鼓励、建立信心、预留提升空间为主。';
+  return `你是深圳校外培训机构数学老师，每周六/日给学生上2小时课。正在微信上给家长发一对一私聊教学反馈。
+
+请润色以下教学反馈，要求：
+
+【🔒 一、本周学习内容 — 全文锁死，严禁任何修改】
+以下是"一、本周学习内容"的完整原文，你必须逐字逐句原样保留，一个字都不能改、不能扩写、不能删减、不能调整语序、不能润色：
+---
+${lockedPart1}
+---
+以上内容重新输出时也必须一字不差完全一致。
+
+【✅ 二、课堂表现 + 三、后续学习安排 — 仅润色这两部分】
+只对下面这两部分做润色，保持三段结构不变：
+${parts23}
+
+【格式硬性规定】
+严格保留三个大标题：一、本周学习内容（原样不动）、二、课堂表现、三、后续学习安排
+每部分为连贯一整段，无序号、无分点、无多余空行，适配微信手机直发
+开头问候语原样保留不动
+
+【场景定位】
+你是深圳校外培训机构数学老师，仅每周六/周日给学生上2小时课。
+所有评价仅针对这2小时课堂表现，不涉及学生在校日常、平日行为习惯、校内老师反馈。
+
+【课堂表现润色规则】
+客观评价：听课状态、专注度、学习态度、答题习惯、知识吸收情况
+口语自然、贴近老师私聊语气，不轻浮、不官方空洞
+高频带入学生名字"${s.name||'学生'}"
+段落内嵌入一句文雅短句，自然不突兀
+视角为一对一专属辅导学情，不出现班级、同学、集体表述
+${is1v1?'这是一对一辅导场景：反馈严格按专属单独辅导视角来写，贴合1对1专属学情。严禁出现：同学们、大家、班上、班级、集体等群体词汇':'这是班课场景：保留课堂对个体的针对性观察，客观写实，不刻意营造一对一私教感。严禁出现：单独给你、专门为你等一对一专属话术'}
+
+【后续学习安排润色规则】
+所有要求只针对学生本人，不安排、不指导、不要求家长做任何事
+作业写清具体题型、明确要求，删除拍照提交相关语句
+给出可落地、可执行的课后巩固方案
+禁止生成：错题汇总、每日固定X分钟复盘、每天打卡类建议（周末机构无法每日监督执行）
+结尾温和正向鼓励
+
+【学生档位人设 — 核心区分】
+${tierGuide}
+
+【学段常识】
+${s.grade==='六'?'六年级不涉及余角补角、不涉及折叠几何角度变化等超纲内容；偶尔提小升初衔接即可，不反复刷必考模块':s.grade&&parseInt(s.grade)<=5?'用本年级核心知识点、章节重点自然表述；适配小学中段/高段数学教学表述；小学生严禁使用自律、自主复习规划、自我管理类表述':'用阶段基础重点、章节核心内容、知识衔接板块正常描述'}
+
+【易错点铁则】
+只写本年级中高阶易错点，杜绝低级常识错误（如记错平角周角度数、分不清射线直线、忘记三角形内角和等）
+只有用户在自定义框明确输入了具体问题才可提及，且用"容易忽略""需要更仔细""偶尔看漏"代替"记错""分不清""不会"
+
+【硬性禁用词】
+禁止：逻辑链条、知识架构、多维分析、奠基、夯实根基、构筑、赋能、底层逻辑
+禁止：我、咱们、本次上课、带他、家长您、同学们、大家
+禁止：天道酬勤、上善若水
+禁止：聚焦、自律、自主规划、平日、日常、每天、每日
+${parseInt(s.grade)<=5?'小学生严禁使用：自律、自主复习规划、自我管理、每日坚持、养成习惯类表述':''}
+极少使用考点类词汇，不重复堆砌"必考、高频考点"
+${is1v1?'严禁出现：同学们、大家、班上、班级、课堂上的其他同学、全班、同班':''}
+
+【文风总体要求】
+整体沉稳、真实、有温度，不平淡、不敷衍
+每句话有新的信息量，不重复表达相同意思
+
+【最终检查】
+输出前请确认：一、本周学习内容是否与原文一字不差？若改动了任何一个字，请重新输出。`;
+}
+function polishDoubao(){
+  const lesson=document.getElementById('lessonContent').value.trim();if(!lesson){showToast('请先输入授课内容');return}
+  const s=stu(S.curSid);const gr=s?s.grade:'';
+  const prompt=`你是深圳数学培训老师。请帮我把下面的授课内容润色扩写为一段专业知识点正文。
+
+【格式硬性规则】
+不添加任何标题、序号、分点、分段，只输出一段连贯完整的正文。
+全程禁止第一人称、禁止授课口语、禁止家长客套话术。
+禁用词：家长您、这次上课、本次授课、我、带他、给他辅导等。
+
+【固定行文逻辑，必须严格遵守】
+第一步：先定义本章节的学段定位——属于当前阶段基础重点，同时说明对后续知识的铺垫作用。
+第二步：讲解本章节的知识特点、学习侧重、能力培养方向。
+第三步：写出对应年级的中高阶易错点，拒绝幼稚入门错误，贴合真实学情。
+
+【文风与用词规范】
+固定学段专业用词：阶段基础重点、章节核心内容、知识衔接板块。
+严控"必考、高频考点"字样，少量点缀即可，绝不堆砌。
+文风沉稳、正式、专业，每次措辞重新改写，避免和历史文案重复。
+内容自然扩展、逻辑顺滑，适配小学中段/高段数学教学表述。
+${gr==='六'?'六年级偶尔提小升初衔接即可，不反复刷必考模块；不涉及余角补角等超纲内容':(parseInt(gr)<=5?'注意：本学段不使用自律、自主复习等超出小学阶段的词汇':gr>='七'?'用阶段基础重点、章节核心内容、知识衔接板块正常描述':'')}
+
+• 授课内容：${lesson}`;
+  copyToClip(prompt);try{location.href='doubao://'}catch(e){}
+}
+
+function saveFeedback(){saveFeedbackWithRules()}
+function copyFeedback(){
+  const text=document.getElementById('previewBox').textContent.trim();if(!text){showToast('请先生成反馈');return}
+  copyToClip(text);document.getElementById('previewStatus').textContent='已复制到剪贴板';
+}
+function copyToClip(text){
+  if(navigator.clipboard)navigator.clipboard.writeText(text);
+  else{const t=document.createElement('textarea');t.value=text;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t)}
+}
+function copyAndOpenWeCom(){
+  const text=document.getElementById('previewBox').textContent.trim();const s=stu(S.curSid);
+  if(!text){showToast('请先生成反馈');return}
+  copyToClip(text);const parentName=s?s.name+' '+s.parent:'';
+  document.getElementById('previewStatus').innerHTML=`<span class="ok">已复制到剪贴板 · 请到企业微信搜索 <b>${esc(parentName||'对应家长')}</b> 粘贴发送</span>`;
+}
+function toggleSent(){const s=stu(S.curSid);if(!s)return;S.sentThisWeek[s.id]=S.sentThisWeek[s.id]?0:Date.now();save();updateSentBadge();updateProgress();renderSidebar();}
+function updateSentBadge(){
+  const s=stu(S.curSid);const el=document.getElementById('sentToggle');if(!s||!el)return;
+  const sent=S.sentThisWeek[s.id];el.textContent=sent?'已发送':'未发送';el.className='sent-badge'+(sent?'':' unsent');
+}
+function updateProgress(){
+  const total=S.students.length;let done=0;S.students.forEach(s=>{if(S.sentThisWeek[s.id])done++});
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('progressLabel').textContent=`${done}/${total}`;
+  document.getElementById('progressFill').style.width=pct+'%';
+}
+function startWorkflow(){
+  const undone=S.students.filter(s=>!S.sentThisWeek[s.id]);if(!undone.length){showToast('本周全部学生已处理完毕！');return}
+  S.workflowIdx=0;document.getElementById('btnNext').style.display='inline-flex';
+  const first=undone[0];selectStudent(first.id);setTimeout(()=>localGenerate(),300);updateWorkflowLabel();
+}
+function updateWorkflowLabel(){
+  const undone=S.students.filter(s=>!S.sentThisWeek[s.id]);const el=document.getElementById('workflowStep');
+  if(!undone.length){el.textContent='本周反馈全部完成！';document.getElementById('btnNext').style.display='none';return}
+  const s=stu(S.curSid);el.textContent=`${s?(s.name||'未命名'):''} · 还有 ${undone.length} 位未完成`;
+}
+function saveAndNext(){
+  saveFeedback();const s=stu(S.curSid);if(s)S.sentThisWeek[s.id]=Date.now();
+  save();updateSentBadge();updateProgress();renderSidebar();setTimeout(()=>nextWorkflowStudent(),400);
+}
+function nextWorkflowStudent(){
+  const s=stu(S.curSid);if(s&&document.getElementById('previewBox').textContent.trim())saveFeedback();
+  const undone=S.students.filter(st=>!S.sentThisWeek[st.id]);if(!undone.length){showToast('全部完成！');updateWorkflowLabel();return}
+  S.workflowIdx=(S.workflowIdx||0)%undone.length;const next=undone[S.workflowIdx];S.workflowIdx++;
+  selectStudent(next.id);setTimeout(()=>localGenerate(),300);
+  document.querySelector('.card')?.classList.add('slide-in');
+  setTimeout(()=>document.querySelector('.card')?.classList.remove('slide-in'),400);
+  updateWorkflowLabel();
+}
+function delHist(i){const s=stu(S.curSid);if(!s||!s.hist)return;if(!confirm('确定删除这条历史记录？'))return;s.hist.splice(i,1);save();renderHistory();}
+function copyHist(i){const s=stu(S.curSid);if(!s||!s.hist||!s.hist[i])return;copyToClip(s.hist[i].content);showToast('已复制')}
+function editHist(i,txt){const s=stu(S.curSid);if(!s||!s.hist||!s.hist[i])return;s.hist[i].content=txt;save()}
+
+// ======================== STAGE REVIEW ========================
+function checkReview(){const s=stu(S.curSid);if(!s||!s.hist||s.hist.length<4)return;if(S.reviewQ.find(r=>r.sid===s.id))return;showReviewModal(s);}
+function showReviewModal(s){
+  const m=document.getElementById('modalBox');const bg=document.getElementById('modalBg');
+  m.innerHTML=`<h3>阶段性复盘 — ${esc(s.name||'未命名')}</h3>
+    <p style="font-size:var(--font-xs);color:var(--text-secondary);margin-bottom:8px">已累计4条反馈记录，建议进行阶段性复盘</p>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <button class="btn btn-primary" onclick="doReview('${s.id}')">立即复盘</button>
+      <button class="btn btn-ghost" onclick="scheduleReview('${s.id}',1)">一天后提醒</button>
+      <button class="btn btn-ghost" onclick="scheduleReview('${s.id}',7)">一周后提醒</button>
+      <button class="btn btn-ghost" onclick="closeModal()">暂不处理</button>
+    </div>`;bg.style.display='flex';
+}
+function scheduleReview(sid,days){S.reviewQ.push({sid,scheduled:Date.now()+days*86400000});save();showToast(`已安排在 ${days} 天后复盘`);closeModal()}
+function doReview(sid){
+  closeModal();const s=stu(sid);if(!s||!s.hist)return;const issues=[];
+  s.hist.forEach(r=>{const lines=r.content.split('\n');lines.forEach(l=>{if(l.includes('不足')||l.includes('需要')||l.includes('改进')||l.includes('薄弱'))issues.push(l.trim())})});
+  const uniq=[...new Set(issues)].slice(0,8);const m=document.getElementById('modalBox');const bg=document.getElementById('modalBg');
+  m.innerHTML=`<h3>阶段性复盘 — ${esc(s.name||'未命名')}</h3>
+    <p style="font-size:var(--font-xs);color:var(--text-secondary);margin-bottom:6px">基于最近4条历史自动提取</p>
+    <textarea id="reviewIssues" rows="5" style="width:100%">${esc(uniq.join('\n'))}</textarea>
+    <div class="btn-row"><button class="btn btn-primary" onclick="genReview('${s.id}')">生成本地复盘</button><button class="btn btn-db" onclick="reviewDoubao('${s.id}')">豆包综合复盘</button></div>
+    <div id="reviewResult" style="margin-top:10px"></div>`;bg.style.display='flex';
+}
+function genReview(sid){
+  const s=stu(sid);const issues=document.getElementById('reviewIssues').value;
+  const text=`阶段性复盘总结\n\n学生：${s.name||'未命名'}\n复盘时间：${new Date().toLocaleDateString('zh-CN')}\n\n近期需要持续关注的方面：\n${issues.split('\n').map(l=>'· '+l).join('\n')}\n\n建议：针对上述问题持续跟踪，在教学中逐步强化相关训练。`;
+  document.getElementById('reviewResult').innerHTML=`<div class="preview-box" style="min-height:auto;margin-top:8px">${esc(text)}</div><button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="copyToClip(this.textContent)">复制</button>`;
+  window._rt=text;S.reviewQ=S.reviewQ.filter(r=>r.sid!==sid);save();
+}
+async function reviewDoubao(sid){const s=stu(sid);const issues=document.getElementById('reviewIssues').value;const prompt=`你是深圳数学培训老师。请综合复盘以下学生情况：学生${s.name||'未命名'}，${s.grade}年级${s.sem}学期，档位${s.tier}。需关注问题：${issues}。要求：口语化不浮夸、给具体建议、穿插一句文雅文学句、不命令家长`;copyToClip(prompt);try{location.href='doubao://'}catch(e){}setTimeout(()=>open('https://www.doubao.com/chat/','_blank'),500)}
+
+// ======================== EXPORT/IMPORT ========================
+function exportData(){
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const u=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=u;a.download=`反馈内容_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(u)
+}
+function importData(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=function(){const f=this.files[0];if(!f)return;const rd=new FileReader();rd.onload=function(e){try{const d=JSON.parse(e.target.result);S={...initState(),...d};save();renderAll();showToast('导入成功')}catch(err){showToast('文件格式错误')}};rd.readAsText(f)};inp.click()
+}
+
+// ======================== SIDEBAR CRUD ========================
+function addGroup(){promptModal('添加学段','新学段',v=>{if(!v)return;S.groups.push({id:uid(),label:v});save();renderAll()})}
+function showAddSG(gid){
+  const m=document.getElementById('modalBox');const bg=document.getElementById('modalBg');
+  m.innerHTML=`<h3>添加班级/一对一</h3><p style="font-size:var(--font-xs);color:var(--text-secondary);margin-bottom:8px">请选择类型，后续文案将自动适配</p>
+    <button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="addSG('${gid}','班课')">班课</button>
+    <button class="btn btn-ghost" style="width:100%" onclick="addSG('${gid}','一对一')">一对一</button>
+    <p style="font-size:var(--font-xs);color:var(--text-secondary);margin-top:8px">班课 ≈ 集体课堂中关注个体 · 一对一 ≈ 专属辅导视角</p>`;bg.style.display='flex';
+}
+function addSG(gid,type){closeModal();setTimeout(()=>{promptModal(`添加${type}`,'',v=>{if(!v)return;S.subGroups.push({id:uid(),groupId:gid,label:v,type});save();renderAll()})},200)}
+function addStudent(sgid){const x=sg(sgid);if(!x)return;S.students.push({id:uid(),sgId:sgid,name:'',gender:'男',parent:'爸爸',grade:'七',sem:'下',tier:'中等档',hist:[],mem:{state:[],strengths:[],improvements:[],count:0},wsEvaluated:false});save();renderAll()}
+function ctxMenu(e,type,id){
+  e.preventDefault();const s=type==='student'?stu(id):null;
+  if(type==='student'&&s){if(confirm(`确定删除学生「${s.name||'未命名'}」？\n此操作不可撤销。`)){S.students=S.students.filter(x=>x.id!==id);if(S.curSid===id)S.curSid=null;save();renderAll()}
+  }else if(type==='subgroup'){
+    if(confirm('确定删除该班级/一对一及其所有学生？\n此操作不可撤销。')){S.subGroups=S.subGroups.filter(x=>x.id!==id);S.students=S.students.filter(x=>x.sgId!==id);delete S.lessonContents[id];delete S.clsRot[id];if(S.curSid&&!stu(S.curSid))S.curSid=null;save();renderAll()}
+  }else if(type==='group'){
+    if(confirm('确定删除该学段及其下所有班级和学生？\n此操作不可撤销。')){S.groups=S.groups.filter(g=>g.id!==id);const sgIds=S.subGroups.filter(x=>x.groupId===id).map(x=>x.id);S.subGroups=S.subGroups.filter(x=>x.groupId!==id);S.students=S.students.filter(x=>!sgIds.includes(x.sgId));sgIds.forEach(sid=>{delete S.lessonContents[sid];delete S.clsRot[sid]});if(S.curSid&&!stu(S.curSid))S.curSid=null;save();renderAll()}
+  }
+}
+let tpTimer;
+function touchCtx(e,type,id){
+  clearTimeout(tpTimer);
+  tpTimer=setTimeout(()=>{ctxMenu(e,type,id)},800);
+  const cancel=()=>{clearTimeout(tpTimer);document.removeEventListener('touchend',cancel);document.removeEventListener('touchmove',cancel)};
+  document.addEventListener('touchend',cancel);document.addEventListener('touchmove',cancel);
+}
+function toggleGenMenu(){document.getElementById('genMenu').classList.toggle('show');setTimeout(()=>document.addEventListener('click',function h(e){if(!e.target.closest('.dropdown')){document.getElementById('genMenu').classList.remove('show');document.removeEventListener('click',h)}}),0)}
+function closeGenMenu(){document.getElementById('genMenu').classList.remove('show')}
+
+// ======================== MODAL ========================
+function openModal(html){document.getElementById('modalBox').innerHTML=html;document.getElementById('modalBg').style.display='flex'}
+function closeModal(){document.getElementById('modalBg').style.display='none';document.getElementById('modalBox').innerHTML=''}
+
+function promptModal(title,def,cb){
+  const id='pm_'+Date.now().toString(36);
+  openModal(`<h3>${esc(title)}</h3>
+    <input type="text" id="${id}" value="${esc(def||'')}" placeholder="请输入..." style="width:100%;margin-bottom:12px" autofocus>
+    <div class="btn-row">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="var v=document.getElementById('${id}').value;closeModal();(${cb.toString()})(v)">确定</button>
+    </div>`);
+  setTimeout(()=>{const inp=document.getElementById(id);if(inp){inp.focus();inp.select()}},100);
+}
+
+// ======================== ONE-CLICK CLEANUP ========================
+function showCleanupModal(){
+  let oldCount=0;let totalHist=0;
+  const cutoff=Date.now()-14*86400000;
+  S.students.forEach(s=>{if(s.hist){totalHist+=s.hist.length;s.hist.forEach(h=>{const d=new Date(h.date);if(d.getTime()<cutoff||isNaN(d.getTime()))oldCount++})}});
+  if(oldCount===0){showToast('没有超过14天的旧记录，无需清理');return}
+  openModal(`<h3>一键清理旧记录</h3>
+    <p style="font-size:var(--font-sm);color:var(--text-secondary);margin-bottom:8px">
+    共有 <b>${oldCount}</b> 条超过14天的历史反馈记录可清理。<br>
+    学生基础资料永久保留，不会删除。
+    </p>
+    <div class="btn-row">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="executeCleanup()">确认清理 ${oldCount} 条</button>
+    </div>`);
+}
+function executeCleanup(){
+  const cutoff=Date.now()-14*86400000;let cleaned=0;
+  S.students.forEach(s=>{if(s.hist){const before=s.hist.length;s.hist=s.hist.filter(h=>{const d=new Date(h.date);return d.getTime()>=cutoff&&!isNaN(d.getTime())});cleaned+=before-s.hist.length}});
+  S.cleanedAt=Date.now();save();closeModal();renderHistory();showToast(`已清理 ${cleaned} 条旧记录，学生资料完整保留`);
+}
+
+// ======================== HISTORY MANAGER ========================
+function showHistoryManager(sid){
+  const s=stu(sid);if(!s){showToast('请先选择学生');return}
+  if(!s.hist||!s.hist.length){showToast('该学生暂无历史记录');return}
+  let html=`<h3>历史反馈记录 — ${esc(s.name||'未命名')}</h3><div class="history-list" style="max-height:60vh">`;
+  s.hist.forEach((r,i)=>{
+    html+=`<div class="history-item"><time>${esc(r.date)}</time><div class="htext">${esc(r.content.slice(0,300))}${r.content.length>300?'…':''}</div>
+    <button class="btn btn-ghost btn-xs" onclick="delHistFromManager('${sid}',${i})" style="margin-top:4px">删除此条</button></div>`;
+  });
+  html+=`</div><div class="btn-row">
+    <button class="btn btn-ghost btn-sm" onclick="if(confirm('确定清空该学生全部历史记录？')){delAllHist('${sid}')}">清空全部</button>
+    <button class="btn btn-primary btn-sm" onclick="closeModal()">关闭</button>
+  </div>`;openModal(html);
+}
+function delHistFromManager(sid,i){
+  const s=stu(sid);if(!s||!s.hist)return;s.hist.splice(i,1);save();renderHistory();showHistoryManager(sid);
+}
+function delAllHist(sid){const s=stu(sid);if(!s)return;s.hist=[];save();renderHistory();closeModal();showToast('已清空全部历史记录')}
+
+// ======================== WORKSPACE MODE ========================
+function enterWorkspace(sgId){
+  // Support direct class entry from sidebar 🎯 button
+  if(sgId){
+    S.workspaceSgId=sgId;S.workspaceIdx=0;
+    stusBySg(sgId).forEach(s=>{s.wsBrowsed=false;s.wsEvaluated=false;s.wsSkipped=false});
+    save();S.consecutiveEvalCount=0;
+    transitionToWS(()=>{wsShowMainMenu()});
+    return;
+  }
+  // Enter from header button — show grade selection (no hero animation)
+  transitionToWS(()=>{wsShowGradeSelect()});
+}
+function transitionToWS(cb){
+  const classic=document.getElementById('app-classic');const ws=document.getElementById('app-workspace');
+  classic.style.opacity='0';classic.style.pointerEvents='none';
+  setTimeout(()=>{classic.style.display='none';ws.style.display='block';ws.offsetHeight;ws.style.opacity='0';
+    setTimeout(()=>{ws.style.opacity='1';ws.style.transition='opacity .35s ease';cb()},20)},300);
+}
+function wsShowHero(){wsShowHeroText('本周课堂反馈')}
+
+function wsShowScreen(id){
+  ['wsEmpty','wsGradeSelect','wsClassSelect','wsMainMenu','wsLessonEdit','wsStack','wsSwipeDots','wsTagEditor','wsComplete'].forEach(sid=>{
+    const el=document.getElementById(sid);if(!el)return;
+    if(sid===id){el.style.display=sid==='wsSwipeDots'?'flex':(sid==='wsStack'?'grid':'block')}
+    else{el.style.display='none'}
+  });
+  document.getElementById('wsFab').style.display=id==='wsMainMenu'?'flex':'none';
+}
+
+function wsShowGradeSelect(){
+  wsShowScreen('wsGradeSelect');
+  document.getElementById('wsProgress').textContent='';
+  document.getElementById('wsTally').textContent='';
+  const el=document.getElementById('wsGradeSelect');
+  let h='<h3>选择年级段</h3>';
+  S.groups.forEach(g=>{
+    const sgs=sgsByGp(g.id);const stus=sgs.reduce((sum,x)=>sum+stusBySg(x.id).length,0);
+    h+=`<button class="ws-select-item" onclick="wsShowClassSelect('${g.id}')">${esc(g.label)}<span class="sub"> · ${sgs.length}个班级 · ${stus}名学生</span></button>`;
+  });
+  el.innerHTML=h;
+}
+
+function wsShowClassSelect(gid){
+  wsShowScreen('wsClassSelect');
+  document.getElementById('wsProgress').textContent='';
+  document.getElementById('wsTally').textContent='';
+  const g=gp(gid);const sgs=sgsByGp(gid);
+  const list=document.getElementById('wsClassList');
+  let h=`<h3>${esc(g?g.label:'')} — 选择班级</h3>`;
+  sgs.forEach(x=>{
+    const stus=stusBySg(x.id);
+    const browsed=stus.filter(s=>s.wsBrowsed).length;
+    const evaluated=stus.filter(s=>s.wsEvaluated).length;
+    const status=browsed>0?` · ${evaluated}/${stus.length}已评价`:'';
+    h+=`<button class="ws-select-item" onclick="wsSelectClass('${x.id}','${esc(x.label)}')">${esc(x.label)}<span class="sub"> · ${esc(x.type)} · ${stus.length}名学生${status}</span></button>`;
+  });
+  list.innerHTML=h||'<p style="color:var(--text-secondary);text-align:center">该年级段暂无班级</p>';
+}
+
+function wsSelectClass(sgId,label){
+  S.workspaceSgId=sgId;S.workspaceIdx=0;
+  stusBySg(sgId).forEach(s=>{s.wsBrowsed=false;s.wsEvaluated=false;s.wsSkipped=false});
+  save();S.consecutiveEvalCount=0;
+  const x=sg(sgId);const stus=stusBySg(sgId);const s=stus[0];
+  const title=s?`${esc(s.grade||'')}年级${esc(s.sem||'')} · ${esc(x?x.type:'')}`:label;
+  document.getElementById('wsMenuTitle').textContent=title;
+  wsShowMainMenu();
+}
+
+function wsShowMainMenu(){
+  wsShowScreen('wsMainMenu');
+  document.getElementById('wsFab').style.display='flex';
+  document.getElementById('wsProgress').textContent='选择操作';
+  document.getElementById('wsTally').textContent='';
+}
+function wsFabGenerate(){
+  const stus=wsGetStudents();if(!stus.length)return;
+  stus.forEach(s=>{
+    if(s._wsEdited||s._wsPreview)return;
+    const ps=tp(s.sgId,s.tier)||{};const mem=s.mem||{};
+    const parts=[];
+    if(mem.state&&mem.state.length)parts.push('课堂表现：'+mem.state.join('，'));
+    if(mem.strengths&&mem.strengths.length)parts.push('表现优点：'+mem.strengths.join('，'));
+    if(mem.improvements&&mem.improvements.length)parts.push('需要改进：'+mem.improvements.join('，'));
+    const fu=ps.followUp||[];if(fu.length)parts.push('后续安排：'+fu.map(v=>{const o=fuOpts.find(oo=>oo.v===v);return o?o.t:''}).filter(Boolean).join('、'));
+    const text=s.name+'家长您好，以下是'+s.name+'本周的课堂反馈：\n\n一、本周学习内容：\n'+(S.lessonContents[s.sgId]||'')+'\n\n二、课堂表现：\n'+(parts.join('\n')||'暂未评价');
+    s._wsPreview=text;
+  });
+  save();wsStartEval();
+}
+
+function wsShowLessonEdit(){
+  wsShowScreen('wsLessonEdit');
+  const sgId=S.workspaceSgId;const x=sg(sgId);
+  const stus=stusBySg(sgId);const fs=stus[0];
+  const t2=fs?`${esc(fs.grade||'')}年级${esc(fs.sem||'')} · ${esc(x?x.type:'')}`:(x?x.label:'');
+  document.getElementById('wsLessonEditTitle').textContent='本周授课内容 — '+t2;
+  document.getElementById('wsLessonTextarea').value=S.lessonContents[sgId]||'';
+  document.getElementById('wsProgress').textContent='编辑授课内容';
+}
+
+function wsPolishLesson(){
+  const lesson=document.getElementById('wsLessonTextarea').value.trim();if(!lesson){showToast('请先输入授课内容');return}
+  const sgId=S.workspaceSgId;const stus=sgId?stusBySg(sgId):[];const s=stus[0];const gr=s?s.grade:'';
+  const prompt=`你是深圳数学培训老师。请帮我把下面的授课内容润色扩写为一段专业知识点正文。
+
+【格式硬性规则】
+不添加任何标题、序号、分点、分段，只输出一段连贯完整的正文。
+全程禁止第一人称、禁止授课口语、禁止家长客套话术。
+禁用词：家长您、这次上课、本次授课、我、带他、给他辅导等。
+
+【固定行文逻辑，必须严格遵守】
+第一步：先定义本章节的学段定位——属于当前阶段基础重点，同时说明对后续知识的铺垫作用。
+第二步：讲解本章节的知识特点、学习侧重、能力培养方向。
+第三步：写出对应年级的中高阶易错点，拒绝幼稚入门错误，贴合真实学情。
+
+【文风与用词规范】
+固定学段专业用词：阶段基础重点、章节核心内容、知识衔接板块。
+严控"必考、高频考点"字样，少量点缀即可，绝不堆砌。
+文风沉稳、正式、专业，每次措辞重新改写，避免和历史文案重复。
+内容自然扩展、逻辑顺滑，适配小学中段/高段数学教学表述。
+${gr==='六'?'六年级偶尔提小升初衔接即可，不反复刷必考模块；不涉及余角补角等超纲内容':(parseInt(gr)<=5?'注意：本学段不使用自律、自主复习等超出小学阶段的词汇':gr>='七'?'用阶段基础重点、章节核心内容、知识衔接板块正常描述':'')}
+
+• 授课内容：${lesson}`;
+  copyToClip(prompt);try{location.href='doubao://'}catch(e){}
+}
+function wsSaveLesson(){
+  const sgId=S.workspaceSgId;if(!sgId)return;
+  S.lessonContents[sgId]=document.getElementById('wsLessonTextarea').value;
+  save();showToast('已保存');
+  setTimeout(()=>wsStartEval(),800);
+}
+
+function wsStartEval(){
+  wsShowScreen('wsStack');
+  wsShowHeroText('学生评价');
+  S.workspaceIdx=0;
+  S._wsStartTime=Date.now();
+  wsRenderStack(0);
+}
+
+function exitWorkspace(){
+  const classic=document.getElementById('app-classic');const ws=document.getElementById('app-workspace');
+  ws.style.opacity='0';ws.style.pointerEvents='none';
+  setTimeout(()=>{ws.style.display='none';classic.style.display='block';classic.offsetHeight;classic.style.opacity='0';
+    classic.style.transition='opacity .35s ease';
+    setTimeout(()=>{classic.style.opacity='1';classic.style.pointerEvents='auto'},20);
+    S.workspaceSgId=null;S.workspaceIdx=0;save();renderAll();
+    if(S.curSid)selectStudent(S.curSid);updateProgress();updateWorkflowLabel();
+  },300);
+}
+
+function wsGetStudents(){
+  if(!S.workspaceSgId)return[];return stusBySg(S.workspaceSgId);
+}
+
+function wsCountDone(){const stus=wsGetStudents();return stus.filter(s=>s.wsEvaluated).length;}
+function wsCountBrowsed(){const stus=wsGetStudents();return stus.filter(s=>s.wsBrowsed).length;}
+
+function wsRenderStack(idx){
+  const stus=wsGetStudents();if(!stus.length){
+    document.getElementById('wsEmpty').style.display='block';document.getElementById('wsStack').style.display='none';
+    document.getElementById('wsSwipeDots').style.display='none';document.getElementById('wsComplete').style.display='none';return;
+  }
+  if(idx>=stus.length||idx<0){wsAllBrowsed();return;}
+  S.workspaceIdx=idx;
+  const active=stus[idx];
+  // Mark active as browsed
+  active.wsBrowsed=true;
+
+  document.getElementById('wsEmpty').style.display='none';
+  document.getElementById('wsComplete').style.display='none';
+  wsShowScreen('wsStack');
+  const stack=document.getElementById('wsStack');
+  stack.className='ws-stack-container'; // Reset: default grid
+  document.getElementById('wsSwipeDots').style.display='none';
+  // Single card for 1-on-1
+  if(stus.length===1)stack.classList.add('single');
+  const x=sg(S.workspaceSgId);const is1v1=x&&x.type==='一对一';
+  // Show only 1 card for 1-on-1
+  const displayStus=is1v1?[stus[0]]:stus;
+
+  let html='';
+  displayStus.forEach((s,i)=>{
+    const ps=tp(s.sgId,s.tier)||{state:[],strengths:[],improvements:[]};
+    const mem=s.mem||{state:[],strengths:[],improvements:[]};
+    const statusIcon=s.wsEvaluated
+      ?' <svg width="12" height="12" viewBox="0 0 16 16" style="vertical-align:-2px"><circle cx="8" cy="8" r="6" fill="var(--accent)" opacity=".25"/><polyline points="5,8 7,10 11,6" stroke="var(--accent)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      :s.wsSkipped
+        ?' <svg width="12" height="12" viewBox="0 0 16 16" style="vertical-align:-2px"><circle cx="8" cy="8" r="6" fill="none" stroke="var(--text-muted)" stroke-width="1.2" stroke-dasharray="3 2"/></svg>'
+        :' <svg width="12" height="12" viewBox="0 0 16 16" style="vertical-align:-2px"><circle cx="8" cy="8" r="6" fill="none" stroke="var(--text-muted)" stroke-width="1.2"/></svg>';
+    // Auto-build feedback from tags only if never manually edited
+    if(!s._wsEdited&&!s._wsPreview){
+      const p=[];if(mem.state&&mem.state.length)p.push('课堂表现：'+mem.state.join('，'));
+      if(mem.strengths&&mem.strengths.length)p.push('表现优点：'+mem.strengths.join('，'));
+      if(mem.improvements&&mem.improvements.length)p.push('需要改进：'+mem.improvements.join('，'));
+      const fu=ps.followUp||[];if(fu.length)p.push('后续安排：'+fu.map(v=>{const o=fuOpts.find(oo=>oo.v===v);return o?o.t:''}).filter(Boolean).join('、'));
+      s._wsPreview=p.length?s.name+'家长您好，以下是'+s.name+'本周的课堂反馈：\n\n一、本周学习内容：\n'+(S.lessonContents[s.sgId]||'')+'\n\n二、课堂表现：\n'+p.join('\n'):'';
+    }
+    const fbPreview=s._wsPreview||'';
+    html+=`<div class="ws-stack-card" data-sid="${s.id}" onclick="wsCardClick('${s.id}',this)">
+      <div class="ws-card-icons">
+        <button class="ws-card-icon ws-ai-btn" onclick="event.stopPropagation();wsCardDoubao('${s.id}')" title="AI润色">
+          <svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="var(--doubao)" opacity=".2"/><path d="M8 12h8M12 8v8" stroke="var(--doubao)" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        ${!is1v1?`<button class="ws-card-icon ws-sync-btn" onclick="event.stopPropagation();wsSyncSameTier('${s.id}')" title="同班同档同步">
+          <svg width="14" height="14" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 14h6v6h-6zM10 10l4 4" stroke="var(--accent)" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+        </button>`:''}
+      </div>
+      <div class="ws-student-name">${esc(s.name||'未命名')}${statusIcon}</div>
+      <div class="ws-student-tier">${esc(s.tier||'')} · ${esc(s.grade||'')}年${esc(s.sem||'')}</div>
+      <div class="ws-preview-text" contenteditable="true" onblur="wsSaveCardPreview('${s.id}',this.textContent)" onclick="event.stopPropagation()">${esc(fbPreview)}</div>
+    </div>`;
+  });
+  stack.innerHTML=html;
+
+  // Progress
+  const browsed=wsCountBrowsed();const done=wsCountDone();const total=stus.length;
+  document.getElementById('wsProgress').innerHTML=`<strong>${browsed}/${total}</strong> 已浏览 (${done}人已评价)`;
+  document.getElementById('wsTally').textContent='左滑下一人 · 右滑上一人 · 上滑跳过 · 双指外扩展开';
+
+  // Swipe dots
+  document.getElementById('wsSwipeDots').style.display='flex';
+  const dots=document.querySelectorAll('#wsSwipeDots .ws-dot');
+  dots.forEach((d,i)=>{d.classList.toggle('active',i===Math.min(idx,total-1)%3)});
+
+  // Bind swipe on stack container + pinch + drag
+  wsBindStackGestures();
+  wsBindPinchGesture();
+  wsBindDragOnCards();
+
+  save();
+}
+
+// Stack tag toggle
+function wsToggleStackTag(el,sid,cat,label){
+  el.classList.toggle('on');const s=stu(sid);if(!s)return;
+  if(!s.mem)s.mem={state:[],strengths:[],improvements:[],count:0};
+  if(!s.mem[cat])s.mem[cat]=[];
+  if(el.classList.contains('on')){if(!s.mem[cat].includes(label))s.mem[cat].push(label);s.wsEvaluated=true;}
+  else{s.mem[cat]=s.mem[cat].filter(l=>l!==label)}
+  save();
+}
+
+// Extract card on click
+function wsExtractCard(el,sid){
+  const stack=document.getElementById('wsStack');
+  if(!stack.classList.contains('stacked')){
+    // In spread mode, toggle extracted state
+    el.classList.toggle('extracted');
+    if(el.classList.contains('extracted')){
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  }else{
+    // In stacked mode, bring this card to top
+    const s=stu(sid);if(!s)return;
+    const stus=wsGetStudents();const idx=stus.indexOf(s);
+    if(idx>=0)wsRenderStack(idx);
+  }
+}
+
+// Copy card content
+function wsCopyCard(sid){
+  const s=stu(sid);if(!s)return;
+  const parts=[];
+  if(s.mem&&s.mem.state&&s.mem.state.length)parts.push('课堂表现：'+s.mem.state.join('，'));
+  if(s.mem&&s.mem.improvements&&s.mem.improvements.length)parts.push('需要改进：'+s.mem.improvements.join('，'));
+  const text=(s.name||'')+' · '+parts.join(' · ');
+  copyToClip(text);showToast('已复制：'+s.name);
+}
+
+// Skip card
+function wsSkipCard(sid){
+  const s=stu(sid);if(!s)return;
+  s.wsSkipped=true;s.wsBrowsed=true;save();
+  wsRenderStack(S.workspaceIdx);
+}
+function wsCardClick(sid,el){
+  // Shrink other cards
+  document.querySelectorAll('.ws-stack-card').forEach(c=>c.style.transform=c===el?'scale(1.04)':'scale(0.94)');
+  setTimeout(()=>document.querySelectorAll('.ws-stack-card').forEach(c=>c.style.transform=''),300);
+  wsEditStudent(sid);
+}
+function wsCardDoubao(sid){
+  const s=stu(sid);if(!s)return;
+  const preview=s._wsPreview||'无预览内容，请先生成本地反馈';
+  const prompt=`你是深圳数学培训老师，正在微信上给一位家长发教学反馈。请润色以下教学反馈，要求口语化但不轻浮，保持三段结构，适合微信直接发送。反馈内容：${preview}`;
+  copyToClip(prompt);try{location.href='doubao://'}catch(e){}
+}
+function wsSyncSameTier(sid){
+  const s=stu(sid);if(!s)return;let c=0;
+  wsGetStudents().forEach(o=>{if(o.id!==s.id&&o.tier===s.tier&&o.sgId===s.sgId){let t=s._wsPreview||'';if(t&&s.name)t=t.replaceAll(s.name,o.name||'孩子');if(t&&s.parent&&o.parent&&s.parent!==o.parent){t=t.replaceAll(s.parent+'您好',o.parent+'您好').replaceAll(s.parent+'好',o.parent+'好')}if(t&&s.gender==='男'&&o.gender==='女')t=t.replaceAll('他','她');if(t&&s.gender==='女'&&o.gender==='男')t=t.replaceAll('她','他');o._wsPreview=t;c++}});
+  save();wsRenderStack(S.workspaceIdx);
+}
+function wsSaveCardPreview(sid,txt){
+  const s=stu(sid);if(!s)return;s._wsPreview=txt;s._wsEdited=true;save();
+}
+
+// Pinch to spread
+function wsBindPinchGesture(){
+  const stack=document.getElementById('wsStack');if(!stack)return;
+  let initDist=0;
+  stack.addEventListener('touchstart',e=>{
+    if(e.touches.length===2){
+      const dx=e.touches[0].clientX-e.touches[1].clientX;
+      const dy=e.touches[0].clientY-e.touches[1].clientY;
+      initDist=Math.sqrt(dx*dx+dy*dy);
+    }
+  },{passive:true});
+  stack.addEventListener('touchmove',e=>{
+    if(e.touches.length===2&&initDist>0){
+      const dx=e.touches[0].clientX-e.touches[1].clientX;
+      const dy=e.touches[0].clientY-e.touches[1].clientY;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist>initDist*1.4&&stack.classList.contains('stacked')){
+        stack.classList.remove('stacked');initDist=0;
+      }else if(dist<initDist*0.6&&!stack.classList.contains('stacked')){
+        stack.classList.add('stacked');initDist=0;
+      }
+    }
+  },{passive:true});
+}
+
+function wsUpdateButtonVisibility(){
+  // Only update header indicator — NEVER hide cards or lock navigation
+  const stus=wsGetStudents();const total=stus.length;
+  const browsed=wsCountBrowsed();const done=wsCountDone();
+  if(browsed>=total&&total>0&&done>=total){
+    document.getElementById('wsProgress').innerHTML=`<strong>${done}/${total}</strong> 全部已评价`;
+  }
+}
+
+function wsToggleLesson(){
+  const body=document.getElementById('wsLessonBody');const toggle=document.getElementById('wsLessonToggle');
+  const collapsed=body.classList.toggle('collapsed');toggle.classList.toggle('collapsed');
+  body.style.maxHeight=collapsed?'0':body.scrollHeight+'px';
+}
+
+function wsToggleTag(el,cat,label){
+  el.classList.toggle('on');const s=wsGetStudents()[S.workspaceIdx];if(!s)return;
+  if(!s.mem)s.mem={state:[],strengths:[],improvements:[],count:0};
+  if(!s.mem[cat])s.mem[cat]=[];
+  if(el.classList.contains('on')){if(!s.mem[cat].includes(label))s.mem[cat].push(label)}
+  else{s.mem[cat]=s.mem[cat].filter(l=>l!==label)}
+  save();
+}
+
+function wsSave(){
+  // DEPRECATED: replaced by wsAutoSave + gesture-based save. Kept for backward compat.
+  wsAutoSave();
+  const stus=wsGetStudents();const total=stus.length;
+  S.workspaceIdx=(S.workspaceIdx+1)%total;
+  wsRenderCard(S.workspaceIdx);
+}
+
+function wsAutoSave(){
+  const stus=wsGetStudents();const s=stus[S.workspaceIdx];if(!s)return;
+  // Save current tag selections to student memory
+  if(s.mem&&(s.mem.state&&s.mem.state.length||s.mem.improvements&&s.mem.improvements.length)){
+    s.wsEvaluated=true;
+    const ps=tp(s.sgId,s.tier);if(ps){
+      if(s.mem.state&&s.mem.state.length)ps.state=[...new Set([...ps.state,...s.mem.state])];
+      if(s.mem.improvements&&s.mem.improvements.length)ps.improvements=[...new Set([...ps.improvements,...s.mem.improvements])];
+    }
+    S.consecutiveEvalCount=(S.consecutiveEvalCount||0)+1;
+    if(S.consecutiveEvalCount===3){showToast('评价小能手！连续评价3位学生')}
+    checkAchievement();
+  }
+  S.sentThisWeek[s.id]=S.sentThisWeek[s.id]||Date.now();
+  // Save to history record (matching classic mode behavior)
+  const mem=s.mem||{};const p=[];if(mem.state&&mem.state.length)p.push('课堂表现：'+mem.state.join('，'));if(mem.improvements&&mem.improvements.length)p.push('需要改进：'+mem.improvements.join('，'));const genPreview=p.length?s.name+'家长您好，以下是'+s.name+'本周的课堂反馈：\n\n一、本周学习内容：\n'+(S.lessonContents[s.sgId]||'')+'\n\n二、课堂表现：\n'+p.join('\n'):'';
+  const preview=s._wsPreview||genPreview;
+  if(preview&&preview.trim()){
+    if(!s.hist)s.hist=[];
+    const wk=getWeekKey();const lesson=S.lessonContents[s.sgId]||'';
+    const exist=s.hist.find(h=>h.week===wk&&h.lesson===lesson);
+    if(exist){exist.content=preview;exist.date=new Date().toLocaleString('zh-CN',{hour12:false});}
+    else{s.hist.unshift({date:new Date().toLocaleString('zh-CN',{hour12:false}),content:preview,week:wk,lesson:lesson});}
+  }
+  save();
+}
+
+// Batch save all workspace students to history
+function wsSaveAllHistory(){
+  const stus=wsGetStudents();if(!stus.length){showToast('没有可保存的学生');return}
+  let c=0;
+  stus.forEach(s=>{
+    const mem=s.mem||{};const p=[];
+    if(mem.state&&mem.state.length)p.push('课堂表现：'+mem.state.join('，'));
+    if(mem.improvements&&mem.improvements.length)p.push('需要改进：'+mem.improvements.join('，'));
+    const genPreview=p.length?s.name+'家长您好，以下是'+s.name+'本周的课堂反馈：\n\n一、本周学习内容：\n'+(S.lessonContents[s.sgId]||'')+'\n\n二、课堂表现：\n'+p.join('\n'):'';
+    const preview=s._wsPreview||genPreview;
+    if(!preview||!preview.trim())return;
+    if(!s.hist)s.hist=[];
+    const wk=getWeekKey();const lesson=S.lessonContents[s.sgId]||'';
+    const exist=s.hist.find(h=>h.week===wk&&h.lesson===lesson);
+    if(exist){exist.content=preview;exist.date=new Date().toLocaleString('zh-CN',{hour12:false});}
+    else{s.hist.unshift({date:new Date().toLocaleString('zh-CN',{hour12:false}),content:preview,week:wk,lesson:lesson});}
+    S.sentThisWeek[s.id]=Date.now();c++;
+  });
+  save();renderSidebar();showToast(`已存档 ${c} 名学生到历史记录`);
+}
+
+// ======================== WORKSPACE GESTURES ========================
+let wsGesture={startX:0,startY:0,startTime:0,isSwiping:false};
+function wsBindStackGestures(){
+  const stack=document.getElementById('wsStack');if(!stack)return;
+  // Use document-level touch events to detect swipes anywhere on screen
+  document.addEventListener('touchstart',wsTouchStart,{passive:true});
+  document.addEventListener('touchmove',wsTouchMove,{passive:false});
+  document.addEventListener('touchend',wsTouchEnd);
+}
+function wsTouchStart(e){
+  // Only handle single-finger touches for swipe (not pinch)
+  if(e.touches.length!==1)return;
+  wsGesture.startX=e.touches[0].clientX;wsGesture.startY=e.touches[0].clientY;
+  wsGesture.startTime=Date.now();wsGesture.isSwiping=false;
+}
+function wsTouchMove(e){
+  if(e.touches.length!==1||!wsGesture.startX)return;
+  const dx=e.touches[0].clientX-wsGesture.startX;const dy=e.touches[0].clientY-wsGesture.startY;
+  if(Math.abs(dx)>10||Math.abs(dy)>10)wsGesture.isSwiping=true;
+  if(wsGesture.isSwiping){e.preventDefault();}
+}
+function wsTouchEnd(e){
+  if(!wsGesture.isSwiping||!wsGesture.startX)return;
+  const dx=e.changedTouches[0].clientX-wsGesture.startX;
+  const dy=e.changedTouches[0].clientY-wsGesture.startY;
+  const absDx=Math.abs(dx);const absDy=Math.abs(dy);
+  wsGesture.startX=0;
+  if(absDx<50)return;
+
+  // Left swipe (R→L) = go back
+  if(dx<-50){
+    if(wsEdit.sid){wsEditDone();return;}
+    if(document.getElementById('wsClassSelect').style.display==='block'){wsShowGradeSelect();return;}
+    if(document.getElementById('wsMainMenu').style.display==='block'){wsShowGradeSelect();return;}
+    if(document.getElementById('wsLessonEdit').style.display==='block'){wsShowMainMenu();return;}
+    if(document.getElementById('wsStack').style.display==='block'||document.getElementById('wsComplete').style.display==='block'){wsShowMainMenu();return;}
+    return;
+  }
+  // Right swipe (L→R) = advance
+  if(dx>50){
+    if(wsEdit.sid){wsEdit.phase++;wsRunPhase();return;}
+    wsAutoSave();wsNavigate(1);
+  }
+}
+
+function wsAllBrowsed(){
+  // All cards browsed — wrap around, never lock
+  const done=wsCountDone();const total=wsGetStudents().length;
+  document.getElementById('wsProgress').innerHTML=`<strong>${done}/${total}</strong> 已评价`;
+  document.getElementById('wsTally').textContent=done>=total?'全部完成！左滑返回':'左滑返回 · 右滑继续';
+  wsRenderStack(0);
+}
+function wsShowHeroText(text){
+  const existing=document.querySelector('.ws-hero-text');
+  if(existing)existing.remove();
+  const hero=document.createElement('div');hero.className='ws-hero-text';
+  hero.textContent=text;document.body.appendChild(hero);
+  requestAnimationFrame(()=>{hero.classList.add('animate')});
+  setTimeout(()=>{if(hero.parentNode)hero.remove()},1400);
+}
+
+function wsNavigate(dir){
+  const stus=wsGetStudents();const total=stus.length;let idx=S.workspaceIdx+dir;
+  if(idx>=total||idx<0){wsAllBrowsed();return;}
+  wsRenderStack(idx);
+}
+
+// ======================== SINGLE STUDENT TAG EDITING ========================
+let wsEdit={sid:null,phase:0,speed:1};
+const wsEditPhases=['课堂表现','表现优点','需要改进','后续学习安排'];
+const wsEditCats=['state','strengths','improvements','followUp'];
+
+function wsEditStudent(sid){
+  wsEdit.sid=sid;wsEdit.phase=0;wsEdit.speed=1;
+  wsShowScreen('wsTagEditor');
+  wsRunPhase();
+}
+function wsRunPhase(){
+  if(wsEdit.phase>=4){wsEditDone();return}
+  const hero=document.getElementById('wsEditHero');const grid=document.getElementById('wsBubbleGrid');
+  const act=document.getElementById('wsEditActions');
+  hero.className='ws-edit-hero';hero.textContent=wsEditPhases[wsEdit.phase];
+  grid.innerHTML='';act.style.display='none';
+  requestAnimationFrame(()=>{hero.classList.add('show')});
+  setTimeout(()=>{
+    const s=stu(wsEdit.sid);if(!s)return;
+    const ps=tp(s.sgId,s.tier)||{};const mem=s.mem||{};
+    const cat=wsEditCats[wsEdit.phase];
+    let tags=[];
+    if(cat==='followUp'){
+      const selected=ps.followUp||[];
+      tags=fuOpts.map(o=>({v:o.v,t:o.t,on:selected.includes(o.v)}));
+    }else{
+      const pool=cat==='state'?poolState:(cat==='strengths'?poolStrengths:poolImprovements);
+      const selected=mem[cat]||[];
+      const labels=[...new Set([...selected,...pick(pool,Math.max(0,8-selected.length))])];
+      tags=labels.map(t=>({t,on:selected.includes(t)}));
+    }
+    grid.innerHTML=tags.map(t=>`<label class="ws-bubble${t.on?' on':''}" onclick="wsToggleEditTag(this,'${cat}','${esc((t.t||t.v).replace(/'/g,"\\'"))}','${esc((t.v||'').replace(/'/g,"\\'"))}')">${esc(t.t||t.v)}</label>`).join('');
+    act.style.display='block';
+  },250/wsEdit.speed);
+  hero.onclick=()=>{wsEdit.speed=2};
+}
+function wsToggleEditTag(el,cat,label,val){
+  el.classList.toggle('on');
+  if(cat==='followUp'){
+    const s=stu(wsEdit.sid);if(!s)return;
+    const ps=tp(s.sgId,s.tier);if(!ps)return;
+    if(!ps.followUp)ps.followUp=[];
+    if(el.classList.contains('on')){if(!ps.followUp.includes(val))ps.followUp.push(val)}
+    else{ps.followUp=ps.followUp.filter(v=>v!==val)}
+  }else{
+    const s=stu(wsEdit.sid);if(!s)return;
+    if(!s.mem)s.mem={state:[],strengths:[],improvements:[],count:0};
+    if(!s.mem[cat])s.mem[cat]=[];
+    if(el.classList.contains('on')){if(!s.mem[cat].includes(label))s.mem[cat].push(label)}
+    else{s.mem[cat]=s.mem[cat].filter(l=>l!==label)}
+  }
+  save();
+}
+function wsRefreshEditTags(){
+  const s=stu(wsEdit.sid);if(!s)return;
+  const cat=wsEditCats[wsEdit.phase];const mem=s.mem||{};
+  const selected=mem[cat]||[];
+  const pool=cat==='state'?poolState:(cat==='strengths'?poolStrengths:poolImprovements);
+  const fresh=pick(pool.filter(t=>!selected.includes(t)),Math.max(0,8-selected.length));
+  const tags=[...selected,...fresh];
+  const grid=document.getElementById('wsBubbleGrid');
+  grid.innerHTML=tags.map(t=>`<label class="ws-bubble${selected.includes(t)?' on':''}" onclick="wsToggleEditTag(this,'${cat}','${esc(t.replace(/'/g,"\\'"))}')">${esc(t)}</label>`).join('');
+}
+function wsEditDone(){
+  const s=stu(wsEdit.sid);if(s){s.wsEvaluated=true;s.wsBrowsed=true;S.sentThisWeek[s.id]=Date.now();S.consecutiveEvalCount=(S.consecutiveEvalCount||0)+1;checkAchievement();save();}
+  wsEdit.sid=null;
+  wsStartEval(); // Always back to card overview, never lock
+}
+
+function wsSkip(){
+  const stus=wsGetStudents();const total=stus.length;
+  S.workspaceIdx=(S.workspaceIdx+1);
+  if(S.workspaceIdx>=total){wsAllBrowsed();return;}
+  wsRenderStack(S.workspaceIdx);
+}
+
+// ======================== KEYBOARD ========================
+// ======================== CARD DRAG-TO-CENTER EDITING ========================
+let wsDrag={timer:null,el:null,startX:0,startY:0,origLeft:0,origTop:0,isDragging:false};
+function wsBindDragOnCards(){
+  document.querySelectorAll('.ws-stack-card').forEach(card=>{
+    card.addEventListener('touchstart',wsDragStart,{passive:true});
+    card.addEventListener('touchmove',wsDragMove,{passive:false});
+    card.addEventListener('touchend',wsDragEnd);
+  });
+}
+function wsDragStart(e){
+  if(e.touches.length!==1)return;
+  const card=e.target.closest('.ws-stack-card');if(!card||card.classList.contains('dragging'))return;
+  wsDrag.el=card;wsDrag.startX=e.touches[0].clientX;wsDrag.startY=e.touches[0].clientY;
+  wsDrag.isDragging=false;
+  clearTimeout(wsDrag.timer);
+  wsDrag.timer=setTimeout(()=>{
+    wsDrag.isDragging=true;
+    const r=card.getBoundingClientRect();
+    wsDrag.origLeft=r.left;wsDrag.origTop=r.top;
+    card.style.position='fixed';card.style.left=r.left+'px';card.style.top=r.top+'px';
+    card.style.width=r.width+'px';card.style.zIndex='200';card.style.margin='0';
+    card.classList.add('dragging');
+  },600);
+}
+function wsDragMove(e){
+  if(!wsDrag.isDragging||!wsDrag.el)return;
+  e.preventDefault();
+  const dx=e.touches[0].clientX-wsDrag.startX;const dy=e.touches[0].clientY-wsDrag.startY;
+  wsDrag.el.style.left=(wsDrag.origLeft+dx)+'px';
+  wsDrag.el.style.top=(wsDrag.origTop+dy)+'px';
+}
+function wsDragEnd(e){
+  clearTimeout(wsDrag.timer);
+  if(!wsDrag.isDragging||!wsDrag.el){wsDrag.el=null;return}
+  const card=wsDrag.el;wsDrag.el=null;wsDrag.isDragging=false;
+  const cx=window.innerWidth/2;const cy=window.innerHeight/2;
+  const r=card.getBoundingClientRect();const cardCx=r.left+r.width/2;const cardCy=r.top+r.height/2;
+  const dist=Math.sqrt((cardCx-cx)**2+(cardCy-cy)**2);
+  if(dist<150){
+    // Near center — enlarge for editing
+    card.style.left='5vw';card.style.top='5vh';card.style.width='90vw';card.style.height='90vh';
+    card.style.transition='all .4s cubic-bezier(0.34,1.56,0.64,1)';
+    card.style.overflow='auto';card.style.zIndex='250';
+    card.classList.remove('dragging');card.classList.add('editing-center');
+  }else{
+    // Return to original position
+    card.style.transition='all .4s ease';
+    card.style.left='';card.style.top='';card.style.width='';card.style.zIndex='';
+    card.style.position='';card.classList.remove('dragging');
+  }
+}
+// Close editing center on background tap
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.ws-stack-card')){
+    const ec=document.querySelector('.ws-stack-card.editing-center');
+    if(ec){ec.style.left='';ec.style.top='';ec.style.width='';ec.style.zIndex='';
+      ec.style.position='';ec.style.overflow='';ec.classList.remove('editing-center');
+      ec.style.transition='all .3s ease';}
+  }
+});
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement===document.body){e.preventDefault();localGenerate()}});
+
+// ======================== BUNNY EARS ========================
+function bunnyEarsUp(){
+  document.querySelectorAll('.bunny-ear').forEach(e=>e.classList.add('ears-up'));
+  setTimeout(()=>bunnyEarsDown(),2500);
+}
+function bunnyEarsDown(){
+  document.querySelectorAll('.bunny-ear').forEach(e=>e.classList.remove('ears-up'));
+}
+
+// ======================== ACHIEVEMENT FEEDBACK ========================
+function checkAchievement(){
+  if(S.consecutiveEvalCount===5)showToast('高效评价！连续完成5位学生');
+  if(S.consecutiveEvalCount===10)showToast('评价达人！连续完成10位学生');
+}
+
+// ======================== HISTORY RULES ========================
+function getWeekKey(){
+  const d=new Date();const day=d.getDay();const diff=d.getDate()-day+(day===0?-6:1);
+  const mon=new Date(d.setDate(diff));return mon.toISOString().slice(0,10);
+}
+function saveFeedbackWithRules(){
+  const s=stu(S.curSid);if(!s)return;const text=document.getElementById('previewBox').textContent.trim();
+  if(!text){showToast('请先生成反馈再保存');return}
+  s._preview=text;if(!s.hist)s.hist=[];
+  const wk=getWeekKey();const lesson=S.lessonContents[s.sgId]||'';
+  // Same-week + same lesson content → overwrite latest
+  const exist=s.hist.find(h=>h.week===wk&&h.lesson===lesson);
+  if(exist){exist.content=text;exist.date=new Date().toLocaleString('zh-CN',{hour12:false});}
+  else{s.hist.unshift({date:new Date().toLocaleString('zh-CN',{hour12:false}),content:text,week:wk,lesson:lesson});}
+  if(!s.mem)s.mem={state:[],strengths:[],improvements:[],count:0};s.mem.count=(s.mem.count||0)+1;
+  if(s.mem.count%2===0){const ps=tp(s.sgId,s.tier);if(ps){['state','strengths','improvements'].forEach(cat=>{if(ps[cat])ps[cat]=shuffle(ps[cat]).slice(0,Math.min(ps[cat].length,6))})}}
+  S.sentThisWeek[s.id]=Date.now();save();renderHistory();updateSentBadge();updateProgress();renderSidebar();
+  document.getElementById('previewStatus').innerHTML='<span class="ok">已保存</span>';
+  bunnyEarsUp();
+  setTimeout(()=>{if(document.getElementById('previewStatus').textContent==='已保存')document.getElementById('previewStatus').textContent=''},2000);
+  checkReview();
+}
+
+// ======================== REVIEW QUEUE ========================
+function processReviewQ(){
+  if(!S.reviewQ||!S.reviewQ.length)return;
+  const now=Date.now();const due=S.reviewQ.filter(r=>r.scheduled<=now);
+  if(!due.length)return;
+  S.reviewQ=S.reviewQ.filter(r=>r.scheduled>now);
+  due.forEach(r=>{
+    const s=stu(r.sid);if(s&&s.hist&&s.hist.length>=4)showReviewModal(s);
+  });
+  save();
+}
+
+// ======================== ONE-CLICK CLEAR ========================
+function showClearOptionsModal(){
+  openModal(`<h3>一键清空</h3>
+    <p style="font-size:var(--font-xs);color:var(--text-secondary);margin-bottom:12px">
+      选择清空范围（学生档案和历史记录永久保留）：
+    </p>
+    <button class="btn btn-ghost" style="width:100%;margin-bottom:8px;text-align:left;padding:12px"
+      onclick="closeModal();clearCurrentClass()">
+      <b>仅清空当前班级</b><br><span style="font-size:var(--font-xs);color:var(--text-secondary)">清空本周授课内容+标签勾选状态</span>
+    </button>
+    <button class="btn btn-ghost" style="width:100%;margin-bottom:8px;text-align:left;padding:12px"
+      onclick="closeModal();clearAllClasses()">
+      <b>清空全年级</b><br><span style="font-size:var(--font-xs);color:var(--text-secondary)">清空所有班级本周授课内容+全部标签</span>
+    </button>
+    <div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="closeModal()">取消</button></div>`);
+}
+function clearCurrentClass(){
+  const sgId=S.workspaceSgId||S.curSgId;if(!sgId){showToast('未选择班级');return}
+  delete S.lessonContents[sgId];
+  stusBySg(sgId).forEach(s=>{s.mem={state:[],strengths:[],improvements:[],count:0};s._preview='';s._wsPreview='';s._wsEdited=false});
+  S.sentThisWeek={};save();showToast('当前班级本周内容已清空');
+}
+function clearAllClasses(){
+  S.lessonContents={};S.tierPresets={};
+  S.sentThisWeek={};S.useCounts={state:0,strengths:0,improvements:0};
+  S.students.forEach(s=>{s._preview='';s._wsPreview='';s._wsEdited=false});
+  save();showToast('全年级本周内容已清空');
+}
+
+// ======================== CUSTOM BACKGROUND ========================
+function setCustomBackground(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  inp.onchange=function(){
+    const f=this.files[0];if(!f)return;
+    const rd=new FileReader();
+    rd.onload=function(e){
+      S.customBgUrl=e.target.result;
+      document.body.style.backgroundImage=`url(${S.customBgUrl})`;
+      document.body.style.backgroundSize='cover';
+      document.body.style.backgroundPosition='center';
+      document.body.style.backgroundAttachment='fixed';
+      save();showToast('背景已更新');
+    };
+    rd.readAsDataURL(f);
+  };
+  inp.click();
+}
+function resetBackground(){
+  S.customBgUrl=null;
+  document.body.style.backgroundImage='';
+  document.body.style.backgroundSize='';
+  document.body.style.backgroundPosition='';
+  document.body.style.backgroundAttachment='';
+  save();showToast('背景已重置为默认');
+}
+
+// ======================== PWA ========================
+if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(reg=>{reg.addEventListener('updatefound',()=>{const w=reg.installing;w.addEventListener('statechange',()=>{if(w.state==='activated'){location.reload()}})})}).catch(()=>{})})}
+
+// ======================== INIT ========================
+renderAll();processReviewQ();updateProgress();updateWorkflowLabel();
+if(!S.curSid&&S.students.length>0){S.curSid=S.students[0].id;S.curSgId=S.students[0].sgId;renderAll();updateProgress()}
+setInterval(processReviewQ,60000);
+</script>
+</body>
+</html>
