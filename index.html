@@ -55,7 +55,9 @@ body{
   background:linear-gradient(175deg,var(--bg) 0%,var(--bg2) 100%);
   color:var(--text);min-height:100vh;font-size:var(--font-md);
   -webkit-tap-highlight-color:transparent;transition:background .4s,color .4s;
+  animation:pageIn .4s ease both;
 }
+@keyframes pageIn{from{opacity:0}to{opacity:1}}
 #app-classic,#app-workspace{
   max-width:1440px;margin:0 auto;padding:14px 16px;position:relative;z-index:1;
   transition:opacity .3s ease;
@@ -209,7 +211,7 @@ select{
   border:1.5px solid transparent;
 }
 .tag:hover{background:var(--accent-light)}
-.tag.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tag.on{background:var(--accent);color:#fff;border-color:var(--accent);transform:scale(1.04)}
 .tag input{display:none}
 .tag-num{font-size:10px;opacity:.6;margin-right:2px}
 .custom-inline{display:flex;gap:6px;align-items:center;margin-top:6px}
@@ -337,6 +339,10 @@ select{
 .ws-header-right{display:flex;align-items:center;gap:8px}
 .ws-progress{font-size:var(--font-sm);color:var(--text-secondary)}
 .ws-progress strong{color:var(--accent);font-size:var(--font-lg)}
+.ws-fluid-bar{display:flex;align-items:center;gap:10px;padding:6px 18px 12px}
+.ws-fluid-track{flex:1;height:6px;background:var(--accent-light);border-radius:3px;overflow:hidden}
+.ws-fluid-fill{height:100%;background:linear-gradient(90deg,var(--accent-soft),#7da887,var(--accent-soft));background-size:200% 100%;border-radius:3px;transition:width .5s ease;animation:fluidFlow 3s linear infinite;width:0%}
+.ws-fluid-text{font-size:11px;color:var(--text-secondary);white-space:nowrap;min-width:50px;text-align:right}
 
 .ws-main{
   display:flex;flex-direction:column;align-items:center;gap:16px;
@@ -442,9 +448,11 @@ select{
   border-radius:var(--radius-xl);padding:24px 22px;
   box-shadow:0 2px 16px rgba(148,130,115,0.08),0 8px 32px rgba(148,130,115,0.06);
   position:relative;cursor:pointer;
-  transition:transform var(--spring),box-shadow var(--transition);
+  transition:transform var(--spring),box-shadow var(--transition),opacity .25s ease;
   border-left:4px solid transparent;
+  animation:cardFadeIn .35s ease both;
 }
+@keyframes cardFadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .ws-stack-card:hover{transform:translateY(-2px);box-shadow:0 4px 24px rgba(148,130,115,0.12),0 12px 40px rgba(148,130,115,0.08)}
 .ws-stack-card.tier-excellent{border-left-color:#7da887}
 .ws-stack-card.tier-medium{border-left-color:#a3acb5}
@@ -566,7 +574,7 @@ input:focus,select:focus,textarea:focus{
   cursor:pointer;transition:all .2s ease;user-select:none;opacity:0;transform:scale(0);
   animation:bubbleOut .2s ease forwards;border:2px solid transparent;
 }
-.ws-bubble.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ws-bubble.on{background:var(--accent);color:#fff;border-color:var(--accent);transform:scale(1.05)}
 .ws-bubble:nth-child(1){animation-delay:0s}.ws-bubble:nth-child(2){animation-delay:.03s}
 .ws-bubble:nth-child(3){animation-delay:.06s}.ws-bubble:nth-child(4){animation-delay:.09s}
 .ws-bubble:nth-child(5){animation-delay:.12s}.ws-bubble:nth-child(6){animation-delay:.15s}
@@ -670,6 +678,10 @@ input:focus,select:focus,textarea:focus{
       <button class="btn btn-primary btn-xs" onclick="wsSaveAllHistory()" title="一键保存全部到历史记录" style="margin-left:4px">一键存档</button>
       <span class="ws-progress" id="wsTally" style="font-size:var(--font-sm);color:var(--text-secondary)"></span>
     </div>
+  </div>
+  <div class="ws-fluid-bar" id="wsFluidBar" style="display:none">
+    <div class="ws-fluid-track"><div class="ws-fluid-fill" id="wsFluidFill"></div></div>
+    <span class="ws-fluid-text" id="wsFluidText"></span>
   </div>
   <div class="ws-main" id="wsMain">
     <div style="text-align:center;color:var(--text-secondary);padding:40px" id="wsEmpty">
@@ -894,6 +906,10 @@ function load(){
     merged.reviewQ=d.reviewQ||[];
     merged.useCounts=d.useCounts||{state:0,strengths:0,improvements:0};
     merged.workflowIdx=d.workflowIdx||0;
+    // Auto-cleanup: silently remove history records older than 14 days
+    const cutoff=Date.now()-14*86400000;let cleaned=0;
+    merged.students.forEach(s=>{if(s.hist){const before=s.hist.length;s.hist=s.hist.filter(h=>{const d=h.date?new Date(h.date).getTime():0;return d>cutoff});cleaned+=before-s.hist.length}});
+    if(cleaned){merged.cleanedAt=Date.now();localStorage.setItem(SK,JSON.stringify(merged))}
     return merged;
   }catch(e){localStorage.removeItem(SK);return initState();}
 }
@@ -1485,9 +1501,9 @@ function enterWorkspace(sgId){
 }
 function transitionToWS(cb){
   const classic=document.getElementById('app-classic');const ws=document.getElementById('app-workspace');
-  classic.style.opacity='0';classic.style.pointerEvents='none';
-  setTimeout(()=>{classic.style.display='none';ws.style.display='block';ws.offsetHeight;ws.style.opacity='0';
-    setTimeout(()=>{ws.style.opacity='1';ws.style.transition='opacity .35s ease';cb()},20)},300);
+  classic.style.transition='opacity .25s ease,transform .25s ease';classic.style.opacity='0';classic.style.transform='scale(0.96)';classic.style.pointerEvents='none';
+  setTimeout(()=>{classic.style.display='none';ws.style.display='block';ws.offsetHeight;ws.style.opacity='0';ws.style.transform='scale(1.04)';
+    setTimeout(()=>{ws.style.transition='opacity .35s ease,transform .35s ease';ws.style.opacity='1';ws.style.transform='scale(1)';cb()},20)},250);
 }
 function wsShowHero(){wsShowHeroText('本周课堂反馈')}
 
@@ -1609,15 +1625,15 @@ function wsStartEval(){
   wsShowHeroText('学生评价');
   S.workspaceIdx=0;
   S._wsStartTime=Date.now();
-  wsRenderStack(0);
+  wsRenderStack(0);wsUpdateFluidBar();
 }
 
 function exitWorkspace(){
   const classic=document.getElementById('app-classic');const ws=document.getElementById('app-workspace');
-  ws.style.opacity='0';ws.style.pointerEvents='none';
-  setTimeout(()=>{ws.style.display='none';classic.style.display='block';classic.offsetHeight;classic.style.opacity='0';
-    classic.style.transition='opacity .35s ease';
-    setTimeout(()=>{classic.style.opacity='1';classic.style.pointerEvents='auto'},20);
+  ws.style.transition='opacity .25s ease,transform .25s ease';ws.style.opacity='0';ws.style.transform='scale(0.96)';ws.style.pointerEvents='none';
+  setTimeout(()=>{ws.style.display='none';classic.style.display='block';classic.offsetHeight;classic.style.opacity='0';classic.style.transform='scale(1.04)';
+    classic.style.transition='opacity .35s ease,transform .35s ease';
+    setTimeout(()=>{classic.style.opacity='1';classic.style.transform='scale(1)';classic.style.pointerEvents='auto'},20);
     S.workspaceSgId=null;S.workspaceIdx=0;save();renderAll();
     if(S.curSid)selectStudent(S.curSid);updateProgress();updateWorkflowLabel();
   },300);
@@ -1629,6 +1645,14 @@ function wsGetStudents(){
 
 function wsCountDone(){const stus=wsGetStudents();return stus.filter(s=>s.wsEvaluated).length;}
 function wsCountBrowsed(){const stus=wsGetStudents();return stus.filter(s=>s.wsBrowsed).length;}
+function wsUpdateFluidBar(){
+  const stus=wsGetStudents();const total=stus.length;const done=wsCountDone();
+  const pct=total?Math.round(done/total*100):0;
+  const bar=document.getElementById('wsFluidBar');const fill=document.getElementById('wsFluidFill');const txt=document.getElementById('wsFluidText');
+  if(bar)bar.style.display=done>0?'flex':'none';
+  if(fill)fill.style.width=pct+'%';
+  if(txt)txt.textContent=done+'/'+total;
+}
 
 function wsRenderStack(idx){
   const stus=wsGetStudents();if(!stus.length){
@@ -1836,7 +1860,7 @@ function wsAutoSave(){
       if(s.mem.improvements&&s.mem.improvements.length)ps.improvements=[...new Set([...ps.improvements,...s.mem.improvements])];
     }
     S.consecutiveEvalCount=(S.consecutiveEvalCount||0)+1;
-    if(S.consecutiveEvalCount===3){showToast('评价小能手！连续评价3位学生')}
+    if(S.consecutiveEvalCount===3){showToast('评价小能手！连续评价3位学生');if(navigator.vibrate)navigator.vibrate(20)}
     checkAchievement();
   }
   S.sentThisWeek[s.id]=S.sentThisWeek[s.id]||Date.now();
@@ -1850,7 +1874,7 @@ function wsAutoSave(){
     if(exist){exist.content=preview;exist.date=new Date().toLocaleString('zh-CN',{hour12:false});}
     else{s.hist.unshift({date:new Date().toLocaleString('zh-CN',{hour12:false}),content:preview,week:wk,lesson:lesson});}
   }
-  save();
+  save();wsUpdateFluidBar();
 }
 
 // Batch save all workspace students to history
@@ -1920,10 +1944,22 @@ function wsTouchEnd(e){
 }
 
 function wsAllBrowsed(){
-  // All cards browsed — wrap around, never lock
   const done=wsCountDone();const total=wsGetStudents().length;
+  if(done>=total&&total>0){
+    // All complete — show summary
+    const elapsed=S._wsStartTime?Math.round((Date.now()-S._wsStartTime)/60000):0;
+    const avg=elapsed>0?(elapsed/total).toFixed(1):'0';
+    wsShowScreen('wsComplete');
+    document.getElementById('wsCompleteMsg').innerHTML=`本次共评价 <b>${total}</b> 名学生<br>耗时约 <b>${elapsed||'<1'}</b> 分钟 · 人均 <b>${avg}</b> 分钟`;
+    document.getElementById('wsProgress').innerHTML='<strong>'+done+'/'+total+'</strong> 全部完成';
+    document.getElementById('wsTally').textContent='右滑返回 · 左滑继续浏览';
+    document.getElementById('wsFluidBar').style.display='flex';
+    document.getElementById('wsFluidFill').style.width='100%';
+    document.getElementById('wsFluidText').textContent=done+'/'+total;
+    return;
+  }
   document.getElementById('wsProgress').innerHTML=`<strong>${done}/${total}</strong> 已评价`;
-  document.getElementById('wsTally').textContent=done>=total?'全部完成！左滑返回':'左滑返回 · 右滑继续';
+  document.getElementById('wsTally').textContent='左滑返回 · 右滑继续';
   wsRenderStack(0);
 }
 function wsShowHeroText(text){
@@ -2005,7 +2041,7 @@ function wsRefreshEditTags(){
   grid.innerHTML=tags.map(t=>`<label class="ws-bubble${selected.includes(t)?' on':''}" onclick="wsToggleEditTag(this,'${cat}','${esc(t.replace(/'/g,"\\'"))}')">${esc(t)}</label>`).join('');
 }
 function wsEditDone(){
-  const s=stu(wsEdit.sid);if(s){s.wsEvaluated=true;s.wsBrowsed=true;S.sentThisWeek[s.id]=Date.now();S.consecutiveEvalCount=(S.consecutiveEvalCount||0)+1;checkAchievement();save();}
+  const s=stu(wsEdit.sid);if(s){s.wsEvaluated=true;s.wsBrowsed=true;S.sentThisWeek[s.id]=Date.now();S.consecutiveEvalCount=(S.consecutiveEvalCount||0)+1;checkAchievement();save();wsUpdateFluidBar();}
   wsEdit.sid=null;
   wsStartEval(); // Always back to card overview, never lock
 }
@@ -2092,8 +2128,8 @@ function bunnyEarsDown(){
 
 // ======================== ACHIEVEMENT FEEDBACK ========================
 function checkAchievement(){
-  if(S.consecutiveEvalCount===5)showToast('高效评价！连续完成5位学生');
-  if(S.consecutiveEvalCount===10)showToast('评价达人！连续完成10位学生');
+  if(S.consecutiveEvalCount===5){showToast('高效评价！连续完成5位学生','');if(navigator.vibrate)navigator.vibrate(30)}
+  if(S.consecutiveEvalCount===10){showToast('评价达人！连续完成10位学生','');if(navigator.vibrate)navigator.vibrate([20,50,20])}
 }
 
 // ======================== HISTORY RULES ========================
