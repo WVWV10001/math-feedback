@@ -701,7 +701,7 @@ input:focus,select:focus,textarea:focus{
       <!-- 7. Preview -->
       <div class="card"><div class="card-title"><span class="title-left"><span class="section-num">7</span> 反馈预览（三部分）</span><span class="title-right"><div class="dropdown"><button class="btn btn-primary btn-sm" id="genBtn" onclick="toggleGenMenu()">生成▾</button><div class="dropdown-menu" id="genMenu"><button onclick="localGenerate()">本地生成初稿</button><div class="sep"></div><button onclick="genDoubao()">豆包 AI 润色</button></div></div><button class="btn btn-ghost btn-sm" onclick="saveFeedback()">保存</button><!-- 保存并下一个已移除，改用滑动手势切换 --><button class="btn btn-ghost btn-sm" onclick="copyFeedback()">一键复制</button><span id="sentToggle" class="sent-badge unsent" onclick="toggleSent()" style="cursor:pointer">未发送</span></span></div><div id="previewBox" class="preview-box" contenteditable="true"></div><div id="previewStatus" class="status-msg"></div></div>
       <!-- 8. History -->
-      <div class="card"><div class="card-title"><span class="title-left"><span class="section-num">8</span> 历史反馈记录</span><button class="btn btn-ghost btn-xs" onclick="showHistoryManager(S.curSid)">查看全部</button></div><div class="history-list" id="historyList"><div style="color:var(--text-secondary);text-align:center;padding:14px">暂无记录</div></div></div>
+      <div class="card"><div class="card-title"><span class="title-left"><span class="section-num">8</span> 历史反馈记录</span><button class="btn btn-ghost btn-xs" onclick="showHistoryClearModal()">一键清空</button><button class="btn btn-ghost btn-xs" onclick="showHistoryManager(S.curSid)">查看全部</button></div><div class="history-list" id="historyList"><div style="color:var(--text-secondary);text-align:center;padding:14px">暂无记录</div></div></div>
     </div>
   </div>
 </div>
@@ -1635,6 +1635,25 @@ function delHistFromManager(sid,i){
   const s=stu(sid);if(!s||!s.hist)return;s.hist.splice(i,1);save();renderHistory();showHistoryManager(sid);
 }
 function delAllHist(sid){const s=stu(sid);if(!s)return;s.hist=[];save();renderHistory();closeModal();showToast('已清空全部历史记录')}
+
+function showHistoryClearModal(){
+  const s=stu(S.curSid);
+  openModal(`<h3>一键清空历史记录</h3>
+    <p style="font-size:var(--font-xs);color:var(--text-secondary);margin-bottom:14px">请选择清空范围（数据永久删除，不可恢复）：</p>
+    <button class="btn btn-ghost" style="width:100%;margin-bottom:8px;text-align:left;padding:12px"
+      onclick="closeModal();if(confirm('确定清空「${esc(s?s.name:'当前学生')||'当前学生'}」的全部历史反馈记录？此操作不可恢复。')){if(s){s.hist=[];save();renderHistory();showToast('已清空')}}">
+      <b>清空当前学生</b><br><span style="font-size:var(--font-xs);color:var(--text-secondary)">${s?esc(s.name||'未命名'):'未选择'} · ${s&&s.hist?s.hist.length:0}条记录</span>
+    </button>
+    <button class="btn btn-ghost" style="width:100%;margin-bottom:8px;text-align:left;padding:12px"
+      onclick="closeModal();if(confirm('确定清空当前班级所有学生的历史反馈记录？此操作不可恢复。')){const sgId=S.curSgId;if(sgId){stusBySg(sgId).forEach(o=>{o.hist=[]});save();renderHistory();showToast('已清空当前班级')}}">
+      <b>清空当前班级</b><br><span style="font-size:var(--font-xs);color:var(--text-secondary)">${S.curSgId?stusBySg(S.curSgId).reduce((sum,o)=>sum+(o.hist?o.hist.length:0),0):0}条记录</span>
+    </button>
+    <button class="btn btn-ghost" style="width:100%;margin-bottom:8px;text-align:left;padding:12px"
+      onclick="closeModal();if(confirm('确定清空全部所有学生的历史反馈记录？此操作不可恢复。')){S.students.forEach(o=>{o.hist=[]});save();renderHistory();showToast('已清空全部历史记录')}">
+      <b>清空全部学生</b><br><span style="font-size:var(--font-xs);color:var(--text-secondary)">${S.students.reduce((sum,s)=>sum+(s.hist?s.hist.length:0),0)}条记录</span>
+    </button>
+    <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:6px" onclick="closeModal()">取消</button>`);
+}
 
 // ======================== WORKSPACE MODE ========================
 function enterWorkspace(sgId){
