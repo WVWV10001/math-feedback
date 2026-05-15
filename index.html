@@ -484,6 +484,39 @@ select{
 .ws-bunny-corner{position:fixed;bottom:16px;right:20px;z-index:5;pointer-events:none;opacity:.5;transition:opacity .8s ease}
 @media(max-width:767px){.ws-bunny-corner{bottom:8px;right:8px;opacity:.35}}
 
+/* ── Running Bunny Progress ── */
+.ws-bunny-runner{position:fixed;bottom:70px;left:0;z-index:90;pointer-events:none;transition:left .5s ease;display:none}
+.ws-bunny-runner svg{width:44px;height:44px;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.12))}
+.ws-bunny-runner .bunny-body{animation:bunnyBob .25s ease-in-out infinite alternate}
+.ws-bunny-runner .bunny-ear-l{animation:bunnyEarL .25s ease-in-out infinite alternate}
+.ws-bunny-runner .bunny-ear-r{animation:bunnyEarR .25s ease-in-out infinite alternate;animation-delay:.12s}
+@keyframes bunnyBob{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+@keyframes bunnyEarL{from{transform:rotate(0deg)}to{transform:rotate(-5deg)}}
+@keyframes bunnyEarR{from{transform:rotate(0deg)}to{transform:rotate(5deg)}}
+.ws-bunny-runner.ok{animation:bunnyOk .5s ease}
+@keyframes bunnyOk{0%{transform:rotate(0)}50%{transform:rotate(180deg) scale(1.1)}100%{transform:rotate(360deg) scale(1)}}
+
+/* ── Reward Overlay ── */
+.ws-reward-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.3);display:none;align-items:center;justify-content:center;animation:pageIn .3s ease}
+.ws-reward-box{text-align:center;animation:rewardBounce 1.5s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes rewardBounce{0%{transform:scale(0) translateY(40vh)}30%{transform:scale(1.1) translateY(-10px)}50%{transform:scale(0.95) translateY(0)}70%{transform:scale(1.02)}100%{transform:scale(1)}}
+.ws-reward-bunny{width:80px;height:80px;margin:0 auto 12px;animation:rewardFloat 2s ease-in-out infinite}
+@keyframes rewardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.ws-reward-banner{background:linear-gradient(135deg,#f5e6c8,#e8d5a8);border-radius:16px;padding:14px 28px;font-size:22px;font-weight:800;color:#8a6d3b;box-shadow:0 4px 24px rgba(0,0,0,0.12);display:inline-block;animation:bannerWave 2s ease-in-out infinite}
+@keyframes bannerWave{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+.ws-reward-bunny.draggable{cursor:grab;pointer-events:auto}
+.ws-reward-bunny.dragging-reward{transition:none;opacity:.9}
+/* Ink trail on drag */
+.ws-ink-trail{position:fixed;pointer-events:none;z-index:499;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,rgba(0,0,0,0.15),transparent 70%);animation:inkFade .3s ease forwards}
+@keyframes inkFade{to{opacity:0;transform:scale(2)}}
+
+/* ── Sound Control ── */
+.ws-sound-ctrl{position:fixed;bottom:20px;left:20px;z-index:300;display:flex;align-items:center;gap:6px;background:var(--glass-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:20px;padding:6px 10px;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.ws-sound-ctrl button{width:30px;height:30px;border-radius:50%;border:none;background:transparent;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--transition-fast)}
+.ws-sound-ctrl button:hover{background:var(--accent-light)}
+.ws-sound-ctrl input[type=range]{width:60px;height:4px;-webkit-appearance:none;appearance:none;background:var(--border);border-radius:2px;outline:none}
+.ws-sound-ctrl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer}
+
 .ws-main{
   display:flex;flex-direction:column;align-items:center;gap:16px;
   padding:10px 0;min-height:70vh;justify-content:center;
@@ -613,6 +646,15 @@ select{
 /* Extracted card */
 .ws-stack-card.extracted{z-index:100!important;transform:scale(1.05)!important;box-shadow:0 8px 40px rgba(148,130,115,0.18)!important;border-color:var(--accent)!important}
 .ws-stack-card.dragging{z-index:200!important;opacity:0.95!important;transition:none!important;box-shadow:0 16px 48px rgba(0,0,0,0.18)!important;pointer-events:none}
+/* Card swipe states */
+.ws-stack-card.swiping{transition:transform .3s ease,opacity .3s ease}
+.ws-stack-card.swipe-pass{transform:translateX(120%) rotate(8deg)!important;opacity:0!important}
+.ws-stack-card.swipe-bounce{animation:swipeBounce .6s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes swipeBounce{0%{transform:translateX(0) rotate(0)}30%{transform:translateX(-20px) rotate(-3deg)}60%{transform:translateX(8px) rotate(1deg)}100%{transform:translateX(0) rotate(0)}}
+/* 3D flip */
+.ws-stack-card.flipping{animation:cardFlip .4s ease-in-out}
+@keyframes cardFlip{0%{transform:rotateY(0)}50%{transform:rotateY(90deg) scale(0.95)}100%{transform:rotateY(0) scale(1)}}
+.ws-stack-card .card-front{backface-visibility:hidden;-webkit-backface-visibility:hidden}
 
 /* ── Line icons on cards ── */
 .ws-card-icons{position:absolute;top:10px;right:12px;display:flex;gap:10px;z-index:5}
@@ -982,6 +1024,27 @@ input:focus,select:focus,textarea:focus{
     <button class="qr-nav qr-next" onclick="qrNav(1)">〉</button>
   </div>
   <div class="qr-dots" id="qrDots"></div>
+</div>
+
+<!-- Running Bunny Progress -->
+<div class="ws-bunny-runner" id="wsBunnyRunner">
+  <svg viewBox="0 0 40 40"><circle class="bunny-body" cx="20" cy="22" r="16" fill="var(--bunny-body)"/><circle cx="20" cy="12" r="13" fill="var(--bunny-body)"/><ellipse class="bunny-ear-l" cx="12" cy="8" rx="8" ry="11" fill="var(--bunny-ear)"/><ellipse class="bunny-ear-r" cx="28" cy="8" rx="8" ry="11" fill="var(--bunny-ear)"/><circle cx="14" cy="12" r="2" fill="var(--text)"/><circle cx="26" cy="12" r="2" fill="var(--text)"/><ellipse cx="20" cy="16" rx="3" ry="2" fill="var(--bunny-nose)"/></svg>
+</div>
+
+<!-- Reward Overlay -->
+<div class="ws-reward-overlay" id="wsRewardOverlay" onclick="if(event.target===this)closeReward()">
+  <div class="ws-reward-box" id="wsRewardBox">
+    <div class="ws-reward-bunny" id="wsRewardBunny">
+      <svg width="80" height="80" viewBox="0 0 40 40"><circle cx="20" cy="22" r="16" fill="var(--bunny-body)"/><circle cx="20" cy="12" r="13" fill="var(--bunny-body)"/><ellipse cx="12" cy="8" rx="8" ry="11" fill="var(--bunny-ear)"/><ellipse cx="28" cy="8" rx="8" ry="11" fill="var(--bunny-ear)"/><circle cx="14" cy="12" r="2" fill="var(--text)"/><circle cx="26" cy="12" r="2" fill="var(--text)"/><ellipse cx="20" cy="16" rx="3" ry="2" fill="var(--bunny-nose)"/></svg>
+    </div>
+    <div class="ws-reward-banner">你真牛</div>
+  </div>
+</div>
+
+<!-- Sound Control -->
+<div class="ws-sound-ctrl" id="wsSoundCtrl">
+  <button onclick="toggleMute()" id="wsMuteBtn" title="静音">🔊</button>
+  <input type="range" min="0" max="100" value="50" oninput="setVolume(this.value)" title="音量">
 </div>
 
 <!-- Modal -->
@@ -2612,22 +2675,99 @@ function updateSkinChecks(){
 // Apply saved skin on load
 (function(){const s=localStorage.getItem('mf-skin');if(s==='monet')document.documentElement.setAttribute('data-skin','monet')})();
 
-// ======================== COMPLETION SOUND ========================
-function playChime(){
-  try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const notes=[523.25,659.25,783.99]; // C5 E5 G5
-    notes.forEach((freq,i)=>{
-      const osc=ctx.createOscillator();const gain=ctx.createGain();
-      osc.type='sine';osc.frequency.value=freq;
-      gain.gain.setValueAtTime(0.15,ctx.currentTime+i*0.12);
-      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*0.12+0.4);
-      osc.connect(gain);gain.connect(ctx.destination);
-      osc.start(ctx.currentTime+i*0.12);osc.stop(ctx.currentTime+i*0.12+0.4);
-    });
-  }catch(e){}
+// ======================== SOUND SYSTEM ========================
+let _soundCtx=null,_soundMuted=false,_soundVol=0.5;
+function _ctx(){if(!_soundCtx)_soundCtx=new(window.AudioContext||window.webkitAudioContext)();return _soundCtx}
+function playSFX(type){if(_soundMuted)return;try{const c=_ctx();const g=c.createGain();g.gain.value=_soundVol;g.connect(c.destination);
+  if(type==='swish'){const o=c.createOscillator();o.type='sine';o.frequency.setValueAtTime(800,c.currentTime);o.frequency.exponentialRampToValueAtTime(400,c.currentTime+.15);g.gain.setValueAtTime(_soundVol,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.15);o.connect(g);o.start();o.stop(c.currentTime+.15)}
+  else if(type==='boop'){const o=c.createOscillator();o.type='triangle';o.frequency.value=200;g.gain.setValueAtTime(_soundVol,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.2);o.connect(g);o.start();o.stop(c.currentTime+.2)}
+  else if(type==='rustle'){for(let i=0;i<8;i++){const o=c.createOscillator();o.type='sawtooth';o.frequency.value=300+Math.random()*600;g.gain.setValueAtTime(_soundVol*.04,c.currentTime+i*.02);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+i*.02+.03);o.connect(g);o.start(c.currentTime+i*.02);o.stop(c.currentTime+i*.02+.03)}}
+  else if(type==='tap'){const o=c.createOscillator();o.type='sine';o.frequency.value=150;g.gain.setValueAtTime(_soundVol*.3,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.06);o.connect(g);o.start();o.stop(c.currentTime+.06)}
+  else if(type==='ding'){const notes=[659,784,1047];notes.forEach((f,i)=>{const o=c.createOscillator();o.type='sine';const gg=c.createGain();gg.gain.setValueAtTime(_soundVol*.2,c.currentTime+i*.1);gg.gain.exponentialRampToValueAtTime(.001,c.currentTime+i*.1+.5);gg.connect(c.destination);o.connect(gg);o.start(c.currentTime+i*.1);o.stop(c.currentTime+i*.1+.5)})}
+  else if(type==='whoosh'){const o=c.createOscillator();o.type='sawtooth';o.frequency.setValueAtTime(200,c.currentTime);o.frequency.exponentialRampToValueAtTime(800,c.currentTime+.3);g.gain.setValueAtTime(_soundVol*.15,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.35);o.connect(g);o.start();o.stop(c.currentTime+.35)}
+}catch(e){}}
+function toggleMute(){_soundMuted=!_soundMuted;document.getElementById('wsMuteBtn').textContent=_soundMuted?'🔇':'🔊'}
+function setVolume(v){_soundVol=v/100}
+
+// ======================== RUNNING BUNNY PROGRESS ========================
+function updateBunnyRunner(){
+  const stus=wsGetStudents();if(!stus.length)return;
+  const total=stus.length;const done=wsCountDone();const pct=total?done/total:0;
+  const runner=document.getElementById('wsBunnyRunner');
+  if(!runner)return;
+  if(done>0&&done<total){
+    runner.style.display='block';
+    const maxLeft=window.innerWidth-60;
+    runner.style.left=(pct*maxLeft)+'px';
+    if(!runner._animating){runner._animating=true;setInterval(()=>{if(runner.style.display!=='none')playSFX('tap')},600)}
+  }else if(done>=total){
+    runner.classList.add('ok');setTimeout(()=>{runner.classList.remove('ok');runner.style.display='none'},600);
+    if(runner._animating){runner._animating=false}
+  }else{runner.style.display='none'}
 }
-// Wire chime to save events
+
+// ======================== CARD SWIPE ENHANCEMENT ========================
+function wsCardSwipe(dir,card){
+  const stus=wsGetStudents();const s=stus[S.workspaceIdx];if(!s||!card)return;
+  card.classList.add('swiping');
+  if(dir==='left'||dir==='right'){
+    card.classList.add('swipe-pass');playSFX('swish');
+    setTimeout(()=>{card.classList.remove('swiping','swipe-pass');wsNavigate(1)},350);
+  }else{
+    card.classList.add('swipe-bounce');playSFX('boop');
+    setTimeout(()=>card.classList.remove('swiping','swipe-bounce'),650);
+  }
+}
+// Wire into existing touch handlers
+const _origWsTouchEnd=wsTouchEnd;
+wsTouchEnd=function(e){
+  const stus=wsGetStudents();const card=document.querySelector('.ws-stack-card:nth-child(1)');
+  if(card&&Math.abs((e.changedTouches[0]||{}).clientX-wsGesture.startX)>60){
+    const dx=(e.changedTouches[0]||{}).clientX-wsGesture.startX;
+    wsCardSwipe(dx>0?'right':'left',card);return;
+  }
+  if(Math.abs((e.changedTouches[0]||{}).clientY-wsGesture.startY)>60){wsCardSwipe('up',card);return}
+  _origWsTouchEnd(e);
+};
+
+// Card click → 3D flip
+const _origWsCardClick=wsCardClick;
+wsCardClick=function(sid,el){
+  el.classList.add('flipping');playSFX('rustle');
+  setTimeout(()=>{el.classList.remove('flipping');_origWsCardClick(sid,el)},450);
+};
+
+// ======================== REWARD SYSTEM ========================
+let _rewardCount=0;
+function checkReward(){
+  _rewardCount++;if(_rewardCount%5!==0)return;
+  const overlay=document.getElementById('wsRewardOverlay');
+  overlay.style.display='flex';playSFX('ding');
+  // Reset animation
+  const box=document.getElementById('wsRewardBox');box.style.animation='none';box.offsetHeight;
+  box.style.animation='rewardBounce 1.5s cubic-bezier(0.34,1.56,0.64,1)';
+  // Make bunny draggable after reward
+  setTimeout(()=>makeRewardDraggable(),1800);
+}
+function closeReward(){document.getElementById('wsRewardOverlay').style.display='none'}
+function makeRewardDraggable(){
+  const bunny=document.getElementById('wsRewardBunny');if(!bunny)return;
+  bunny.classList.add('draggable');
+  let startX,startY,bunnyX,bunnyY,dragging=false;
+  bunny.onpointerdown=function(e){e.preventDefault();dragging=true;bunny.classList.add('dragging-reward');startX=e.clientX;startY=e.clientY;const r=bunny.getBoundingClientRect();bunnyX=r.left;bunnyY=r.top;bunny.setPointerCapture(e.pointerId)};
+  bunny.onpointermove=function(e){if(!dragging)return;const dx=e.clientX-startX,dy=e.clientY-startY;bunny.style.transform=`translate(${dx}px,${dy}px) scale(${1+Math.min(Math.abs(dx)/200,0.2)})`;bunny.style.position='relative';
+    // Ink trail
+    const trail=document.createElement('div');trail.className='ws-ink-trail';trail.style.left=(bunnyX+dx-15)+'px';trail.style.top=(bunnyY+dy-15)+'px';document.body.appendChild(trail);setTimeout(()=>trail.remove(),350)};
+  bunny.onpointerup=function(e){dragging=false;bunny.classList.remove('dragging-reward');const dx=e.clientX-startX,dy=e.clientY-startY;const w=window.innerWidth,h=window.innerHeight;
+    if(Math.abs(dx)>w*.3||Math.abs(dy)>h*.3){playSFX('whoosh');bunny.style.transition='transform .4s ease,opacity .3s ease';bunny.style.transform=`translate(${dx*3}px,${dy*3}px) scale(0.3)`;bunny.style.opacity='0';setTimeout(()=>{bunny.style.transition='';bunny.style.transform='';bunny.style.opacity='';bunny.style.position='';closeReward()},500)}
+    else{bunny.style.transition='transform .4s cubic-bezier(0.34,1.56,0.64,1)';bunny.style.transform='';bunny.style.position='';setTimeout(()=>{bunny.style.transition=''},400)}};
+}
+// Wire reward into wsAutoSave
+const _origWsAutoSaveReward=wsAutoSave;
+wsAutoSave=function(){_origWsAutoSaveReward();checkReward();updateBunnyRunner()};
+
+// ======================== COMPLETION SOUND ========================
+function playChime(){playSFX('ding')}
 const _origSaveFeedback=saveFeedbackWithRules;
 saveFeedbackWithRules=function(){_origSaveFeedback();playChime()};
 const _origWsSaveAll=wsSaveAllHistory;
