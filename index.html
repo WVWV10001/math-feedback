@@ -62,18 +62,104 @@ html[data-skin="monet"]{
   --bunny-body:#f5e8c8;--bunny-ear:#fef8e8;--bunny-outline:#8a7a6a;
   --glass-bg:rgba(255,255,255,0.65);--glass-blur:blur(18px);
   --overlay:rgba(140,170,195,0.25);
-  /* Water lily texture overlay */
-  background-image:
-    radial-gradient(ellipse at 15% 80%, rgba(180,160,210,0.12) 0%, transparent 55%),
-    radial-gradient(ellipse at 75% 30%, rgba(200,230,200,0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 60%, rgba(245,215,110,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse at 85% 70%, rgba(180,200,220,0.10) 0%, transparent 45%),
-    radial-gradient(ellipse at 20% 20%, rgba(220,190,210,0.10) 0%, transparent 50%);
-  background-attachment:fixed;
 }
 html[data-skin="monet"] body{
-  background:linear-gradient(175deg,var(--bg) 0%,var(--bg2) 100%);
+  background:linear-gradient(175deg,#E6F0F5 0%,#d9e8f0 40%,#e8ddf0 70%,#dce8f0 100%);
+  position:relative;
 }
+/* Oil painting water lily texture overlay */
+html[data-skin="monet"] body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse at 12% 75%, rgba(180,160,210,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 25%, rgba(200,230,200,0.18) 0%, transparent 45%),
+    radial-gradient(ellipse at 45% 55%, rgba(245,215,110,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 65%, rgba(180,200,220,0.12) 0%, transparent 40%),
+    radial-gradient(ellipse at 22% 18%, rgba(220,190,210,0.13) 0%, transparent 50%),
+    radial-gradient(ellipse at 55% 85%, rgba(160,200,190,0.10) 0%, transparent 45%),
+    radial-gradient(circle at 88% 12%, rgba(245,215,110,0.06) 0%, transparent 35%);
+  animation:monetRipple 12s ease-in-out infinite;
+}
+@keyframes monetRipple{
+  0%,100%{opacity:.85;transform:scale(1)}
+  33%{opacity:1;transform:scale(1.02)}
+  66%{opacity:.9;transform:scale(0.99)}
+}
+/* Water ripple overlay layer */
+html[data-skin="monet"] body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(180,200,220,0.03) 80px,rgba(180,200,220,0.03) 81px),
+    repeating-linear-gradient(90deg,transparent,transparent 120px,rgba(200,210,230,0.02) 120px,rgba(200,210,230,0.02) 121px);
+  animation:waterShimmer 8s ease-in-out infinite;
+}
+@keyframes waterShimmer{
+  0%,100%{opacity:.5}
+  50%{opacity:1}
+}
+/* Flowing water progress bar - Monet */
+html[data-skin="monet"] .ws-fluid-fill{
+  background:linear-gradient(90deg,#b8d4e0,#a8c8a0,#c8b8d8,#b8d4e0);background-size:300% 100%;
+  animation:monetFlow 4s ease-in-out infinite;
+}
+@keyframes monetFlow{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+html[data-skin="monet"] .progress-fill{
+  background:linear-gradient(90deg,#b8d4e0,#a8c8a0,#c8b8d8,#b8d4e0);background-size:300% 100%;
+  animation:monetFlow 4s ease-in-out infinite;
+}
+/* Water lily floating decorative elements */
+html[data-skin="monet"] .ws-bunny-corner svg{
+  filter:drop-shadow(0 2px 6px rgba(160,180,200,0.25));
+}
+/* Water lily petals around bunny in Monet */
+html[data-skin="monet"] .ws-bunny-corner::before{
+  content:'';position:absolute;bottom:-10px;right:-8px;width:60px;height:60px;
+  background:radial-gradient(ellipse at 40% 30%,rgba(200,180,220,0.18) 0%,transparent 60%),
+    radial-gradient(ellipse at 60% 40%,rgba(245,215,110,0.10) 0%,transparent 50%),
+    radial-gradient(ellipse at 30% 60%,rgba(200,230,200,0.12) 0%,transparent 55%);
+  border-radius:50%;pointer-events:none;z-index:-1;
+  animation:petalFloat 5s ease-in-out infinite;
+}
+@keyframes petalFloat{
+  0%,100%{transform:translate(0,0) rotate(0deg)}
+  33%{transform:translate(-3px,-6px) rotate(2deg)}
+  66%{transform:translate(2px,-3px) rotate(-1deg)}
+}
+/* Water lily decorative bloom in corner */
+html[data-skin="monet"] .ws-bunny-corner::after{
+  content:'';position:absolute;top:-15px;left:-10px;width:36px;height:36px;
+  background:radial-gradient(circle at 35% 35%,rgba(245,215,110,0.22) 0%,rgba(200,180,220,0.10) 40%,transparent 70%);
+  border-radius:50%;pointer-events:none;z-index:-1;
+  animation:bloomPulse 6s ease-in-out infinite;
+}
+@keyframes bloomPulse{
+  0%,100%{transform:scale(1);opacity:.6}
+  50%{transform:scale(1.3);opacity:1}
+}
+/* Monet card floating effect */
+html[data-skin="monet"] .ws-stack-card,
+html[data-skin="monet"] .co-card{
+  animation:monetFloat 6s ease-in-out infinite;
+  box-shadow:0 4px 24px rgba(140,160,190,0.10),0 2px 8px rgba(160,180,200,0.06);
+}
+@keyframes monetFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-4px)}
+}
+/* Monet enhanced modal & overlays */
+html[data-skin="monet"] .modal,
+html[data-skin="monet"] .co-overlay,
+html[data-skin="monet"] .qr-overlay{
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+}
+html[data-skin="monet"] .co-overlay{
+  background:rgba(230,240,245,0.88);
+}
+/* Monet rounded components */
 html[data-skin="monet"] .ws-stack-card,
 html[data-skin="monet"] .card,
 html[data-skin="monet"] .modal,
@@ -81,13 +167,22 @@ html[data-skin="monet"] .co-card,
 html[data-skin="monet"] .qr-card{
   border-radius:16px;
 }
-html[data-skin="monet"] .btn{
-  border-radius:12px;
-}
+html[data-skin="monet"] .btn{border-radius:12px}
 html[data-skin="monet"] input,
 html[data-skin="monet"] textarea,
 html[data-skin="monet"] select{
   background:rgba(255,255,255,0.8);border:1px solid rgba(160,180,200,0.35);
+}
+/* Monet card hover - water ripple feel */
+html[data-skin="monet"] .ws-stack-card:hover{
+  transform:translateY(-4px);box-shadow:0 8px 32px rgba(140,160,190,0.16),0 4px 12px rgba(160,180,200,0.10);
+}
+/* Monet tag bubble enhanced */
+html[data-skin="monet"] .ws-bubble.on{
+  box-shadow:0 2px 8px rgba(180,165,200,0.25);
+}
+html[data-skin="monet"] .tag.on{
+  box-shadow:0 2px 8px rgba(180,165,200,0.25);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -207,10 +302,12 @@ body{
 .main-panel{display:flex;flex-direction:column;gap:10px}
 .card{
   background:var(--card-bg);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);
+  border-radius:var(--radius-lg);padding:16px 18px;
+  box-shadow:0 2px 16px rgba(148,130,115,0.08),0 6px 28px rgba(148,130,115,0.06);
   transition:transform .25s ease,box-shadow .25s ease;
-  transform:translateZ(0) rotateX(1deg);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
 }
+.card:hover{transform:translateY(-2px);box-shadow:0 4px 24px rgba(148,130,115,0.12),0 10px 36px rgba(148,130,115,0.08)}
 .card:hover{transform:translateY(-2px) translateZ(0);box-shadow:var(--shadow-lg)}
 .card.slide-in{animation:cardIn .35s ease}
 @keyframes cardIn{from{opacity:.5;transform:translateY(12px) translateZ(0)}to{opacity:1;transform:translateY(0) translateZ(0)}}
@@ -626,19 +723,21 @@ input:focus,select:focus,textarea:focus{
 .qr-header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--glass-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .qr-title{font-size:18px;font-weight:700;color:var(--text);flex:1}
 .qr-counter{font-size:12px;color:var(--text-secondary)}
-.qr-card-wrap{flex:1;display:flex;align-items:center;justify-content:center;gap:16px;padding:20px;overflow:auto}
-.qr-card{background:var(--card-bg);border-radius:20px;padding:32px 28px;max-width:680px;width:100%;box-shadow:0 4px 32px rgba(148,130,115,0.1);animation:qrCardIn .3s ease}
+.qr-card-wrap{flex:1;display:flex;align-items:center;justify-content:center;gap:20px;padding:20px 32px;overflow:auto}
+.qr-card{background:var(--card-bg);border-radius:24px;padding:40px 36px;max-width:820px;width:100%;min-height:55vh;box-shadow:0 4px 40px rgba(148,130,115,0.10),0 2px 10px rgba(148,130,115,0.04);animation:qrCardIn .3s ease;display:flex;flex-direction:column}
 @keyframes qrCardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.qr-card .qr-name{font-size:24px;font-weight:800;margin-bottom:4px;color:var(--text)}
-.qr-card .qr-meta{font-size:12px;color:var(--text-secondary);margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border-light)}
-.qr-card .qr-content{font-size:14px;line-height:2;color:var(--text);white-space:pre-wrap;word-break:break-word}
-.qr-nav{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--card-bg);font-size:18px;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--transition-fast);flex-shrink:0}
+.qr-card .qr-name{font-size:28px;font-weight:800;margin-bottom:4px;color:var(--text)}
+.qr-card .qr-meta{font-size:13px;color:var(--text-secondary);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border-light)}
+.qr-card .qr-content{font-size:15px;line-height:2.2;color:var(--text);white-space:pre-wrap;word-break:break-word;flex:1}
+.qr-nav{width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--card-bg);font-size:20px;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--transition-fast);flex-shrink:0}
 .qr-nav:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
 .qr-nav:active{transform:scale(0.9)}
 .qr-dots{display:flex;gap:6px;justify-content:center;padding:10px 0 16px}
 .qr-dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all var(--transition)}
 .qr-dot.active{background:var(--accent);transform:scale(1.4)}
-@media(max-width:600px){.qr-card{padding:20px 16px}.qr-nav{width:32px;height:32px;font-size:14px}.qr-card-wrap{gap:8px;padding:12px}}
+/* iPad landscape: larger cards */
+@media(min-width:1024px){.qr-card{max-width:880px;padding:48px 44px}.qr-card .qr-name{font-size:32px}.qr-card .qr-content{font-size:16px}}
+@media(max-width:600px){.qr-card{padding:20px 16px;min-height:40vh}.qr-nav{width:32px;height:32px;font-size:14px}.qr-card-wrap{gap:8px;padding:12px}}
 
 /* ── Card Overview (扑克牌平铺) ── */
 .co-overlay{position:fixed;inset:0;z-index:500;background:rgba(242,239,237,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;animation:pageIn .3s ease}
@@ -729,6 +828,7 @@ input:focus,select:focus,textarea:focus{
   </div>
   <div class="side-menu-section">
     <div class="side-menu-label">其他</div>
+    <button class="side-menu-item" onclick="toggleSideMenu();if(document.getElementById('app-workspace').style.display!=='none'){exitWorkspace()}else{renderAll();window.scrollTo(0,0)}">回到主页面</button>
     <button class="side-menu-item" onclick="toggleSideMenu();showToast('数学教学反馈工具 v1 · 深圳数学老师专属')">关于小程序</button>
   </div>
 </div>
