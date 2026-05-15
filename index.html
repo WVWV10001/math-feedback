@@ -49,6 +49,47 @@ html[data-theme="dark"]{
   --overlay:rgba(0,0,0,0.35);
 }
 
+/* ── Monet Water Lilies Skin ── */
+html[data-skin="monet"]{
+  --bg:#E6F0F5;--bg2:#d9e8f0;
+  --surface:rgba(255,255,255,0.72);--card-bg:rgba(255,255,255,0.82);
+  --text:#3a3a4a;--text-secondary:#7a8a9a;--text-muted:#9aa8b5;
+  --accent:#b8a5c9;--accent-soft:#a8c8a0;--accent-light:rgba(200,180,220,0.14);
+  --border:rgba(160,180,200,0.28);--border-light:rgba(180,200,215,0.2);
+  --shadow-sm:0 2px 10px rgba(120,150,180,0.06);--shadow:0 4px 18px rgba(120,150,180,0.08);--shadow-lg:0 8px 32px rgba(120,150,180,0.12);
+  --success:#7db89a;--warn:#e8b45a;--danger:#e08070;
+  --doubao:#8ba4d8;--doubao-light:rgba(139,164,216,0.15);--ds:#6db88a;--ds-light:rgba(109,184,138,0.15);
+  --bunny-body:#f5e8c8;--bunny-ear:#fef8e8;--bunny-outline:#8a7a6a;
+  --glass-bg:rgba(255,255,255,0.65);--glass-blur:blur(18px);
+  --overlay:rgba(140,170,195,0.25);
+  /* Water lily texture overlay */
+  background-image:
+    radial-gradient(ellipse at 15% 80%, rgba(180,160,210,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 30%, rgba(200,230,200,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 60%, rgba(245,215,110,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 85% 70%, rgba(180,200,220,0.10) 0%, transparent 45%),
+    radial-gradient(ellipse at 20% 20%, rgba(220,190,210,0.10) 0%, transparent 50%);
+  background-attachment:fixed;
+}
+html[data-skin="monet"] body{
+  background:linear-gradient(175deg,var(--bg) 0%,var(--bg2) 100%);
+}
+html[data-skin="monet"] .ws-stack-card,
+html[data-skin="monet"] .card,
+html[data-skin="monet"] .modal,
+html[data-skin="monet"] .co-card,
+html[data-skin="monet"] .qr-card{
+  border-radius:16px;
+}
+html[data-skin="monet"] .btn{
+  border-radius:12px;
+}
+html[data-skin="monet"] input,
+html[data-skin="monet"] textarea,
+html[data-skin="monet"] select{
+  background:rgba(255,255,255,0.8);border:1px solid rgba(160,180,200,0.35);
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
@@ -561,6 +602,25 @@ input:focus,select:focus,textarea:focus{
 .ws-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ── Hamburger + Hidden Side Menu ── */
+.hamburger-btn{position:fixed;top:10px;left:12px;z-index:400;width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--glass-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:18px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--transition-fast);box-shadow:var(--shadow-sm)}
+.hamburger-btn:hover{background:var(--accent-light);border-color:var(--accent)}
+.hamburger-btn:active{transform:scale(0.92)}
+.side-menu-overlay{position:fixed;inset:0;z-index:410;background:rgba(0,0,0,0.15);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:none;animation:pageIn .2s ease}
+.side-menu{position:fixed;top:0;left:0;z-index:420;width:260px;max-width:82vw;height:100vh;background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-right:1px solid var(--border);box-shadow:4px 0 24px rgba(0,0,0,0.06);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .3s cubic-bezier(0.34,1.56,0.64,1);overflow-y:auto}
+.side-menu.open{transform:translateX(0)}
+.side-menu-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border-light)}
+.side-menu-title{font-size:17px;font-weight:700;color:var(--text)}
+.side-menu-close{width:28px;height:28px;border-radius:50%;border:none;background:transparent;font-size:16px;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--transition-fast)}
+.side-menu-close:hover{background:var(--accent-light);color:var(--accent)}
+.side-menu-section{padding:8px 0}
+.side-menu-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;padding:8px 18px 4px}
+.side-menu-item{display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 18px;border:none;background:transparent;font-size:14px;color:var(--text);cursor:pointer;font-family:inherit;text-align:left;transition:all var(--transition-fast);border-radius:0}
+.side-menu-item:hover{background:var(--accent-light);color:var(--accent)}
+.side-menu-item:active{transform:scale(0.97)}
+.side-menu-check{font-size:12px;color:var(--accent);display:none}
+.side-menu-check.show{display:inline}
+
 /* ── Quick Review Fullscreen ── */
 .qr-overlay{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;animation:pageIn .3s ease}
 .qr-header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--glass-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
@@ -642,6 +702,37 @@ input:focus,select:focus,textarea:focus{
 <button class="ws-fab" id="wsFab" onclick="wsFabGenerate()" title="本地生成" style="display:none">本</button>
 
 <!-- ═══════════ CLASSIC MODE ═══════════ -->
+<!-- Hamburger Menu Button -->
+<button class="hamburger-btn" onclick="toggleSideMenu()" title="菜单">☰</button>
+
+<!-- Hidden Side Menu -->
+<div class="side-menu-overlay" id="sideMenuOverlay" onclick="if(event.target===this)toggleSideMenu()"></div>
+<div class="side-menu" id="sideMenu">
+  <div class="side-menu-header">
+    <span class="side-menu-title">设置</span>
+    <button class="side-menu-close" onclick="toggleSideMenu()">✕</button>
+  </div>
+  <div class="side-menu-section">
+    <div class="side-menu-label">切换皮肤</div>
+    <button class="side-menu-item" onclick="setSkin('classic')">经典皮肤<span class="side-menu-check" id="skinCheckClassic">✓</span></button>
+    <button class="side-menu-item" onclick="setSkin('monet')">莫奈睡莲<span class="side-menu-check" id="skinCheckMonet"></span></button>
+  </div>
+  <div class="side-menu-section">
+    <div class="side-menu-label">显示模式</div>
+    <button class="side-menu-item" onclick="document.documentElement.setAttribute('data-theme','light');localStorage.setItem('mf-theme','light');toggleSideMenu()">浅色模式</button>
+    <button class="side-menu-item" onclick="document.documentElement.setAttribute('data-theme','dark');localStorage.setItem('mf-theme','dark');toggleSideMenu()">夜间模式</button>
+  </div>
+  <div class="side-menu-section">
+    <div class="side-menu-label">清理设置</div>
+    <button class="side-menu-item" onclick="toggleSideMenu();clearWeek()">一键清空本周</button>
+    <button class="side-menu-item" onclick="toggleSideMenu();showHistoryClearModal()">清空历史反馈</button>
+  </div>
+  <div class="side-menu-section">
+    <div class="side-menu-label">其他</div>
+    <button class="side-menu-item" onclick="toggleSideMenu();showToast('数学教学反馈工具 v1 · 深圳数学老师专属')">关于小程序</button>
+  </div>
+</div>
+
 <div id="app-classic">
   <div class="header">
     <div class="header-title">
@@ -2399,6 +2490,50 @@ function resetBackground(){
   document.body.style.backgroundAttachment='';
   save();showToast('背景已重置为默认');
 }
+
+// ======================== SIDE MENU & SKIN ========================
+function toggleSideMenu(){
+  const menu=document.getElementById('sideMenu');const overlay=document.getElementById('sideMenuOverlay');
+  const open=!menu.classList.contains('open');
+  menu.classList.toggle('open');overlay.style.display=open?'block':'none';
+  updateSkinChecks();
+}
+function setSkin(name){
+  document.documentElement.setAttribute('data-skin',name==='monet'?'monet':'');
+  localStorage.setItem('mf-skin',name);
+  updateSkinChecks();
+}
+function updateSkinChecks(){
+  const cur=localStorage.getItem('mf-skin')||'classic';
+  const elC=document.getElementById('skinCheckClassic');const elM=document.getElementById('skinCheckMonet');
+  if(elC)elC.style.display=cur==='classic'?'inline':'none';
+  if(elM)elM.style.display=cur==='monet'?'inline':'none';
+}
+// Apply saved skin on load
+(function(){const s=localStorage.getItem('mf-skin');if(s==='monet')document.documentElement.setAttribute('data-skin','monet')})();
+
+// ======================== COMPLETION SOUND ========================
+function playChime(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const notes=[523.25,659.25,783.99]; // C5 E5 G5
+    notes.forEach((freq,i)=>{
+      const osc=ctx.createOscillator();const gain=ctx.createGain();
+      osc.type='sine';osc.frequency.value=freq;
+      gain.gain.setValueAtTime(0.15,ctx.currentTime+i*0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*0.12+0.4);
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.start(ctx.currentTime+i*0.12);osc.stop(ctx.currentTime+i*0.12+0.4);
+    });
+  }catch(e){}
+}
+// Wire chime to save events
+const _origSaveFeedback=saveFeedbackWithRules;
+saveFeedbackWithRules=function(){_origSaveFeedback();playChime()};
+const _origWsSaveAll=wsSaveAllHistory;
+wsSaveAllHistory=function(){_origWsSaveAll();playChime()};
+const _origQrSave=qrSave;
+qrSave=function(){_origQrSave();playChime()};
 
 // ======================== PWA ========================
 if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(reg=>{reg.addEventListener('updatefound',()=>{const w=reg.installing;w.addEventListener('statechange',()=>{if(w.state==='activated'){location.reload()}})})}).catch(()=>{})})}
