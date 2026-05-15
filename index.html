@@ -580,6 +580,23 @@ input:focus,select:focus,textarea:focus{
 .qr-dot.active{background:var(--accent);transform:scale(1.4)}
 @media(max-width:600px){.qr-card{padding:20px 16px}.qr-nav{width:32px;height:32px;font-size:14px}.qr-card-wrap{gap:8px;padding:12px}}
 
+/* ── Card Overview (扑克牌平铺) ── */
+.co-overlay{position:fixed;inset:0;z-index:500;background:rgba(242,239,237,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;animation:pageIn .3s ease}
+.co-header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);flex-shrink:0}
+.co-title{font-size:18px;font-weight:700;color:var(--text);flex:1}
+.co-counter{font-size:12px;color:var(--text-secondary)}
+.co-grid{flex:1;display:flex;flex-wrap:wrap;gap:18px;padding:24px;overflow:auto;align-content:flex-start;justify-content:center}
+.co-card{background:var(--card-bg);border-radius:16px;padding:24px 20px;width:320px;box-shadow:0 3px 20px rgba(148,130,115,0.1),0 1px 4px rgba(148,130,115,0.06);position:relative;animation:coDeal .4s ease both;transition:transform .2s ease,box-shadow .2s ease}
+.co-card:hover{transform:translateY(-3px) rotate(0deg)!important;box-shadow:0 8px 30px rgba(148,130,115,0.16);z-index:10}
+@keyframes coDeal{from{opacity:0;transform:translateY(30px) rotate(var(--co-rot,0deg)) scale(0.9)}to{opacity:1;transform:translateY(0) rotate(var(--co-rot,0deg)) scale(1)}}
+.co-card .co-name{font-size:16px;font-weight:700;color:var(--text);margin-bottom:2px}
+.co-card .co-meta{font-size:11px;color:var(--text-secondary);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border-light)}
+.co-card .co-content{font-size:12px;line-height:1.8;color:var(--text);white-space:pre-wrap;word-break:break-word;max-height:220px;overflow-y:auto}
+.co-copy-btn{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--card-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-secondary);transition:all var(--transition-fast);opacity:.5}
+.co-copy-btn:hover{opacity:1;background:var(--accent);color:#fff;border-color:var(--accent)}
+.co-empty{text-align:center;color:var(--text-secondary);padding:60px 20px;font-size:16px}
+@media(max-width:768px){.co-grid{gap:12px;padding:14px}.co-card{width:100%;max-width:400px}}
+
 /* ── Scroll damping ── */
 .sidebar,.ws-stack-card,.history-list,.ws-lesson-editor{
   scroll-behavior:smooth;
@@ -646,6 +663,7 @@ input:focus,select:focus,textarea:focus{
 
   <div class="workflow-bar" id="workflowBar">
     <button class="btn btn-primary btn-sm" onclick="startWorkflow()">快速过学生</button>
+    <button class="btn btn-ghost btn-sm" onclick="showCardOverview()">卡片总览</button>
     <button class="btn btn-ghost btn-sm" onclick="nextWorkflowStudent()" id="btnNext" style="display:none">跳下一个</button>
     <span class="step" id="workflowStep">共 29 名学生，点击开始逐个生成反馈</span>
   </div>
@@ -747,6 +765,16 @@ input:focus,select:focus,textarea:focus{
   <div class="ws-bunny-corner" aria-hidden="true">
     <svg width="48" height="48" viewBox="0 0 48 48"><ellipse cx="24" cy="30" rx="16" ry="14" fill="var(--bunny-body)" opacity=".6"/><circle cx="24" cy="16" r="13" fill="var(--bunny-body)" opacity=".6"/><ellipse cx="13" cy="10" rx="7" ry="12" fill="var(--bunny-ear)" opacity=".5"/><ellipse cx="35" cy="10" rx="7" ry="12" fill="var(--bunny-ear)" opacity=".5"/><circle cx="17" cy="17" r="1.5" fill="var(--text)" opacity=".4"/><circle cx="31" cy="17" r="1.5" fill="var(--text)" opacity=".4"/><ellipse cx="24" cy="22" rx="3" ry="2" fill="var(--bunny-nose)" opacity=".5"/></svg>
   </div>
+</div>
+
+<!-- Card Overview Overlay -->
+<div class="co-overlay" id="coOverlay" style="display:none" onclick="if(event.target===this)closeCardOverview()">
+  <div class="co-header">
+    <span class="co-title">卡片总览</span>
+    <span class="co-counter" id="coCounter"></span>
+    <button class="btn btn-ghost btn-sm" onclick="closeCardOverview()">关闭</button>
+  </div>
+  <div class="co-grid" id="coGrid"></div>
 </div>
 
 <!-- Quick Review Overlay -->
@@ -1424,6 +1452,32 @@ function qrSave(){
 function closeQuickReview(){
   document.getElementById('qrOverlay').style.display='none';
   updateProgress();renderSidebar();
+}
+
+// ── Card Overview ──
+function showCardOverview(){
+  const list=S.students.filter(s=>s._preview&&s._preview.trim());
+  if(!list.length){showToast('暂无已生成反馈预览的学生，请先生成本地反馈');return}
+  S._coList=list;
+  document.getElementById('coOverlay').style.display='flex';
+  document.getElementById('coCounter').textContent=list.length+' 名学生';
+  const grid=document.getElementById('coGrid');
+  grid.innerHTML=list.map((s,i)=>{
+    const rot=(Math.random()*3-1.5).toFixed(1);
+    return `<div class="co-card" style="--co-rot:${rot}deg;animation-delay:${i*0.04}s">
+      <button class="co-copy-btn" onclick="event.stopPropagation();coCopy('${s.id}')" title="一键复制">⎘</button>
+      <div class="co-name">${esc(s.name||'未命名')}</div>
+      <div class="co-meta">${esc(s.tier||'')} · ${esc(s.grade||'')}年${esc(s.sem||'')} · ${esc(s.parent||'家长')}</div>
+      <div class="co-content">${esc(s._preview||'')}</div>
+    </div>`;
+  }).join('');
+}
+function coCopy(sid){
+  const s=stu(sid);if(!s||!s._preview)return;
+  copyToClip(s._preview);showToast('已复制 '+s.name);
+}
+function closeCardOverview(){
+  document.getElementById('coOverlay').style.display='none';
 }
 function updateWorkflowLabel(){
   const undone=S.students.filter(s=>!S.sentThisWeek[s.id]);const el=document.getElementById('workflowStep');
