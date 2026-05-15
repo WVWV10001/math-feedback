@@ -343,6 +343,8 @@ select{
 .ws-fluid-track{flex:1;height:6px;background:var(--accent-light);border-radius:3px;overflow:hidden}
 .ws-fluid-fill{height:100%;background:linear-gradient(90deg,var(--accent-soft),#7da887,var(--accent-soft));background-size:200% 100%;border-radius:3px;transition:width .5s ease;animation:fluidFlow 3s linear infinite;width:0%}
 .ws-fluid-text{font-size:11px;color:var(--text-secondary);white-space:nowrap;min-width:50px;text-align:right}
+.ws-bunny-corner{position:fixed;bottom:16px;right:20px;z-index:5;pointer-events:none;opacity:.5;transition:opacity .8s ease}
+@media(max-width:767px){.ws-bunny-corner{bottom:8px;right:8px;opacity:.35}}
 
 .ws-main{
   display:flex;flex-direction:column;align-items:center;gap:16px;
@@ -674,6 +676,7 @@ input:focus,select:focus,textarea:focus{
       <span class="ws-progress" id="wsProgress">准备开始评价</span>
     </div>
     <div class="ws-header-right">
+      <button class="btn btn-ghost btn-xs" onclick="wsShowLessonEdit()" title="编辑本周授课内容">授课</button>
       <button class="btn btn-ghost btn-xs" onclick="showClearOptionsModal()" title="清空">清空</button>
       <button class="btn btn-primary btn-xs" onclick="wsSaveAllHistory()" title="一键保存全部到历史记录" style="margin-left:4px">一键存档</button>
       <span class="ws-progress" id="wsTally" style="font-size:var(--font-sm);color:var(--text-secondary)"></span>
@@ -721,6 +724,9 @@ input:focus,select:focus,textarea:focus{
       <p id="wsCompleteMsg"></p>
       <p style="font-size:var(--font-xs);color:var(--text-muted)">右滑返回年级选择</p>
     </div>
+  </div>
+  <div class="ws-bunny-corner" aria-hidden="true">
+    <svg width="48" height="48" viewBox="0 0 48 48"><ellipse cx="24" cy="30" rx="16" ry="14" fill="var(--bunny-body)" opacity=".6"/><circle cx="24" cy="16" r="13" fill="var(--bunny-body)" opacity=".6"/><ellipse cx="13" cy="10" rx="7" ry="12" fill="var(--bunny-ear)" opacity=".5"/><ellipse cx="35" cy="10" rx="7" ry="12" fill="var(--bunny-ear)" opacity=".5"/><circle cx="17" cy="17" r="1.5" fill="var(--text)" opacity=".4"/><circle cx="31" cy="17" r="1.5" fill="var(--text)" opacity=".4"/><ellipse cx="24" cy="22" rx="3" ry="2" fill="var(--bunny-nose)" opacity=".5"/></svg>
   </div>
 </div>
 
@@ -1493,7 +1499,7 @@ function enterWorkspace(sgId){
     S.workspaceSgId=sgId;S.workspaceIdx=0;
     stusBySg(sgId).forEach(s=>{s.wsBrowsed=false;s.wsEvaluated=false;s.wsSkipped=false});
     save();S.consecutiveEvalCount=0;
-    transitionToWS(()=>{wsShowMainMenu()});
+    transitionToWS(()=>{wsStartEval()});
     return;
   }
   // Enter from header button — show grade selection (no hero animation)
