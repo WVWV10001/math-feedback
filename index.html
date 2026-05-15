@@ -561,6 +561,25 @@ input:focus,select:focus,textarea:focus{
 .ws-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ── Quick Review Fullscreen ── */
+.qr-overlay{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;animation:pageIn .3s ease}
+.qr-header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--glass-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.qr-title{font-size:18px;font-weight:700;color:var(--text);flex:1}
+.qr-counter{font-size:12px;color:var(--text-secondary)}
+.qr-card-wrap{flex:1;display:flex;align-items:center;justify-content:center;gap:16px;padding:20px;overflow:auto}
+.qr-card{background:var(--card-bg);border-radius:20px;padding:32px 28px;max-width:680px;width:100%;box-shadow:0 4px 32px rgba(148,130,115,0.1);animation:qrCardIn .3s ease}
+@keyframes qrCardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.qr-card .qr-name{font-size:24px;font-weight:800;margin-bottom:4px;color:var(--text)}
+.qr-card .qr-meta{font-size:12px;color:var(--text-secondary);margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border-light)}
+.qr-card .qr-content{font-size:14px;line-height:2;color:var(--text);white-space:pre-wrap;word-break:break-word}
+.qr-nav{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--card-bg);font-size:18px;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--transition-fast);flex-shrink:0}
+.qr-nav:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.qr-nav:active{transform:scale(0.9)}
+.qr-dots{display:flex;gap:6px;justify-content:center;padding:10px 0 16px}
+.qr-dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all var(--transition)}
+.qr-dot.active{background:var(--accent);transform:scale(1.4)}
+@media(max-width:600px){.qr-card{padding:20px 16px}.qr-nav{width:32px;height:32px;font-size:14px}.qr-card-wrap{gap:8px;padding:12px}}
+
 /* ── Scroll damping ── */
 .sidebar,.ws-stack-card,.history-list,.ws-lesson-editor{
   scroll-behavior:smooth;
@@ -728,6 +747,22 @@ input:focus,select:focus,textarea:focus{
   <div class="ws-bunny-corner" aria-hidden="true">
     <svg width="48" height="48" viewBox="0 0 48 48"><ellipse cx="24" cy="30" rx="16" ry="14" fill="var(--bunny-body)" opacity=".6"/><circle cx="24" cy="16" r="13" fill="var(--bunny-body)" opacity=".6"/><ellipse cx="13" cy="10" rx="7" ry="12" fill="var(--bunny-ear)" opacity=".5"/><ellipse cx="35" cy="10" rx="7" ry="12" fill="var(--bunny-ear)" opacity=".5"/><circle cx="17" cy="17" r="1.5" fill="var(--text)" opacity=".4"/><circle cx="31" cy="17" r="1.5" fill="var(--text)" opacity=".4"/><ellipse cx="24" cy="22" rx="3" ry="2" fill="var(--bunny-nose)" opacity=".5"/></svg>
   </div>
+</div>
+
+<!-- Quick Review Overlay -->
+<div class="qr-overlay" id="qrOverlay" style="display:none">
+  <div class="qr-header">
+    <span class="qr-title" id="qrTitle"></span>
+    <span class="qr-counter" id="qrCounter"></span>
+    <button class="btn btn-primary btn-sm" onclick="qrSave()">保存到历史</button>
+    <button class="btn btn-ghost btn-sm" onclick="closeQuickReview()">退出</button>
+  </div>
+  <div class="qr-card-wrap">
+    <button class="qr-nav qr-prev" onclick="qrNav(-1)">〈</button>
+    <div class="qr-card" id="qrCard"></div>
+    <button class="qr-nav qr-next" onclick="qrNav(1)">〉</button>
+  </div>
+  <div class="qr-dots" id="qrDots"></div>
 </div>
 
 <!-- Modal -->
@@ -1340,8 +1375,55 @@ function updateProgress(){
 }
 function startWorkflow(){
   const undone=S.students.filter(s=>!S.sentThisWeek[s.id]);if(!undone.length){showToast('本周全部学生已处理完毕！');return}
-  S.workflowIdx=0;document.getElementById('btnNext').style.display='inline-flex';
-  const first=undone[0];selectStudent(first.id);setTimeout(()=>localGenerate(),300);updateWorkflowLabel();
+  // Auto-generate previews for students without one
+  undone.forEach(s=>{if(!s._preview){const text=buildFeedbackFor(s);if(text)s._preview=text}});
+  save();
+  S._qrList=undone;S._qrIdx=0;
+  document.getElementById('qrOverlay').style.display='flex';
+  qrRender();
+}
+function buildFeedbackFor(s){
+  const x=sgOfStu(s.id);const is1v1=x&&x.type==='一对一';const lesson=S.lessonContents[s.sgId]||'（本周继续围绕阶段重点内容展开）';
+  const ps=tp(s.sgId,s.tier)||{};const b={state:ps.state||[],strengths:ps.strengths||[],improvements:ps.improvements||[]};
+  const cs=ps.customStrengths||'';const ci=ps.customImprovements||'';
+  if(cs)b.strengths=[...b.strengths,cs];if(ci)b.improvements=[...b.improvements,ci];
+  const pr=prn(s);const pl=s.parent||'家长';const sgId=s.sgId;
+  const gi=rotCls(sgId,'greet',greetPool.length);const greet=greetPool[gi](s.name||'孩子',pl);
+  const p2=genPart2(s,x,b,is1v1,pr,sgId);const p3=genPart3(s,x,b,ps.followUp||[],ps.customFollowUp||'',is1v1,pr,sgId);
+  return greet+'\n\n一、本周学习内容：\n'+lesson+'\n\n二、课堂表现：\n'+p2+'\n\n三、后续学习安排：\n'+p3;
+}
+function qrRender(){
+  const list=S._qrList;const idx=S._qrIdx;const s=list[idx];if(!s)return;
+  document.getElementById('qrTitle').textContent=s.name||'未命名';
+  document.getElementById('qrCounter').textContent=(idx+1)+'/'+list.length;
+  document.getElementById('qrCard').innerHTML=`
+    <div class="qr-name">${esc(s.name||'未命名')}</div>
+    <div class="qr-meta">${esc(s.tier||'')} · ${esc(s.grade||'')}年${esc(s.sem||'')} · ${esc(s.parent||'家长')}</div>
+    <div class="qr-content" contenteditable="true" id="qrContent">${esc(s._preview||'暂未生成反馈预览')}</div>`;
+  // Dots
+  document.getElementById('qrDots').innerHTML=list.map((_,i)=>`<div class="qr-dot${i===idx?' active':''}"></div>`).join('');
+}
+function qrNav(dir){
+  const list=S._qrList;S._qrIdx=(S._qrIdx+dir+list.length)%list.length;
+  qrRender();
+}
+function qrSave(){
+  const list=S._qrList;const idx=S._qrIdx;const s=list[idx];if(!s)return;
+  const txt=document.getElementById('qrContent').textContent.trim();
+  if(!txt){showToast('内容为空，未保存');return}
+  s._preview=txt;S.sentThisWeek[s.id]=Date.now();
+  if(!s.hist)s.hist=[];
+  const wk=getWeekKey();const lesson=S.lessonContents[s.sgId]||'';
+  const exist=s.hist.find(h=>h.week===wk&&h.lesson===lesson);
+  if(exist){exist.content=txt;exist.date=new Date().toLocaleString('zh-CN',{hour12:false});}
+  else{s.hist.unshift({date:new Date().toLocaleString('zh-CN',{hour12:false}),content:txt,week:wk,lesson:lesson});}
+  save();updateProgress();renderSidebar();showToast(s.name+' 已保存到历史记录');
+  // Auto-advance to next
+  if(idx+1<list.length){S._qrIdx++;qrRender()}else{showToast('全部预览完毕！')}
+}
+function closeQuickReview(){
+  document.getElementById('qrOverlay').style.display='none';
+  updateProgress();renderSidebar();
 }
 function updateWorkflowLabel(){
   const undone=S.students.filter(s=>!S.sentThisWeek[s.id]);const el=document.getElementById('workflowStep');
@@ -2121,7 +2203,15 @@ document.addEventListener('click',e=>{
   }
 });
 
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement===document.body){e.preventDefault();localGenerate()}});
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('qrOverlay').style.display==='flex'){
+    if(e.key==='ArrowLeft'){e.preventDefault();qrNav(-1)}
+    else if(e.key==='ArrowRight'){e.preventDefault();qrNav(1)}
+    else if(e.key==='Enter'&&e.ctrlKey){e.preventDefault();qrSave()}
+    return;
+  }
+  if(e.key==='Enter'&&document.activeElement===document.body){e.preventDefault();localGenerate()}
+});
 
 // ======================== BUNNY EARS ========================
 function bunnyEarsUp(){
