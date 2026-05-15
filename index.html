@@ -1408,7 +1408,15 @@ function startWorkflow(){
   save();
   S._qrList=undone;S._qrIdx=0;
   document.getElementById('qrOverlay').style.display='flex';
-  qrRender();
+  qrRender();qrBindSwipe();
+}
+let qrTouchStartX=0;
+let _qrSwipeBound=false;
+function qrBindSwipe(){
+  if(_qrSwipeBound)return;_qrSwipeBound=true;
+  const el=document.getElementById('qrOverlay');
+  el.addEventListener('touchstart',e=>{if(e.touches.length===1)qrTouchStartX=e.touches[0].clientX},{passive:true});
+  el.addEventListener('touchend',e=>{if(document.getElementById('qrOverlay').style.display!=='flex')return;const dx=(e.changedTouches[0]||{}).clientX-qrTouchStartX;if(dx<-60)qrNav(1);else if(dx>60)qrNav(-1)});
 }
 function buildFeedbackFor(s){
   const x=sgOfStu(s.id);const is1v1=x&&x.type==='一对一';const lesson=S.lessonContents[s.sgId]||'（本周继续围绕阶段重点内容展开）';
