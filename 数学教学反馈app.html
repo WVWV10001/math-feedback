@@ -37,7 +37,7 @@ html:not([data-theme="dark"]):not([data-skin="monet"]) body{
   background:linear-gradient(175deg,#f8f4f0 0%,#f0eae2 40%,#ede4db 75%,#f5f0eb 100%);
   background-attachment:fixed;
 }
-html:not([data-theme="dark"]):not([data-skin="monet"]) body::before{
+html:not([data-skin="monet"]) body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
     radial-gradient(ellipse at 25% 15%,rgba(200,180,160,0.05) 0%,transparent 50%),
@@ -51,7 +51,7 @@ html:not([data-theme="dark"]):not([data-skin="monet"]) body::before{
   50%{opacity:1}
 }
 
-/* Dark theme */
+/* Dark theme — 黑金模式 */
 html[data-theme="dark"]{
   --bg:#0a0a0a;--bg2:#141210;
   --surface:#1a1815;--card-bg:rgba(26,24,21,0.95);
@@ -78,30 +78,30 @@ html[data-skin="monet"]{
   --bg:#E6F0F5;--bg2:#d9e8f0;
   --surface:rgba(255,255,255,0.72);--card-bg:rgba(255,255,255,0.82);
   --text:#3a3a4a;--text-secondary:#7a8a9a;--text-muted:#9aa8b5;
-  --accent:#b8a5c9;--accent-soft:#a8c8a0;--accent-light:rgba(200,180,220,0.14);
-  --border:rgba(160,180,200,0.28);--border-light:rgba(180,200,215,0.2);
-  --shadow-sm:0 2px 10px rgba(120,150,180,0.06);--shadow:0 4px 18px rgba(120,150,180,0.08);--shadow-lg:0 8px 32px rgba(120,150,180,0.12);
-  --success:#7db89a;--warn:#e8b45a;--danger:#e08070;
-  --doubao:#8ba4d8;--doubao-light:rgba(139,164,216,0.15);--ds:#6db88a;--ds-light:rgba(109,184,138,0.15);
-  --bunny-body:#f5e8c8;--bunny-ear:#fef8e8;--bunny-outline:#8a7a6a;
-  --glass-bg:rgba(255,255,255,0.65);--glass-blur:blur(18px);
-  --overlay:rgba(140,170,195,0.25);
+  --accent:#c0a0d4;--accent-soft:#c8b0d8;--accent-light:rgba(195,160,215,0.14);
+  --border:rgba(180,165,200,0.28);--border-light:rgba(195,180,215,0.2);
+  --shadow-sm:0 2px 10px rgba(150,130,180,0.06);--shadow:0 4px 18px rgba(150,130,180,0.08);--shadow-lg:0 8px 32px rgba(150,130,180,0.12);
+  --success:#9db8a8;--warn:#e0b070;--danger:#d89090;
+  --doubao:#a898d4;--doubao-light:rgba(168,152,212,0.15);--ds:#8db89a;--ds-light:rgba(141,184,154,0.15);
+  --bunny-body:#f5e0f0;--bunny-ear:#fef0f8;--bunny-outline:#c0a0b0;
+  --glass-bg:rgba(255,248,252,0.65);--glass-blur:blur(18px);
+  --overlay:rgba(170,150,200,0.25);
 }
 html[data-skin="monet"] body{
-  background:linear-gradient(175deg,#E6F0F5 0%,#d9e8f0 40%,#e8ddf0 70%,#dce8f0 100%);
+  background:linear-gradient(175deg,#F2EAF8 0%,#E8DDF2 40%,#EDE0F5 70%,#F0E5F8 100%);
   position:relative;
 }
 /* Oil painting water lily texture overlay */
 html[data-skin="monet"] body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
-    radial-gradient(ellipse at 12% 75%, rgba(180,160,210,0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 25%, rgba(200,230,200,0.18) 0%, transparent 45%),
-    radial-gradient(ellipse at 45% 55%, rgba(245,215,110,0.10) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 65%, rgba(180,200,220,0.12) 0%, transparent 40%),
-    radial-gradient(ellipse at 22% 18%, rgba(220,190,210,0.13) 0%, transparent 50%),
-    radial-gradient(ellipse at 55% 85%, rgba(160,200,190,0.10) 0%, transparent 45%),
-    radial-gradient(circle at 88% 12%, rgba(245,215,110,0.06) 0%, transparent 35%);
+    radial-gradient(ellipse at 12% 75%, rgba(200,165,220,0.16) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 25%, rgba(220,180,215,0.18) 0%, transparent 45%),
+    radial-gradient(ellipse at 45% 55%, rgba(190,155,220,0.14) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 65%, rgba(210,170,225,0.13) 0%, transparent 40%),
+    radial-gradient(ellipse at 22% 18%, rgba(225,195,220,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 55% 85%, rgba(185,160,210,0.12) 0%, transparent 45%),
+    radial-gradient(circle at 88% 12%, rgba(215,185,225,0.08) 0%, transparent 35%);
   animation:monetRipple 12s ease-in-out infinite;
 }
 @keyframes monetRipple{
@@ -113,8 +113,8 @@ html[data-skin="monet"] body::before{
 html[data-skin="monet"] body::after{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
-    repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(180,200,220,0.03) 80px,rgba(180,200,220,0.03) 81px),
-    repeating-linear-gradient(90deg,transparent,transparent 120px,rgba(200,210,230,0.02) 120px,rgba(200,210,230,0.02) 121px);
+    repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(195,170,215,0.03) 80px,rgba(195,170,215,0.03) 81px),
+    repeating-linear-gradient(90deg,transparent,transparent 120px,rgba(210,180,225,0.02) 120px,rgba(210,180,225,0.02) 121px);
   animation:waterShimmer 8s ease-in-out infinite;
 }
 @keyframes waterShimmer{
@@ -123,7 +123,7 @@ html[data-skin="monet"] body::after{
 }
 /* Flowing water progress bar - Monet */
 html[data-skin="monet"] .ws-fluid-fill{
-  background:linear-gradient(90deg,#b8d4e0,#a8c8a0,#c8b8d8,#b8d4e0);background-size:300% 100%;
+  background:linear-gradient(90deg,#d4c0e8,#c8a8d8,#e0c8f0,#d4c0e8);background-size:300% 100%;
   animation:monetFlow 4s ease-in-out infinite;
 }
 @keyframes monetFlow{
@@ -132,19 +132,19 @@ html[data-skin="monet"] .ws-fluid-fill{
   100%{background-position:0% 50%}
 }
 html[data-skin="monet"] .progress-fill{
-  background:linear-gradient(90deg,#b8d4e0,#a8c8a0,#c8b8d8,#b8d4e0);background-size:300% 100%;
+  background:linear-gradient(90deg,#d4c0e8,#c8a8d8,#e0c8f0,#d4c0e8);background-size:300% 100%;
   animation:monetFlow 4s ease-in-out infinite;
 }
 /* Water lily floating decorative elements */
 html[data-skin="monet"] .ws-bunny-corner svg{
-  filter:drop-shadow(0 2px 6px rgba(160,180,200,0.25));
+  filter:drop-shadow(0 2px 6px rgba(180,160,200,0.25));
 }
 /* Water lily petals around bunny in Monet */
 html[data-skin="monet"] .ws-bunny-corner::before{
   content:'';position:absolute;bottom:-10px;right:-8px;width:60px;height:60px;
-  background:radial-gradient(ellipse at 40% 30%,rgba(200,180,220,0.18) 0%,transparent 60%),
-    radial-gradient(ellipse at 60% 40%,rgba(245,215,110,0.10) 0%,transparent 50%),
-    radial-gradient(ellipse at 30% 60%,rgba(200,230,200,0.12) 0%,transparent 55%);
+  background:radial-gradient(ellipse at 40% 30%,rgba(220,185,225,0.18) 0%,transparent 60%),
+    radial-gradient(ellipse at 60% 40%,rgba(200,170,215,0.12) 0%,transparent 50%),
+    radial-gradient(ellipse at 30% 60%,rgba(210,180,220,0.14) 0%,transparent 55%);
   border-radius:50%;pointer-events:none;z-index:-1;
   animation:petalFloat 5s ease-in-out infinite;
 }
@@ -156,7 +156,7 @@ html[data-skin="monet"] .ws-bunny-corner::before{
 /* Water lily decorative bloom in corner */
 html[data-skin="monet"] .ws-bunny-corner::after{
   content:'';position:absolute;top:-15px;left:-10px;width:36px;height:36px;
-  background:radial-gradient(circle at 35% 35%,rgba(245,215,110,0.22) 0%,rgba(200,180,220,0.10) 40%,transparent 70%);
+  background:radial-gradient(circle at 35% 35%,rgba(225,185,220,0.22) 0%,rgba(200,175,215,0.12) 40%,transparent 70%);
   border-radius:50%;pointer-events:none;z-index:-1;
   animation:bloomPulse 6s ease-in-out infinite;
 }
@@ -168,7 +168,7 @@ html[data-skin="monet"] .ws-bunny-corner::after{
 html[data-skin="monet"] .ws-stack-card,
 html[data-skin="monet"] .co-card{
   animation:monetFloat 6s ease-in-out infinite;
-  box-shadow:0 4px 24px rgba(140,160,190,0.10),0 2px 8px rgba(160,180,200,0.06);
+  box-shadow:0 4px 24px rgba(160,140,190,0.10),0 2px 8px rgba(180,160,200,0.06);
 }
 @keyframes monetFloat{
   0%,100%{transform:translateY(0)}
@@ -181,7 +181,7 @@ html[data-skin="monet"] .qr-overlay{
   backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
 }
 html[data-skin="monet"] .co-overlay{
-  background:rgba(230,240,245,0.88);
+  background:rgba(240,235,248,0.88);
 }
 /* Monet rounded components */
 html[data-skin="monet"] .ws-stack-card,
@@ -195,11 +195,11 @@ html[data-skin="monet"] .btn{border-radius:12px}
 html[data-skin="monet"] input,
 html[data-skin="monet"] textarea,
 html[data-skin="monet"] select{
-  background:rgba(255,255,255,0.8);border:1px solid rgba(160,180,200,0.35);
+  background:rgba(255,255,255,0.8);border:1px solid rgba(190,170,210,0.35);
 }
 /* Monet card hover - water ripple feel */
 html[data-skin="monet"] .ws-stack-card:hover{
-  transform:translateY(-4px);box-shadow:0 8px 32px rgba(140,160,190,0.16),0 4px 12px rgba(160,180,200,0.10);
+  transform:translateY(-4px);box-shadow:0 8px 32px rgba(160,140,190,0.16),0 4px 12px rgba(180,160,200,0.10);
 }
 /* Monet tag bubble enhanced */
 html[data-skin="monet"] .ws-bubble.on{
@@ -256,6 +256,9 @@ body{
   justify-content:center;transition:all var(--transition-fast);font-size:14px;padding:0;
 }
 .btn-icon:hover{background:var(--card-bg);border-color:var(--accent)}
+
+.theme-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all var(--transition-fast);font-size:15px;padding:0}
+.theme-btn:hover{background:var(--card-bg);border-color:var(--accent)}
 
 /* ── Layout ── */
 .layout{display:grid;grid-template-columns:275px 1fr;gap:12px;align-items:start}
@@ -480,15 +483,6 @@ select{
 .sent-badge:hover{background:rgba(143,170,147,0.25)}
 .sent-badge.unsent{color:var(--warn);background:rgba(230,126,34,0.12)}
 .sent-badge.unsent:hover{background:rgba(230,126,34,0.2)}
-
-/* ── Theme toggle ── */
-.theme-btn{
-  width:30px;height:30px;border-radius:50%;border:1px solid var(--border);
-  background:var(--surface);cursor:pointer;display:inline-flex;align-items:center;
-  justify-content:center;transition:all var(--transition-fast);font-size:15px;padding:0;
-}
-.theme-btn:hover{background:var(--card-bg);border-color:var(--accent)}
-
 /* ═══════════ WORKSPACE MODE ═══════════ */
 .ws-header{
   display:flex;align-items:center;justify-content:space-between;gap:8px;
@@ -1019,63 +1013,38 @@ body{overscroll-behavior:none;-webkit-overflow-scrolling:touch}
   position:fixed;bottom:40px;right:40px;z-index:200;pointer-events:auto;
 }
 .cyber-panel-toggle button{
-  width:50px;height:50px;border-radius:50%;
-  background:rgba(10,10,10,.75);border:2px solid rgba(168,155,140,.25);
-  color:var(--accent);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .3s ease;font-size:20px;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  box-shadow:0 4px 16px rgba(0,0,0,.3);
+  width:44px;height:44px;border-radius:var(--radius);
+  background:var(--glass-bg);border:1.5px solid var(--border);
+  color:var(--text-secondary);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .35s cubic-bezier(0.34,1.56,0.64,1);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:var(--shadow-sm);padding:0;
 }
+.cyber-panel-toggle button svg{width:18px;height:18px}
 .cyber-panel-toggle button:hover{
-  border-color:var(--accent);box-shadow:0 0 24px rgba(168,155,140,.3);
-  transform:scale(1.08);
+  border-color:var(--accent);color:var(--accent);
+  box-shadow:var(--shadow-lg),0 0 18px rgba(168,155,140,.12);
+  transform:translateY(-2px) scale(1.06);
 }
 .cyber-panel-toggle button.active{
-  border-color:var(--accent);background:rgba(168,155,140,.15);
-  transform:rotate(60deg);
+  border-color:var(--accent);background:var(--accent-light);color:var(--accent);
+  transform:rotate(45deg);
 }
-.cyber-panel{
-  position:fixed;bottom:110px;right:40px;z-index:190;
-  width:300px;max-height:70vh;overflow-y:auto;
-  background:rgba(20,18,16,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(168,155,140,.15);border-radius:18px;padding:22px 20px;
-  box-shadow:0 12px 48px rgba(0,0,0,.5),0 0 32px rgba(168,155,140,.06);
-  opacity:0;visibility:hidden;transform:translateY(16px) scale(.95);
-  transition:all .3s cubic-bezier(0.16,1,0.3,1);pointer-events:auto;
-}
+.cyber-panel{position:fixed;bottom:106px;right:40px;z-index:190;width:290px;max-height:65vh;overflow-y:auto;background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 18px;box-shadow:var(--shadow-lg),0 0 28px rgba(168,155,140,.06);opacity:0;visibility:hidden;transform:translateY(12px) scale(.95);transition:all .3s cubic-bezier(0.16,1,0.3,1);pointer-events:auto}
 .cyber-panel.open{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
-.cyber-panel-title{
-  font-size:12px;font-weight:600;color:var(--accent);margin-bottom:18px;
-  text-transform:uppercase;letter-spacing:2px;font-family:"JetBrains Mono",monospace;
-}
-.cyber-panel-group{margin-bottom:16px}
-.cyber-panel-label{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:8px;font-size:11px;color:var(--text-secondary);
-  font-family:"JetBrains Mono",monospace;
-}
-.cyber-panel-val{color:var(--accent);font-weight:600;font-size:13px}
-.cyber-panel input[type=range]{
-  width:100%;height:3px;border-radius:2px;
-  background:linear-gradient(to right,rgba(168,155,140,.1),rgba(168,155,140,.3),rgba(168,155,140,.1));
-  outline:none;-webkit-appearance:none;appearance:none;cursor:pointer;
-}
-.cyber-panel input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:16px;height:16px;border-radius:50%;
-  background:var(--accent);cursor:pointer;box-shadow:0 0 12px rgba(168,155,140,.4);
-}
-.cyber-panel-reset{
-  width:100%;padding:8px;border:1px solid rgba(168,155,140,.15);
-  background:transparent;color:var(--text-secondary);border-radius:10px;
-  font-size:11px;cursor:pointer;transition:all .3s;
-  font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:1px;
-}
-.cyber-panel-reset:hover{border-color:var(--accent);color:var(--accent);background:rgba(168,155,140,.05)}
+.cyber-panel-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:16px;letter-spacing:.5px}
+.cyber-panel-group{margin-bottom:14px}
+.cyber-panel-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px;color:var(--text-secondary)}
+.cyber-panel-val{color:var(--accent);font-weight:600;font-size:12px}
+.cyber-panel input[type=range]{width:100%;height:3px;border-radius:2px;background:var(--border-light);outline:none;-webkit-appearance:none;appearance:none;cursor:pointer}
+.cyber-panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.12);transition:transform .15s ease}.cyber-panel input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.cyber-panel-reset{width:100%;padding:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);border-radius:var(--radius);font-size:12px;cursor:pointer;transition:all .25s ease;font-family:inherit;letter-spacing:1px;margin-top:4px}
+.cyber-panel-reset:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 
 @media(max-width:767px){
   .cyber-panel-toggle{bottom:30px;right:12px}
-  .cyber-panel-toggle button{width:42px;height:42px;font-size:18px}
-  .cyber-panel{bottom:90px;right:12px;width:260px;max-height:55vh}
+  .cyber-panel-toggle button{width:38px;height:38px}
+  .cyber-panel{bottom:86px;right:12px;width:260px;max-height:55vh}
 }
 
 /* ═══════════ FLASHY FX: Emoji Pop ═══════════ */
@@ -1208,9 +1177,8 @@ body{overscroll-behavior:none;-webkit-overflow-scrolling:touch}
     </div>
     <div class="header-actions">
       <span class="progress-wrap"><span class="progress-text" id="progressLabel">0/29</span><span class="progress-bar"><span class="progress-fill" id="progressFill" style="width:0%"></span></span></span>
-      <button class="theme-btn" onclick="toggleTheme()" title="切换主题" id="themeBtn">
-        <svg width="15" height="15" viewBox="0 0 24 24" style="vertical-align:-1px"><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-      <button class="btn btn-ghost btn-sm" onclick="enterWorkspace()" id="btnWsEnter" title="切换工作模式">
+<button class="theme-btn" onclick="toggleTheme()" title="切换主题" id="themeBtn"><svg width="15" height="15" viewBox="0 0 24 24" style="vertical-align:-1px"><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+<button class="btn btn-ghost btn-sm" onclick="enterWorkspace()" id="btnWsEnter" title="切换工作模式">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M8 3H3v5"/><path d="M3 3l6 6"/><path d="M16 21h5v-5"/><path d="M21 21l-6-6"/></svg> 沉浸工作</button>
       <button class="btn btn-ghost btn-sm" onclick="showCleanupModal()" title="清理旧记录"><svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="5,7 2,0 9,6" fill="none" stroke="currentColor" stroke-width="1.2"/><polygon points="19,7 22,0 15,6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/></svg> 清理</button>
       <button class="btn btn-ghost btn-sm" onclick="clearWeek()">一键清空本周</button>
@@ -1366,7 +1334,7 @@ body{overscroll-behavior:none;-webkit-overflow-scrolling:touch}
 
 <!-- Cyberpunk Background Control Panel -->
 <div class="cyber-panel-toggle">
-  <button id="cyberToggleBtn" title="背景效果调节">⚙</button>
+  <button id="cyberToggleBtn" title="背景效果调节"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><line x1="12" y1="7" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="17"/><line x1="7" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="17" y2="12"/></svg></button>
 </div>
 <div class="cyber-panel" id="cyberPanel">
   <div class="cyber-panel-title">背景效果调节</div>
@@ -1591,8 +1559,8 @@ function load(){
     return merged;
   }catch(e){localStorage.removeItem(SK);return initState();}
 }
-function save(){const compact=JSON.parse(JSON.stringify(S));localStorage.setItem(SK,JSON.stringify(compact));scheduleSave()}
-let st;function scheduleSave(){clearTimeout(st);st=setTimeout(()=>{const c=JSON.parse(JSON.stringify(S));localStorage.setItem(SK,JSON.stringify(c))},100)}
+function save(){scheduleSave()}
+let st;function scheduleSave(){clearTimeout(st);st=setTimeout(()=>{const c=JSON.parse(JSON.stringify(S));localStorage.setItem(SK,JSON.stringify(c))},300)}
 addEventListener('beforeunload',()=>{const c=JSON.parse(JSON.stringify(S));localStorage.setItem(SK,JSON.stringify(c))});
 S=load();
 
@@ -3247,17 +3215,19 @@ function toggleSideMenu(){
 }
 function setSkin(name){
   document.documentElement.setAttribute('data-skin',name==='monet'?'monet':'');
-  document.documentElement.setAttribute('data-theme','light'); // skin = light theme
+  document.documentElement.setAttribute('data-theme','light');
   localStorage.setItem('mf-skin',name);localStorage.setItem('mf-theme','light');
   S.theme='light';save();
   updateSkinChecks();
+  updateWebglColors();
 }
 function setTheme(name){
   document.documentElement.setAttribute('data-theme',name);
-  document.documentElement.setAttribute('data-skin',''); // theme = classic skin base
+  document.documentElement.setAttribute('data-skin','');
   localStorage.setItem('mf-theme',name);localStorage.setItem('mf-skin','classic');
   S.theme=name;save();
   updateSkinChecks();
+  updateWebglColors();
 }
 function updateSkinChecks(){
   var cur=localStorage.getItem('mf-skin')||'classic';
@@ -3333,10 +3303,10 @@ function updateBunnyRunner(){
     runner.style.display='block';
     const maxLeft=window.innerWidth-60;
     runner.style.left=(pct*maxLeft)+'px';
-    if(!runner._animating){runner._animating=true;setInterval(()=>{if(runner.style.display!=='none')playSFX('tap')},600)}
+    if(!runner._animating){runner._animating=true;runner._tapTimer=setInterval(()=>{if(runner.style.display!=='none')playSFX('tap')},600)}
   }else if(done>=total){
     runner.classList.add('ok');setTimeout(()=>{runner.classList.remove('ok');runner.style.display='none'},600);
-    if(runner._animating){runner._animating=false}
+    if(runner._animating){runner._animating=false;clearInterval(runner._tapTimer)}
   }else{runner.style.display='none'}
 }
 
@@ -3484,8 +3454,7 @@ let _webglScene=null,_webglRenderer=null,_webglUniforms=null;
 const WEBGL_VERTEX=`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.0);}`;
 const WEBGL_FRAGMENT=`
   uniform float uTime,uGridRes,uGlow,uCycle,uEdge,uDistort,uSpeed,uBlend;
-  uniform vec2 uRes;varying vec2 vUv;
-  const vec3 BRIGHT=vec3(0.78,0.61,0.35);const vec3 DIM=vec3(0.10,0.07,0.04);
+  uniform vec2 uRes;uniform vec3 uBright,uDim;varying vec2 vUv;
   vec3 permute(vec3 x){return mod(((x*34.0)+1.0)*x,289.0);}
   float snoise(vec2 v){const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);vec2 i1=(x0.x>x0.y)?vec2(1.0,0.0):vec2(0.0,1.0);vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;i=mod(i,289.0);vec3 p=permute(permute(i.y+vec3(0.0,i1.y,1.0))+i.x+vec3(0.0,i1.x,1.0));vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0);m=m*m;m=m*m;vec3 x=2.0*fract(p*C.www)-1.0;vec3 h=abs(x)-0.5;vec3 a0=x-floor(x+0.5);m*=1.79284291400159-0.85373472095314*(a0*a0+h*h);vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;return 130.0*dot(m,g);}
   float voxelSDF(vec2 p,float s,float r){vec2 q=abs(p)-s+r;return length(max(q,0.0))+min(max(q.x,q.y),0.0)-r;}
@@ -3502,7 +3471,7 @@ const WEBGL_FRAGMENT=`
     float fb=we+ee;fb-=(we*ee*0.4);
     vec2 gu=vUv*vec2(uGridRes*asp.x,uGridRes);vec2 cl=fract(gu);vec2 vl=cl-0.5;
     float vs=voxelSDF(vl,0.25,0.05);float vsh=1.0-smoothstep(-0.05,0.05,vs);
-    float fi=fb*vsh;vec3 fc=mix(DIM,BRIGHT,fi);fc*=fi;
+    float fi=fb*vsh;vec3 fc=mix(uDim,uBright,fi);fc*=fi;
     gl_FragColor=vec4(fc,1.0);
   }`;
 
@@ -3520,7 +3489,8 @@ async function initWebglBg(){
     uGridRes:{value:_webglCfg.gridRes},uGlow:{value:_webglCfg.glowInt},
     uCycle:{value:_webglCfg.cycle},uEdge:{value:_webglCfg.edgeGlow},
     uDistort:{value:_webglCfg.distort},uSpeed:{value:_webglCfg.speed},
-    uBlend:{value:0.02}
+    uBlend:{value:0.02},
+    uBright:{value:new m.Vector3(0.72,0.58,0.42)},uDim:{value:new m.Vector3(0.10,0.07,0.04)}
   };
   const mat=new m.ShaderMaterial({uniforms:_webglUniforms,vertexShader:WEBGL_VERTEX,fragmentShader:WEBGL_FRAGMENT,transparent:true});
   const geo=new m.PlaneGeometry(2,2);
@@ -3548,6 +3518,22 @@ function toggleWebglBg(){
   const c=document.getElementById('webglBg');
   if(c)c.classList.toggle('hidden',!_webglOn);
   localStorage.setItem('mf-webgl-bg',_webglOn?'1':'0');
+}
+
+function updateWebglColors(){
+  if(!_webglUniforms||!_webglUniforms.uBright)return;
+  var isMonet=document.documentElement.getAttribute('data-skin')==='monet';
+  var isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  if(isMonet){
+    _webglUniforms.uBright.value.set(0.82,0.58,0.80);
+    _webglUniforms.uDim.value.set(0.12,0.04,0.20);
+  }else if(isDark){
+    _webglUniforms.uBright.value.set(0.78,0.61,0.35);
+    _webglUniforms.uDim.value.set(0.10,0.07,0.04);
+  }else{
+    _webglUniforms.uBright.value.set(0.72,0.58,0.42);
+    _webglUniforms.uDim.value.set(0.10,0.07,0.04);
+  }
 }
 
 // Control panel
