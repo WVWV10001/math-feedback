@@ -1010,9 +1010,73 @@ html:not([data-theme="dark"]):not([data-skin="monet"]) body::after{
 html{overscroll-behavior:none}
 body{overscroll-behavior:none;-webkit-overflow-scrolling:touch}
 
-/* ═══════════ FLASHY FX: Particle Background ═══════════ */
-#particleCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;transition:opacity .6s ease}
-#particleCanvas.hidden{opacity:0}
+/* ═══════════ FLASHY FX: WebGL Cyberpunk Background ═══════════ */
+#webglBg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;transition:opacity .8s ease}
+#webglBg.hidden{opacity:0}
+
+/* ═══════════ FLASHY FX: Cyberpunk Control Panel ═══════════ */
+.cyber-panel-toggle{
+  position:fixed;bottom:40px;right:40px;z-index:200;pointer-events:auto;
+}
+.cyber-panel-toggle button{
+  width:50px;height:50px;border-radius:50%;
+  background:rgba(10,10,10,.75);border:2px solid rgba(168,155,140,.25);
+  color:var(--accent);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .3s ease;font-size:20px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 4px 16px rgba(0,0,0,.3);
+}
+.cyber-panel-toggle button:hover{
+  border-color:var(--accent);box-shadow:0 0 24px rgba(168,155,140,.3);
+  transform:scale(1.08);
+}
+.cyber-panel-toggle button.active{
+  border-color:var(--accent);background:rgba(168,155,140,.15);
+  transform:rotate(60deg);
+}
+.cyber-panel{
+  position:fixed;bottom:110px;right:40px;z-index:190;
+  width:300px;max-height:70vh;overflow-y:auto;
+  background:rgba(20,18,16,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(168,155,140,.15);border-radius:18px;padding:22px 20px;
+  box-shadow:0 12px 48px rgba(0,0,0,.5),0 0 32px rgba(168,155,140,.06);
+  opacity:0;visibility:hidden;transform:translateY(16px) scale(.95);
+  transition:all .3s cubic-bezier(0.16,1,0.3,1);pointer-events:auto;
+}
+.cyber-panel.open{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
+.cyber-panel-title{
+  font-size:12px;font-weight:600;color:var(--accent);margin-bottom:18px;
+  text-transform:uppercase;letter-spacing:2px;font-family:"JetBrains Mono",monospace;
+}
+.cyber-panel-group{margin-bottom:16px}
+.cyber-panel-label{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:8px;font-size:11px;color:var(--text-secondary);
+  font-family:"JetBrains Mono",monospace;
+}
+.cyber-panel-val{color:var(--accent);font-weight:600;font-size:13px}
+.cyber-panel input[type=range]{
+  width:100%;height:3px;border-radius:2px;
+  background:linear-gradient(to right,rgba(168,155,140,.1),rgba(168,155,140,.3),rgba(168,155,140,.1));
+  outline:none;-webkit-appearance:none;appearance:none;cursor:pointer;
+}
+.cyber-panel input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:var(--accent);cursor:pointer;box-shadow:0 0 12px rgba(168,155,140,.4);
+}
+.cyber-panel-reset{
+  width:100%;padding:8px;border:1px solid rgba(168,155,140,.15);
+  background:transparent;color:var(--text-secondary);border-radius:10px;
+  font-size:11px;cursor:pointer;transition:all .3s;
+  font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:1px;
+}
+.cyber-panel-reset:hover{border-color:var(--accent);color:var(--accent);background:rgba(168,155,140,.05)}
+
+@media(max-width:767px){
+  .cyber-panel-toggle{bottom:30px;right:12px}
+  .cyber-panel-toggle button{width:42px;height:42px;font-size:18px}
+  .cyber-panel{bottom:90px;right:12px;width:260px;max-height:55vh}
+}
 
 /* ═══════════ FLASHY FX: Emoji Pop ═══════════ */
 .emoji-pop{
@@ -1087,7 +1151,7 @@ body{overscroll-behavior:none;-webkit-overflow-scrolling:touch}
 </style>
 </head>
 <body>
-<canvas id="particleCanvas"></canvas>
+<div id="webglBg"></div>
 <div class="parallax-bg" id="parallaxBg"></div>
 <div id="bunnyOverlay" class="bunny-hidden" onclick="duangBunny(event)">
 <svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg"><defs><filter id="bBlur"><feGaussianBlur stdDeviation="2.2"/></filter><filter id="bSh" x="-25%" y="-15%" width="150%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="2"/><feOffset dx="0" dy="2.5"/><feComponentTransfer><feFuncA type="linear" slope="0.07"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><ellipse cx="110" cy="218" rx="50" ry="7" fill="rgba(160,150,130,0.09)"/><g transform="rotate(-3,105,115)"><circle cx="148" cy="155" r="17" fill="#FFF9E8" filter="url(#bSh)"/><circle cx="148" cy="155" r="17" fill="none" stroke="#5A5A5A" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="60 20 30 15" opacity=".5"/><ellipse cx="152" cy="150" rx="10" ry="10" fill="#F9E0B7" opacity=".3" filter="url(#bBlur)"/><g filter="url(#bBlur)"><path d="M58,130 C40,142 32,168 36,192 C40,210 58,224 82,228 C100,231 122,228 138,218 C156,206 162,182 158,162 C154,145 142,130 128,122 C114,115 96,112 82,112 C68,113 58,120 58,130 Z" fill="#FFF9E8"/><ellipse cx="95" cy="100" rx="42" ry="28" fill="#F9E0B7" opacity=".35"/><ellipse cx="140" cy="150" rx="28" ry="35" fill="#F9E0B7" opacity=".22"/><ellipse cx="105" cy="170" rx="35" ry="38" fill="#FFFDF6" opacity=".6"/></g><path d="M58,130 C40,142 32,168 36,192 C40,210 58,224 82,228 C100,231 122,228 138,218 C156,206 162,182 158,162 C154,145 142,130 128,122 C114,115 96,112 82,112 C68,113 58,120 58,130 Z" fill="none" stroke="#5A5A5A" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M36,192 C40,210 58,224 82,228" fill="none" stroke="#5A5A5A" stroke-width="3.5" stroke-linecap="round" opacity=".7"/><path d="M138,218 C156,206 162,182 158,162" fill="none" stroke="#5A5A5A" stroke-width="3.2" stroke-linecap="round" opacity=".65"/><g filter="url(#bBlur)"><ellipse cx="95" cy="100" rx="44" ry="40" fill="#FFF9E8"/><ellipse cx="88" cy="92" rx="30" ry="24" fill="#F9E0B7" opacity=".28"/></g><ellipse cx="95" cy="100" rx="44" ry="40" fill="none" stroke="#5A5A5A" stroke-width="2.5" stroke-linecap="round"/><path d="M128,178 C132,172 138,170 141,174 C143,178 140,184 135,186 C130,187 125,183 126,180 Z" fill="#F9E0B7" opacity=".4" filter="url(#bBlur)"/><g class="ear-l" transform-origin="65 64"><path d="M62,66 C56,48 50,28 50,18 C50,10 54,6 58,8 C62,10 66,20 68,36 C70,48 68,58 66,66 Z" fill="#FFF9E8" filter="url(#bBlur)"/><path d="M62,66 C56,48 50,28 50,18 C50,10 54,6 58,8 C62,10 66,20 68,36 C70,48 68,58 66,66 Z" fill="#F9E0B7" opacity=".45"/><path d="M60,64 C56,48 52,30 53,22 C53,16 55,13 57,13 C59,14 61,20 62,32 C63,42 62,54 61,64 Z" fill="#F8D4BC" opacity=".55"/><path d="M56,45 C57,38 58,30 58,24" fill="none" stroke="#5A5A5A" stroke-width="1" stroke-linecap="round" opacity=".35"/><path d="M62,66 C56,48 50,28 50,18 C50,10 54,6 58,8 C62,10 66,20 68,36 C70,48 68,58 66,66 Z" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-linecap="round"/></g><g class="ear-r" transform-origin="125 64" style="transform:rotate(-5deg)"><path d="M128,66 C134,48 140,28 140,18 C140,10 135,6 131,8 C127,10 123,20 121,36 C119,48 122,58 124,66 Z" fill="#FFF9E8" filter="url(#bBlur)"/><path d="M128,66 C134,48 140,28 140,18 C140,10 135,6 131,8 C127,10 123,20 121,36 C119,48 122,58 124,66 Z" fill="#F9E0B7" opacity=".45"/><path d="M126,64 C131,48 136,30 136,22 C135,16 133,13 131,13 C129,14 127,20 126,32 C125,42 126,54 127,64 Z" fill="#F8D4BC" opacity=".55"/><path d="M132,45 C131,38 130,30 131,24" fill="none" stroke="#5A5A5A" stroke-width="1" stroke-linecap="round" opacity=".35"/><path d="M128,66 C134,48 140,28 140,18 C140,10 135,6 131,8 C127,10 123,20 121,36 C119,48 122,58 124,66 Z" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-linecap="round"/></g><circle cx="78" cy="96" r="4.5" fill="#2A2A2A"/><circle cx="79.5" cy="94" r="1.1" fill="#FFF"/><circle cx="112" cy="96" r="4.5" fill="#2A2A2A"/><circle cx="113.5" cy="94" r="1.1" fill="#FFF"/><circle cx="95" cy="108" r="2.8" fill="#F8D4BC" opacity=".85"/><circle cx="94" cy="107" r=".8" fill="rgba(255,255,255,.4)"/><path d="M91,113 C93,115 95,116 95,116 C95,116 97,115 99,113" fill="none" stroke="#5A5A5A" stroke-width="1" stroke-linecap="round" opacity=".6"/><g class="cheek-l" transform-origin="65 106"><ellipse cx="65" cy="106" rx="12" ry="9" fill="#F9E0B7" opacity=".4" filter="url(#bBlur)"/><circle cx="60" cy="108" r="1.2" fill="#F9E0B7" opacity=".7"/></g><g class="cheek-r" transform-origin="125 106"><ellipse cx="125" cy="106" rx="12" ry="9" fill="#F9E0B7" opacity=".4" filter="url(#bBlur)"/></g><ellipse cx="60" cy="195" rx="11" ry="7.5" fill="#FFF9E8" filter="url(#bBlur)"/><ellipse cx="60" cy="195" rx="11" ry="7.5" fill="none" stroke="#5A5A5A" stroke-width="1.5" stroke-linecap="round"/><path d="M56,197 C57,198 58,198 59,197" fill="none" stroke="#5A5A5A" stroke-width=".8" stroke-linecap="round" opacity=".5"/><path d="M59,198 C60,199 61,199 62,198" fill="none" stroke="#5A5A5A" stroke-width=".8" stroke-linecap="round" opacity=".5"/><ellipse cx="130" cy="195" rx="11" ry="7.5" fill="#FFF9E8" filter="url(#bBlur)"/><ellipse cx="130" cy="195" rx="11" ry="7.5" fill="none" stroke="#5A5A5A" stroke-width="1.5" stroke-linecap="round"/><path d="M126,197 C127,198 128,198 129,197" fill="none" stroke="#5A5A5A" stroke-width=".8" stroke-linecap="round" opacity=".5"/><path d="M129,198 C130,199 131,199 132,198" fill="none" stroke="#5A5A5A" stroke-width=".8" stroke-linecap="round" opacity=".5"/><ellipse class="belly" cx="100" cy="180" rx="32" ry="30" fill="#FFFDF6" opacity=".45" transform-origin="100 180" filter="url(#bBlur)"/></g></svg></div>
@@ -1300,6 +1364,39 @@ body{overscroll-behavior:none;-webkit-overflow-scrolling:touch}
   </div>
 </div>
 
+<!-- Cyberpunk Background Control Panel -->
+<div class="cyber-panel-toggle">
+  <button id="cyberToggleBtn" title="背景效果调节">⚙</button>
+</div>
+<div class="cyber-panel" id="cyberPanel">
+  <div class="cyber-panel-title">背景效果调节</div>
+  <div class="cyber-panel-group">
+    <div class="cyber-panel-label"><span>粒子密度</span><span class="cyber-panel-val" id="cyValGrid">140</span></div>
+    <input type="range" id="cyGridRes" min="20" max="150" step="5" value="140">
+  </div>
+  <div class="cyber-panel-group">
+    <div class="cyber-panel-label"><span>发光强度</span><span class="cyber-panel-val" id="cyValGlow">1.00</span></div>
+    <input type="range" id="cyGlowInt" min="0.3" max="2.5" step="0.05" value="1.0">
+  </div>
+  <div class="cyber-panel-group">
+    <div class="cyber-panel-label"><span>波纹周期</span><span class="cyber-panel-val" id="cyValCycle">2.0</span></div>
+    <input type="range" id="cyCycle" min="0.5" max="8" step="0.1" value="2.0">
+  </div>
+  <div class="cyber-panel-group">
+    <div class="cyber-panel-label"><span>边缘发光</span><span class="cyber-panel-val" id="cyValEdge">0.80</span></div>
+    <input type="range" id="cyEdgeGlow" min="0.1" max="2" step="0.05" value="0.8">
+  </div>
+  <div class="cyber-panel-group">
+    <div class="cyber-panel-label"><span>扭曲强度</span><span class="cyber-panel-val" id="cyValDistort">0.60</span></div>
+    <input type="range" id="cyDistort" min="0" max="2.5" step="0.05" value="0.6">
+  </div>
+  <div class="cyber-panel-group">
+    <div class="cyber-panel-label"><span>飘动速度</span><span class="cyber-panel-val" id="cyValSpeed">0.60</span></div>
+    <input type="range" id="cySpeed" min="0.1" max="2" step="0.05" value="0.6">
+  </div>
+  <button class="cyber-panel-reset" id="cyResetBtn">恢复默认</button>
+</div>
+
 <!-- Sound Control — now in side menu -->
 
 <!-- Modal -->
@@ -1307,6 +1404,9 @@ body{overscroll-behavior:none;-webkit-overflow-scrolling:touch}
   <div class="modal" id="modalBox" onclick="event.stopPropagation()"></div>
 </div>
 
+<script type="importmap">
+  { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
 <script>
 // ======================== CONSTANTS ========================
 const SK='mathFeedbackTool-v3';
@@ -3375,69 +3475,133 @@ setInterval(function(){
 // FLASHY FX MODULE — 8 flashy interactions for fun feedback
 // ═══════════════════════════════════════════════════════════════
 
-// ======================== 1. PARTICLE BACKGROUND ========================
-let _particles=[],_pctx=null,_pW=0,_pH=0,_pAnimId=null,_particlesOn=true;
-const MATH_SYMBOLS=['+','−','×','÷','∑','π','∫','√','∞','≈','Δ','θ','α','β','λ','%'];
-function initParticleBg(){
-  const c=document.getElementById('particleCanvas');if(!c)return;
-  _pctx=c.getContext('2d');
-  function resize(){_pW=c.width=window.innerWidth;_pH=c.height=window.innerHeight}
-  resize();window.addEventListener('resize',resize);
-  // Create particles
-  _particles=Array.from({length:55},()=>({
-    x:Math.random()*_pW,y:Math.random()*_pH,
-    vx:(Math.random()-.5)*.3,vy:-0.15-Math.random()*.35,
-    symbol:MATH_SYMBOLS[Math.floor(Math.random()*MATH_SYMBOLS.length)],
-    size:10+Math.random()*16,opacity:.04+Math.random()*.08,
-    life:Math.random()*300
-  }));
-  let mx=_pW/2,my=_pH/2;
-  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY},{passive:true});
-  document.addEventListener('touchmove',e=>{if(e.touches[0]){mx=e.touches[0].clientX;my=e.touches[0].clientY}},{passive:true});
-  function animate(){
-    _pAnimId=requestAnimationFrame(animate);
-    if(!_particlesOn){_pctx.clearRect(0,0,_pW,_pH);return}
-    _pctx.clearRect(0,0,_pW,_pH);
-    for(let i=0;i<_particles.length;i++){
-      const p=_particles[i];
-      // Mouse repulsion
-      const dx=p.x-mx,dy=p.y-my,dist=Math.sqrt(dx*dx+dy*dy);
-      if(dist<120){p.vx+=(dx/dist)*.08;p.vy+=(dy/dist)*.08}
-      // Damping
-      p.vx*=0.998;p.vy*=0.998;
-      p.x+=p.vx;p.y+=p.vy;
-      // Wrap
-      if(p.y<-30){p.y=_pH+20;p.x=Math.random()*_pW}
-      if(p.y>_pH+30){p.y=-20;p.x=Math.random()*_pW}
-      if(p.x<-30)p.x=_pW+20;
-      if(p.x>_pW+30)p.x=-20;
-      // Draw
-      _pctx.fillStyle='rgba(168,155,140,'+p.opacity+')';
-      _pctx.font=(p.size)+'px "Georgia","Times New Roman",serif';
-      _pctx.fillText(p.symbol,p.x,p.y);
-    }
-    // Draw connection lines between close particles
-    _pctx.strokeStyle='rgba(168,155,140,.03)';_pctx.lineWidth=.5;
-    for(let i=0;i<_particles.length;i++){
-      for(let j=i+1;j<_particles.length;j++){
-        const dx=_particles[i].x-_particles[j].x,dy=_particles[i].y-_particles[j].y;
-        if(dx*dx+dy*dy<10000){
-          _pctx.beginPath();_pctx.moveTo(_particles[i].x,_particles[i].y);_pctx.lineTo(_particles[j].x,_particles[j].y);_pctx.stroke();
-        }
-      }
-    }
-    // Draw subtle glow near cursor
-    const grd=_pctx.createRadialGradient(mx,my,0,mx,my,100);
-    grd.addColorStop(0,'rgba(201,169,110,.04)');grd.addColorStop(1,'transparent');
-    _pctx.fillStyle=grd;_pctx.fillRect(mx-100,my-100,200,200);
+// ======================== 1. CYBERPUNK WEBGL BACKGROUND (Three.js) ========================
+let _webglOn=true,_webglCfg={
+  gridRes:140,glowInt:1.0,cycle:2.0,edgeGlow:0.8,distort:0.6,speed:0.6
+};
+const _webglDefaults={..._webglCfg};
+let _webglScene=null,_webglRenderer=null,_webglUniforms=null;
+const WEBGL_VERTEX=`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.0);}`;
+const WEBGL_FRAGMENT=`
+  uniform float uTime,uGridRes,uGlow,uCycle,uEdge,uDistort,uSpeed,uBlend;
+  uniform vec2 uRes;varying vec2 vUv;
+  const vec3 BRIGHT=vec3(0.78,0.61,0.35);const vec3 DIM=vec3(0.10,0.07,0.04);
+  vec3 permute(vec3 x){return mod(((x*34.0)+1.0)*x,289.0);}
+  float snoise(vec2 v){const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);vec2 i1=(x0.x>x0.y)?vec2(1.0,0.0):vec2(0.0,1.0);vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;i=mod(i,289.0);vec3 p=permute(permute(i.y+vec3(0.0,i1.y,1.0))+i.x+vec3(0.0,i1.x,1.0));vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0);m=m*m;m=m*m;vec3 x=2.0*fract(p*C.www)-1.0;vec3 h=abs(x)-0.5;vec3 a0=x-floor(x+0.5);m*=1.79284291400159-0.85373472095314*(a0*a0+h*h);vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;return 130.0*dot(m,g);}
+  float voxelSDF(vec2 p,float s,float r){vec2 q=abs(p)-s+r;return length(max(q,0.0))+min(max(q.x,q.y),0.0)-r;}
+  void main(){
+    vec2 asp=vec2(uRes.x/uRes.y,1.0);vec2 dEdge=min(vUv,1.0-vUv)*asp;float de=min(dEdge.x,dEdge.y);
+    vec2 uv=(vUv*2.0-1.0)*asp;float t=uTime*uSpeed;
+    float ns=snoise(uv*1.5+vec2(t*0.2));float ns2=snoise(uv*0.8-vec2(t*0.15));
+    vec2 duv=uv+uv*(ns*0.6+ns2*0.4)*uDistort*0.1;
+    float dc=length(duv);float mr=length(asp)*1.1;
+    float p=fract(t/uCycle);float cr=p*mr;float dr=abs(dc-cr);
+    float ep=smoothstep(uBlend,0.0,de);float wp=smoothstep(uBlend,0.0,dr);
+    float dew=0.04*(1.0+wp*1.5);float ee=exp(-de/dew)*uEdge;ee*=(0.9+0.1*sin(uTime*1.2));ee*=(1.0+wp*1.2);
+    float dww=0.01+ep*0.04;float we=exp(-pow(dr,2.0)/dww)*uGlow;we*=smoothstep(0.0,0.1,p);
+    float fb=we+ee;fb-=(we*ee*0.4);
+    vec2 gu=vUv*vec2(uGridRes*asp.x,uGridRes);vec2 cl=fract(gu);vec2 vl=cl-0.5;
+    float vs=voxelSDF(vl,0.25,0.05);float vsh=1.0-smoothstep(-0.05,0.05,vs);
+    float fi=fb*vsh;vec3 fc=mix(DIM,BRIGHT,fi);fc*=fi;
+    gl_FragColor=vec4(fc,1.0);
+  }`;
+
+async function initWebglBg(){
+  const container=document.getElementById('webglBg');if(!container)return;
+  const m=await import('three');
+  _webglScene=new m.Scene();
+  const cam=new m.OrthographicCamera(-1,1,1,-1,0,1);
+  _webglRenderer=new m.WebGLRenderer({antialias:true,alpha:true});
+  _webglRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  _webglRenderer.setSize(window.innerWidth,window.innerHeight);
+  container.appendChild(_webglRenderer.domElement);
+  _webglUniforms={
+    uTime:{value:0},uRes:{value:new m.Vector2(window.innerWidth,window.innerHeight)},
+    uGridRes:{value:_webglCfg.gridRes},uGlow:{value:_webglCfg.glowInt},
+    uCycle:{value:_webglCfg.cycle},uEdge:{value:_webglCfg.edgeGlow},
+    uDistort:{value:_webglCfg.distort},uSpeed:{value:_webglCfg.speed},
+    uBlend:{value:0.02}
+  };
+  const mat=new m.ShaderMaterial({uniforms:_webglUniforms,vertexShader:WEBGL_VERTEX,fragmentShader:WEBGL_FRAGMENT,transparent:true});
+  const geo=new m.PlaneGeometry(2,2);
+  _webglScene.add(new m.Mesh(geo,mat));
+  window.addEventListener('resize',()=>{
+    _webglRenderer.setSize(window.innerWidth,window.innerHeight);
+    _webglUniforms.uRes.value.set(window.innerWidth,window.innerHeight);
+  });
+  function animate(now){
+    requestAnimationFrame(animate);
+    if(!_webglOn){_webglRenderer.clear();return}
+    _webglUniforms.uTime.value=now*0.001;
+    _webglRenderer.render(_webglScene,cam);
   }
-  animate();
+  requestAnimationFrame(animate);
+  // Load saved state
+  const saved=localStorage.getItem('mf-webgl-bg');
+  if(saved==='0')toggleWebglBg();
+  // Init control panel
+  initCyberPanel();
 }
-function toggleParticles(){
-  _particlesOn=!_particlesOn;
-  const c=document.getElementById('particleCanvas');
-  if(c)c.classList.toggle('hidden',!_particlesOn);
-  localStorage.setItem('mf-particles',_particlesOn?'1':'0');
+
+function toggleWebglBg(){
+  _webglOn=!_webglOn;
+  const c=document.getElementById('webglBg');
+  if(c)c.classList.toggle('hidden',!_webglOn);
+  localStorage.setItem('mf-webgl-bg',_webglOn?'1':'0');
+}
+
+// Control panel
+function initCyberPanel(){
+  const btn=document.getElementById('cyberToggleBtn');
+  const panel=document.getElementById('cyberPanel');
+  if(!btn||!panel)return;
+  btn.addEventListener('click',()=>{
+    panel.classList.toggle('open');
+    btn.classList.toggle('active');
+  });
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.cyber-panel-toggle')&&!e.target.closest('.cyber-panel')){
+      panel.classList.remove('open');btn.classList.remove('active');
+    }
+  });
+  // Bind sliders
+  const binds=[
+    ['cyGridRes','cyValGrid','uGridRes',false],
+    ['cyGlowInt','cyValGlow','uGlow',true],
+    ['cyCycle','cyValCycle','uCycle',true],
+    ['cyEdgeGlow','cyValEdge','uEdge',true],
+    ['cyDistort','cyValDistort','uDistort',true],
+    ['cySpeed','cyValSpeed','uSpeed',true],
+  ];
+  binds.forEach(([sliderId,valId,uniformKey,isFloat])=>{
+    const sl=document.getElementById(sliderId),vl=document.getElementById(valId);
+    if(!sl)return;
+    // Load saved value
+    const saved=localStorage.getItem('cy-'+sliderId);
+    if(saved!==null){sl.value=saved;_webglCfg[uniformKey.substring(1)]=parseFloat(saved)}
+    sl.addEventListener('input',()=>{
+      const v=parseFloat(sl.value);
+      if(_webglUniforms&&_webglUniforms[uniformKey])_webglUniforms[uniformKey].value=v;
+      _webglCfg[uniformKey.substring(1)]=v;
+      if(vl)vl.textContent=isFloat?v.toFixed(2):Math.round(v);
+      localStorage.setItem('cy-'+sliderId,v);
+    });
+    // Trigger initial display
+    if(vl)vl.textContent=isFloat?parseFloat(sl.value).toFixed(2):Math.round(sl.value);
+  });
+  // Reset button
+  document.getElementById('cyResetBtn').addEventListener('click',()=>{
+    Object.assign(_webglCfg,_webglDefaults);
+    binds.forEach(([sliderId,valId,uniformKey,isFloat])=>{
+      const sl=document.getElementById(sliderId),vl=document.getElementById(valId);
+      const key=uniformKey.substring(1);
+      const def=_webglDefaults[key];
+      if(sl)sl.value=def;
+      if(_webglUniforms&&_webglUniforms[uniformKey])_webglUniforms[uniformKey].value=def;
+      if(vl)vl.textContent=isFloat?def.toFixed(2):Math.round(def);
+      localStorage.removeItem('cy-'+sliderId);
+    });
+  });
 }
 
 // ======================== 2. CONFETTI BURST ========================
@@ -3677,26 +3841,22 @@ wsRenderStack=function(idx){
   },150);
 };
 
-// ======================== PARTICLE TOGGLE IN SETTINGS ========================
-// Add particle toggle to side menu
+// ======================== WEBGL BG TOGGLE IN SETTINGS ========================
 (function(){
-  const saved=localStorage.getItem('mf-particles');
-  if(saved==='0'){_particlesOn=false;const c=document.getElementById('particleCanvas');if(c)c.classList.add('hidden')}
-  // Wire into side menu
   setTimeout(()=>{
     const menu=document.querySelector('.side-menu-section');
     if(menu){
       const row=document.createElement('button');
       row.className='side-menu-item';
-      row.innerHTML='<span>✨ 粒子背景</span><span class="side-menu-check" id="particleCheck" style="display:'+(_particlesOn?'inline':'none')+'">✓</span>';
-      row.onclick=function(){toggleParticles();document.getElementById('particleCheck').style.display=_particlesOn?'inline':'none'};
+      row.innerHTML='<span>🌐 赛博背景</span><span class="side-menu-check" id="webglCheck" style="display:'+(_webglOn?'inline':'none')+'">✓</span>';
+      row.onclick=function(){toggleWebglBg();document.getElementById('webglCheck').style.display=_webglOn?'inline':'none'};
       menu.appendChild(row);
     }
   },100);
 })();
 
 // ======================== INIT ALL FX ========================
-initParticleBg();
+initWebglBg();
 initCardTilt();
 initMagneticButtons();
 </script>
