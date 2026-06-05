@@ -923,6 +923,12 @@ input:focus,select:focus,textarea:focus{
 .ws-bubble-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-content:flex-start;padding:10px 20px;max-width:700px;min-height:180px;margin:0 auto;transition:opacity .2s ease;flex:1}
 .ws-edit-actions{padding:8px 0 20px;flex-shrink:0;min-height:44px;opacity:.5;transition:opacity .3s ease}
 .ws-edit-actions:hover{opacity:1}
+.ws-tag-nav{position:fixed;top:50%;transform:translateY(-50%);width:52px;height:120px;border:none;background:transparent;color:var(--text);opacity:.12;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:42px;font-family:"Segoe UI",system-ui,sans-serif;font-weight:200;z-index:150;transition:opacity .35s ease,text-shadow .35s ease;pointer-events:auto;outline:none;-webkit-tap-highlight-color:transparent}
+.ws-tag-nav:hover{opacity:1;text-shadow:0 0 18px var(--accent),0 0 36px var(--accent-light)}
+.ws-tag-nav:active{opacity:.7;transition:opacity .05s ease}
+.ws-tag-nav-left{left:6px}
+.ws-tag-nav-right{right:6px}
+@media(max-width:600px){.ws-tag-nav{width:36px;height:80px;font-size:28px}.ws-tag-nav-left{left:0}.ws-tag-nav-right{right:0}}
 .ws-bubble{
   padding:10px 18px;border-radius:24px;background:var(--border-light);font-size:var(--font-sm);
   cursor:pointer;transition:all .2s ease;user-select:none;opacity:0;transform:scale(0);
@@ -933,6 +939,19 @@ input:focus,select:focus,textarea:focus{
 .ws-bubble:nth-child(3){animation-delay:.06s}.ws-bubble:nth-child(4){animation-delay:.09s}
 .ws-bubble:nth-child(5){animation-delay:.12s}.ws-bubble:nth-child(6){animation-delay:.15s}
 .ws-bubble:nth-child(7){animation-delay:.18s}.ws-bubble:nth-child(8){animation-delay:.21s}
+.ws-bubble:nth-child(9){animation-delay:.24s}.ws-bubble:nth-child(10){animation-delay:.27s}
+.ws-bubble:nth-child(11){animation-delay:.30s}.ws-bubble:nth-child(12){animation-delay:.33s}
+.ws-bubble:nth-child(13){animation-delay:.36s}.ws-bubble:nth-child(14){animation-delay:.39s}
+.ws-bubble:nth-child(15){animation-delay:.42s}.ws-bubble:nth-child(16){animation-delay:.45s}
+/* Grade tier: 小学 — warm coral */
+.ws-tag-editor[data-grade-tier="elem"] .ws-bubble.on{background:#f08c6a;border-color:#e87752;box-shadow:0 2px 12px rgba(240,140,106,.25)}
+.ws-tag-editor[data-grade-tier="elem"] .ws-edit-hero{color:#e8876a}
+/* Grade tier: 初中 — fresh teal */
+.ws-tag-editor[data-grade-tier="mid"] .ws-bubble.on{background:#5db89a;border-color:#48a585;box-shadow:0 2px 12px rgba(93,184,154,.25)}
+.ws-tag-editor[data-grade-tier="mid"] .ws-edit-hero{color:#5da890}
+/* Grade tier: 高中 — deep indigo */
+.ws-tag-editor[data-grade-tier="high"] .ws-bubble.on{background:#7b8cc4;border-color:#6678b8;box-shadow:0 2px 12px rgba(123,140,196,.25)}
+.ws-tag-editor[data-grade-tier="high"] .ws-edit-hero{color:#7b8cc4}
 @keyframes bubbleOut{0%{opacity:0;transform:scale(0)}100%{opacity:1;transform:scale(1)}}
 
 /* ── Floating "本" button ── */
@@ -1279,6 +1298,8 @@ body{overscroll-behavior:none;-webkit-overflow-scrolling:touch}
       <div class="ws-edit-actions" id="wsEditActions"
         <button class="btn btn-ghost btn-xs" onclick="wsRefreshEditTags()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg></button>
       </div>
+      <button class="ws-tag-nav ws-tag-nav-left" id="wsTagNavLeft" onclick="wsTagNav(-1)" title="上一个">〈</button>
+      <button class="ws-tag-nav ws-tag-nav-right" id="wsTagNavRight" onclick="wsTagNav(1)" title="下一个">〉</button>
     </div>
     <div class="ws-complete" id="wsComplete" style="display:none">
       <h2>全班评价完成</h2>
@@ -1376,6 +1397,49 @@ body{overscroll-behavior:none;-webkit-overflow-scrolling:touch}
   { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
 </script>
 <script>
+// ======================== 域名保护 ========================
+// 👇 改成你自己的 GitHub 域名，比如 "wangyi123.github.io"
+const ALLOWED_HOST='wvwv10001.github.io';
+
+(function(){
+  const host=location.hostname;
+  const allowed=[
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    ALLOWED_HOST
+  ];
+  const isAllowed=allowed.some(function(a){return host===a||host.endsWith('.'+a);});
+
+  if(!isAllowed){
+    // 停掉所有执行
+    document.documentElement.innerHTML='';
+    document.write(
+      '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+      '<title>数学教学反馈工具</title><style>'+
+      '*{margin:0;padding:0;box-sizing:border-box}'+
+      'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'+
+      'background:linear-gradient(175deg,#f8f4f0,#f0eae2,#ede4db);min-height:100vh;display:flex;align-items:center;justify-content:center}'+
+      '.card{background:#fff;border-radius:20px;padding:48px 36px;max-width:420px;text-align:center;'+
+      'box-shadow:0 8px 36px rgba(148,130,115,.1);margin:20px}'+
+      '.icon{font-size:64px;margin-bottom:24px}'+
+      'h2{color:#3d3530;font-size:20px;margin-bottom:12px}'+
+      'p{color:#9b8e84;font-size:14px;line-height:1.8}'+
+      '.domain{color:#a89b8c;font-weight:600;background:#f5f1ed;padding:2px 8px;border-radius:4px;font-size:13px}'+
+      '</style></head><body><div class="card">'+
+      '<div class="icon">🔒</div>'+
+      '<h2>请在正式地址访问</h2>'+
+      '<p>本工具仅供授权使用，请通过<br><span class="domain">'+ALLOWED_HOST+'</span><br>访问</p>'+
+      '<p style="margin-top:16px;font-size:12px;color:#b0a599">如果你是从老师那里获取的此工具，<br>请联系老师获取正确的访问地址。</p>'+
+      '</div></body></html>'
+    );
+    throw new Error('Unauthorized domain');
+  }
+
+  // 标记已通过验证（内部校验用）
+  window.__AUTH__=true;
+})();
+
 // ======================== CONSTANTS ========================
 const SK='mathFeedbackTool-v3';
 
@@ -1385,12 +1449,20 @@ const isTouch='ontouchstart'in window||navigator.maxTouchPoints>0;
 // Tag pools
 const poolState=[
   '上课专注，听讲认真','主动举手回答问题','课堂参与度较高','能跟上教学节奏',
-  '愿意上台板演','对新题型有兴趣','课堂互动时表现积极','对难题有钻研精神',
+  '对新题型有兴趣','课堂互动时表现积极','对难题有钻研精神',
   '课堂笔记工整有条理','遇到不懂主动提问','反应快理解能力强','认真完成课堂练习',
   '学习中善于总结方法','乐于帮助同学讲解','有独到的解题思路','对新知识接受较快',
   '上课状态整体良好','保持稳定的学习状态','逻辑思维表现不错','思路清晰表达流畅',
   '审题较为仔细','计算准确率较高','几何想象力不错','解题步骤完整规范',
-  '学习态度端正','能独立完成思考题','课堂互动表现活跃','对解题有自己见解'
+  '学习态度端正','能独立完成思考题','课堂互动表现活跃','对解题有自己见解',
+  '课堂练习正确率高','善于运用所学知识解题','思维活跃有创造力',
+  '课堂发言条理清晰','能快速掌握新知识点','推理过程严谨细致',
+  '能发现题目中的隐含条件','解题方法灵活多变','空间思维能力较强',
+  '对抽象概念理解到位','能主动归纳解题技巧','课堂练习速度较快',
+  '善于用多种方法验证答案','能在小组讨论中发挥积极作用','知识点之间能建立联系',
+  '对易错点有警觉意识','解题中有估算验证习惯','能清晰复述解题思路',
+  '课堂注意力持续时间长','面对复杂问题保持冷静','能主动反思错题原因',
+  '有良好的做题习惯','善于画图辅助分析','数学表达用词准确'
 ];
 const poolStrengths=[
   '理解能力强一点就通','解题步骤规范思路清晰','善于总结同类题型解法',
@@ -1400,7 +1472,13 @@ const poolStrengths=[
   '阅读题目仔细审题认真','敢于挑战难题不畏惧','书写工整规范',
   '逻辑推理能力突出','课堂反应敏捷','知识迁移运用灵活',
   '良好自我检查纠错能力','善于与老师沟通交流','善于发现题目关键信息',
-  '自信心较强不怕犯错','课堂乐于分享想法','基础扎实知识框架清晰'
+  '自信心较强不怕犯错','课堂乐于分享想法','基础扎实知识框架清晰',
+  '应用题分析能力强','能快速抓住题目核心条件','代数运算功底扎实',
+  '几何证明思路严谨','对数字敏感计算流畅','能用不同角度思考问题',
+  '课后复习习惯好','能主动整理错题本','学习计划执行到位',
+  '合作学习能力强','在探究活动中表现突出','能创造性地解决问题',
+  '时间管理意识好','解题耐心细致','能坚持攻克难题',
+  '善于用图形化方式理解抽象概念','归纳总结能力强','预习习惯良好'
 ];
 const poolImprovements=[
   '遇难题有时会退缩需多鼓励','计算速度可以再提升','偶尔忽略题目关键条件',
@@ -1410,7 +1488,13 @@ const poolImprovements=[
   '可以更注重检查验算','知识点串联可以更主动','笔记细节可再完善一些',
   '有时急于求成需要更多耐心','一题多解意识可以加强','对自己要求可以再高一点',
   '需加强基础计算熟练度','可多尝试不同的解题方法','时间分配上可以更合理',
-  '复杂问题拆解能力有提升空间','可规范使用数学语言','个别知识点灵活运用可加强'
+  '复杂问题拆解能力有提升空间','可规范使用数学语言','个别知识点灵活运用可加强',
+  '几何辅助线添加可以多练','代数字母运算熟练度可提高','选择题可用排除法验证',
+  '概率统计部分可以多熟悉','函数图像分析能力可加强','三角变换可以更熟练',
+  '证明题书写逻辑可更严谨','课下提问可以更主动','草稿书写可以更整洁',
+  '方程思想运用可以更灵活','公式记忆准确度可提高','分式运算需注意符号',
+  '数形结合意识可以加强','开放性问题可以更敢于尝试','解题速度可逐步提升',
+  '小细节容易疏忽需多提醒','不等号方向偶尔混淆需注意','实数运算要更仔细'
 ];
 const fuOpts=[
   {v:'review',t:'复盘讲义错题',d:'建议孩子重点复习本周讲义中的错题，查漏补缺'},
@@ -1577,6 +1661,7 @@ function stusBySg(sgId){return S.students.filter(s=>s.sgId===sgId)}
 function sgsByGp(gId){return S.subGroups.filter(x=>x.groupId===gId)}
 function sgOfStu(sid){const s=stu(sid);return s?sg(s.sgId):null}
 function gpOfStu(sid){const x=sgOfStu(sid);return x?gp(x.groupId):null}
+function getGradeTier(sid){var s=stu(sid);if(!s||!s.grade)return'';var g=s.grade;if('一二三四五六'.includes(g))return'elem';if('七八九'.includes(g))return'mid';return'high'}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
 function pick(a,n){return shuffle(a).slice(0,n)}
 function prn(s){return s.gender==='女'?'她':'他'}
@@ -1712,7 +1797,7 @@ function renderStudentPanel(){
 function renderTags(elId,selected,cat){
   const el=document.getElementById(elId);
   const pool=cat==='state'?poolState:(cat==='strengths'?poolStrengths:poolImprovements);
-  let shown=[...new Set([...selected,...pick(pool,Math.max(0,8-selected.length))])];
+  let shown=[...new Set([...selected,...pick(pool,Math.max(0,16-selected.length))])];
   el.innerHTML=shown.map((t,i)=>{
     const on=selected.includes(t);
     return `<label class="tag${on?' on':''}"><input type="checkbox" ${on?'checked':''} onchange="toggleTag('${cat}','${esc(t.replace(/'/g,"\\'"))}',this.checked)"><span class="tag-num">${i+1}</span>${esc(t)}</label>`;
@@ -1776,7 +1861,7 @@ function onFollowUpCustom(){const s=stu(S.curSid);if(!s)return;const ps=tp(s.sgI
 
 function refreshOptions(cat){
   S.useCounts[cat]=(S.useCounts[cat]||0)+1;const s=stu(S.curSid);const ps=s?tp(s.sgId,s.tier):null;const cur=ps?ps[cat]||[]:[];
-  const pool=cat==='state'?poolState:(cat==='strengths'?poolStrengths:poolImprovements);const fresh=pick(pool,9);
+  const pool=cat==='state'?poolState:(cat==='strengths'?poolStrengths:poolImprovements);const fresh=pick(pool,16);
   const mem=(s&&s.mem)?s.mem[cat]||[]:[];const merged=[...new Set([...cur,...mem,...fresh])];
   renderTags('check'+cat[0].toUpperCase()+cat.slice(1),merged,cat);
   if(S.useCounts[cat]>=5){S.useCounts[cat]=0;showToast('选项已轮换多轮，建议手动补充自定义标签')}
@@ -2207,21 +2292,28 @@ function showCleanupModal(){
   let oldCount=0;let totalHist=0;
   const cutoff=Date.now()-14*86400000;
   S.students.forEach(s=>{if(s.hist){totalHist+=s.hist.length;s.hist.forEach(h=>{const d=new Date(h.date);if(d.getTime()<cutoff||isNaN(d.getTime()))oldCount++})}});
-  if(oldCount===0){showToast('没有超过14天的旧记录，无需清理');return}
-  openModal(`<h3>一键清理旧记录</h3>
-    <p style="font-size:var(--font-sm);color:var(--text-secondary);margin-bottom:8px">
-    共有 <b>${oldCount}</b> 条超过14天的历史反馈记录可清理。<br>
-    学生基础资料永久保留，不会删除。
+  var cacheKeys=0;for(var k in localStorage){if(k.startsWith('cy-')||k.startsWith('mf-webgl'))cacheKeys++}
+  openModal(`<h3>一键清理</h3>
+    <p style="font-size:var(--font-sm);color:var(--text-secondary);margin-bottom:12px">
+    ${oldCount>0?'<b>'+oldCount+'</b> 条超过14天的旧记录<br>':''}
+    ${cacheKeys>0?'<b>'+cacheKeys+'</b> 条背景效果缓存<br>':''}
+    学生预览缓存<br>
+    <span style="font-size:var(--font-xs);color:var(--text-muted)">学生基础资料永久保留</span>
     </p>
     <div class="btn-row">
       <button class="btn btn-ghost btn-sm" onclick="closeModal()">取消</button>
-      <button class="btn btn-primary btn-sm" onclick="executeCleanup()">确认清理 ${oldCount} 条</button>
+      <button class="btn btn-primary btn-sm" onclick="executeCleanup()">一键清理</button>
     </div>`);
 }
 function executeCleanup(){
   const cutoff=Date.now()-14*86400000;let cleaned=0;
   S.students.forEach(s=>{if(s.hist){const before=s.hist.length;s.hist=s.hist.filter(h=>{const d=new Date(h.date);return d.getTime()>=cutoff&&!isNaN(d.getTime())});cleaned+=before-s.hist.length}});
-  S.cleanedAt=Date.now();save();closeModal();renderHistory();showToast(`已清理 ${cleaned} 条旧记录，学生资料完整保留`);
+  // Clear WebGL & slider caches
+  for(var k in localStorage){if(k.startsWith('cy-')||k.startsWith('mf-webgl'))localStorage.removeItem(k)}
+  // Clear student preview caches
+  S.students.forEach(s=>{s._preview='';s._wsPreview='';s._wsEdited=false});
+  S.cleanedAt=Date.now();save();closeModal();renderHistory();
+  showToast('已清理 '+cleaned+' 条旧记录 + 缓存垃圾，学生资料保留');
 }
 
 // ======================== HISTORY MANAGER ========================
@@ -2945,7 +3037,7 @@ function wsEditStudent(sid){
   wsShowScreen('wsTagEditor');
   var s=stu(sid);var name=s?s.name||'学生':'';
   var nameEl=document.getElementById('wsEditStudentName');if(nameEl)nameEl.textContent=name;
-  var te=document.getElementById('wsTagEditor');if(te)te.setAttribute('data-name',name);
+  var te=document.getElementById('wsTagEditor');if(te){te.setAttribute('data-name',name);te.setAttribute('data-grade-tier',getGradeTier(sid))}
   wsRunPhase();
 }
 function wsRunPhase(){
@@ -2967,7 +3059,7 @@ function wsRunPhase(){
       var pool=cat==='state'?poolState:(cat==='strengths'?poolStrengths:poolImprovements);
       var selected=mem[cat]||[];
       var labels=selected.slice(); // preserve all selected
-      var fresh=pick(pool.filter(function(t){return!selected.includes(t)}),Math.max(0,8-selected.length));
+      var fresh=pick(pool.filter(function(t){return!selected.includes(t)}),Math.max(0,16-selected.length));
       tags=[...new Set([...labels,...fresh])].map(function(t){return{t:t,on:selected.includes(t)}});
     }
     grid.innerHTML=tags.map(function(t){var lbl=t.t||t.v;return'<label class="ws-bubble'+(t.on?' on':'')+'" onclick="wsToggleEditTag(this,\''+cat+'\',\''+esc(lbl.replace(/'/g,"\\'"))+'\',\''+esc((t.v||'').replace(/'/g,"\\'"))+'\')">'+esc(lbl)+'</label>'}).join('');
@@ -2997,7 +3089,7 @@ function wsRefreshEditTags(){
   const cat=wsEditCats[wsEdit.phase];const mem=s.mem||{};
   const selected=mem[cat]||[];
   const pool=cat==='state'?poolState:(cat==='strengths'?poolStrengths:poolImprovements);
-  const fresh=pick(pool.filter(t=>!selected.includes(t)),Math.max(0,8-selected.length));
+  const fresh=pick(pool.filter(t=>!selected.includes(t)),Math.max(0,16-selected.length));
   const tags=[...selected,...fresh];
   const grid=document.getElementById('wsBubbleGrid');
   grid.innerHTML=tags.map(t=>`<label class="ws-bubble${selected.includes(t)?' on':''}" onclick="wsToggleEditTag(this,'${cat}','${esc(t.replace(/'/g,"\\'"))}')">${esc(t)}</label>`).join('');
@@ -3016,6 +3108,17 @@ function wsSkip(){
   S.workspaceIdx=(S.workspaceIdx+1);
   if(S.workspaceIdx>=total){wsAllBrowsed();return;}
   wsRenderStack(S.workspaceIdx);
+}
+function wsTagNav(dir){
+  var stus=wsGetStudents();var total=stus.length;
+  var newIdx=S.workspaceIdx+dir;
+  if(newIdx<0||newIdx>=total){showToast(dir>0?'已是最后一名学生':'已是第一名学生');return}
+  // Auto-save current edits before navigating
+  if(wsEdit.sid){
+    var s=stu(wsEdit.sid);if(s){s.wsBrowsed=true;S.sentThisWeek[s.id]=Date.now()}
+  }
+  wsEdit.sid=null;S.workspaceIdx=newIdx;save();
+  var next=stus[newIdx];if(next)wsEditStudent(next.id);
 }
 
 // ======================== KEYBOARD ========================
@@ -3447,7 +3550,7 @@ setInterval(function(){
 
 // ======================== 1. CYBERPUNK WEBGL BACKGROUND (Three.js) ========================
 let _webglOn=true,_webglCfg={
-  gridRes:140,glowInt:1.0,cycle:2.0,edgeGlow:0.8,distort:0.6,speed:0.6
+  gridRes:isIPad?70:140,glowInt:1.0,cycle:2.0,edgeGlow:0.8,distort:0.6,speed:0.6
 };
 const _webglDefaults={..._webglCfg};
 let _webglScene=null,_webglRenderer=null,_webglUniforms=null;
@@ -3506,9 +3609,12 @@ async function initWebglBg(){
     _webglRenderer.render(_webglScene,cam);
   }
   requestAnimationFrame(animate);
-  // Load saved state
+  // iPad: default WebGL off for performance
   const saved=localStorage.getItem('mf-webgl-bg');
-  if(saved==='0')toggleWebglBg();
+  if(saved===null&&isIPad){toggleWebglBg();localStorage.setItem('mf-webgl-bg','0')}
+  else if(saved==='0')toggleWebglBg();
+  // Apply initial WebGL colors matching current theme
+  updateWebglColors();
   // Init control panel
   initCyberPanel();
 }
@@ -3845,6 +3951,20 @@ wsRenderStack=function(idx){
 initWebglBg();
 initCardTilt();
 initMagneticButtons();
+
+// ── 内部环境校验（请勿移除）──
+(function(){
+  var _check=function(){
+    if(typeof window.__AUTH__==='undefined'||!window.__AUTH__){
+      document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#c0392b;font-size:18px">⚠️ 应用环境异常，请刷新页面或联系老师</div>';
+      throw new Error('Env check failed');
+    }
+  };
+  // 30~90秒后静默校验一次
+  setTimeout(_check,30000+Math.floor(Math.random()*60000));
+  // 之后每5分钟校验
+  setInterval(_check,300000);
+})();
 </script>
 </body>
 </html>
